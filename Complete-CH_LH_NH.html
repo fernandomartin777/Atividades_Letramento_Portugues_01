@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>CH LH NH</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    line-height: 2;
+    margin: 30px;
+}
+
+input{
+    width: 2.4em;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px solid black;
+    padding: 0;
+    margin: 0;
+}
+
+.correto{
+    background-color:#b6ffb6;
+}
+
+.errado{
+    background-color:#ffb6b6;
+}
+
+button{
+    font-size:28px;
+    padding:10px;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>
+COMPLETE AS PALAVRAS COM
+<span style="color:red;">CH</span>,
+<span style="color:red;">LH</span>
+OU
+<span style="color:red;">NH</span>.
+</h2>
+
+<p>
+HOJE NO ALMOÇO TEM
+<input maxlength="2" data-resposta="CH">U<input maxlength="2" data-resposta="CH">U
+NO MO<input maxlength="2" data-resposta="LH">O DE TOMATE,
+<input maxlength="2" data-resposta="CH">URRASCO,
+ARROZ VE<input maxlength="2" data-resposta="LH">O
+E MI<input maxlength="2" data-resposta="LH">O COZIDO.
+</p>
+
+<p>
+ESQUECI A SE<input maxlength="2" data-resposta="NH">A DO CELULAR.
+SÓ LEMBRO QUE TI<input maxlength="2" data-resposta="NH">A 5 NÚMEROS.
+A<input maxlength="2" data-resposta="CH">O QUE COMEÇAVA COM 1234…
+O QUE SERÁ QUE VEM DEPOIS?
+</p>
+
+<p>
+EU TE<input maxlength="2" data-resposta="NH">O DOIS IRMÃOS,
+TRÊS FI<input maxlength="2" data-resposta="LH">OS
+E UMA CU<input maxlength="2" data-resposta="NH">ADA.
+</p>
+
+<p>
+O COPO ESTÁ
+<input maxlength="2" data-resposta="CH">EIO DE CAFÉ.
+O CAFÉ ESTÁ COM
+<input maxlength="2" data-resposta="CH">EIRO FORTE.
+VOU TOMAR BA<input maxlength="2" data-resposta="NH">O
+E TOMAR CAFÉ.
+</p>
+
+<p>
+ELA TI<input maxlength="2" data-resposta="NH">A UM CADERNO DE 100 FO<input maxlength="2" data-resposta="LH">AS
+DENTRO DA MO<input maxlength="2" data-resposta="CH">ILA.
+</p>
+
+<p>
+A MU<input maxlength="2" data-resposta="LH">ER PEGOU A LI<input maxlength="2" data-resposta="NH">A,
+A TESOURA
+E A AGU<input maxlength="2" data-resposta="LH">A
+PARA COSTURAR.
+</p>
+
+<button onclick="corrigir()">Conferir respostas</button>
+
+<script>
+function corrigir(){
+
+let campos = document.querySelectorAll("input");
+
+campos.forEach(function(campo){
+
+campo.classList.remove("correto");
+campo.classList.remove("errado");
+
+let resposta = campo.dataset.resposta.toUpperCase();
+let digitado = campo.value.trim().toUpperCase();
+
+if(digitado === resposta){
+campo.classList.add("correto");
+}
+else{
+campo.classList.add("errado");
+}
+
+});
+
+}
+</script>
+
+</body>
+</html>
