@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Professor - Controle de XP</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            text-align: center;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        h2 { color: #2c3e50; }
+
+        .placar {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #e8f8f5;
+            border-radius: 6px;
+        }
+
+        .campo-input {
+            font-size: 18pt;
+            font-family: Georgia, serif;
+            width: 120px;
+            text-align: center;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            font-size: 16pt;
+            font-family: Georgia, serif;
+            padding: 8px 16px;
+            margin: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-zerar { background-color: #e74c3c; color: white; }
+        .btn-atribuir { background-color: #2980b9; color: white; }
+    </style>
+</head>
+<body>
+
+    <h2>Painel de Controle de XP</h2>
+    
+    <div class="placar">
+        Pontuação Atual: <span id="lblPontos">0</span> XP
+    </div>
+
+    <!-- Botão para Zerar -->
+    <div>
+        <button class="btn-zerar" onclick="zerarPontuacao()">Zerar Pontuação (0 XP)</button>
+    </div>
+
+    <hr style="margin: 25px 0; border: 0; border-top: 1px solid #ccc;">
+
+    <!-- Área de Atribuição Manual -->
+    <div>
+        <label for="inputPontos" style="display: block; font-size: 16pt; margin-bottom: 8px;">Definir nova pontuação:</label>
+        <input type="number" id="inputPontos" class="campo-input" placeholder="0">
+        <br>
+        <button class="btn-atribuir" onclick="atribuirPontuacao()">Atribuir Pontuação</button>
+    </div>
+
+    <script>
+        // Lista com todas as chaves de pontuação utilizadas nas atividades
+        const chavesPontos = ["pontosAluno", "pontosTotais", "pontuacaoTotal"];
+
+        // Carrega e exibe os pontos salvos ao abrir o painel
+        atualizarExibicao();
+
+        function obterPontosAtuais() {
+            // Busca o valor de qualquer uma das chaves configuradas
+            for (let chave of chavesPontos) {
+                const valor = localStorage.getItem(chave);
+                if (valor !== null) {
+                    return parseInt(valor, 10);
+                }
+            }
+            return 0;
+        }
+
+        function salvarPontosEmTodasChaves(valor) {
+            // Salva em todas as chaves para garantir sincronização entre diferentes modelos de jogos
+            chavesPontos.forEach(chave => {
+                localStorage.setItem(chave, valor);
+            });
+        }
+
+        function atualizarExibicao() {
+            const pontos = obterPontosAtuais();
+            document.getElementById("lblPontos").innerText = pontos;
+        }
+
+        // Função do Botão Zerar
+        function zerarPontuacao() {
+            salvarPontosEmTodasChaves(0);
+            atualizarExibicao();
+            alert("✅ Pontuação zerada com sucesso em todas as atividades!");
+        }
+
+        // Função do Botão Atribuir
+        function atribuirPontuacao() {
+            const valorInput = document.getElementById("inputPontos").value;
+            
+            if (valorInput === "" || isNaN(valorInput)) {
+                alert("⚠️ Por favor, digite um número válido!");
+                return;
+            }
+
+            const novosPontos = parseInt(valorInput, 10);
+            salvarPontosEmTodasChaves(novosPontos);
+            atualizarExibicao();
+            document.getElementById("inputPontos").value = "";
+            alert(`✅ Pontuação atualizada para ${novosPontos} XP!`);
+        }
+    </script>
+
+</body>
+</html>
