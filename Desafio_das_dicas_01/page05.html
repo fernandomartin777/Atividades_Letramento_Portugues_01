@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>F01</title>
+	<meta name="generator" content="LibreOffice 26.2.5.2 (Linux)"/>
+	<meta name="created" content="2026-08-15T19:09:15.641307559"/>
+	<meta name="changed" content="2026-08-15T19:52:59.857569073"/>
+	<style type="text/css">
+		@page { size: 21cm 29.7cm; margin: 1cm }
+		p { margin-bottom: 0.25cm; line-height: 115%; background: transparent }
+		a:link { color: #000080; text-decoration: underline }
+		a:visited { color: #800000; text-decoration: underline }
+		.escondido { display: none; }
+		input, button { font-size: 18pt; padding: 5px 15px; margin: 5px; }
+	</style>
+</head>
+<body lang="pt-BR" link="#000080" vlink="#800000" dir="ltr">
+
+<p align="center" style="margin-bottom: 0cm; line-height: 100%">
+<font color="#0000ff"><font size="5" style="font-size: 20pt">DESAFIO DAS DICAS</font></font></p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><font color="#0000ff"><font size="5" style="font-size: 20pt">Objetos</font></font></p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/></p>
+
+<p align="right" style="margin-bottom: 0cm; line-height: 100%">
+<font color="#ff0000"><font size="5" style="font-size: 20pt"><b>PONTOS: <span id="pontos">0</span></b></font></font></p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/></p>
+
+<!-- Dica 1 (Inicia Visível) -->
+<p id="dica1" style="line-height: 100%; margin-bottom: 0cm"><font size="5" style="font-size: 20pt">Tem páginas.</font></p>
+
+<!-- Dica 2 (Oculta até a 1ª tentativa incorreta) -->
+<p id="dica2" class="escondido" style="line-height: 100%; margin-bottom: 0cm"><font size="5" style="font-size: 20pt">Pode contar uma história.</font></p>
+
+<!-- Dica 3 (Oculta até a 2ª tentativa incorreta) -->
+<p id="dica3" class="escondido" style="line-height: 100%; margin-bottom: 0cm"><font size="5" style="font-size: 20pt">É usado para ler.</font></p>
+
+<p style="line-height: 100%; margin-bottom: 0cm"><br/></p>
+<p style="line-height: 100%; margin-bottom: 0cm"><br/></p>
+
+<!-- Campo de Entrada de Texto -->
+<p align="center" style="margin-bottom: 0cm; line-height: 100%">
+    <input type="text" id="respostaUsuario" maxlength="100" placeholder="Digite sua resposta aqui...">
+</p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/></p>
+
+<!-- Botão de Conferir -->
+<p align="center" style="margin-bottom: 0cm; line-height: 100%">
+    <button id="btnConferir" onclick="conferirResposta()">Conferir</button>
+</p>
+
+<!-- Botão de Próxima Página (Fica abaixo do botão conferir) -->
+<p align="center" style="margin-bottom: 0cm; line-height: 100%">
+    <button id="btnProxima" class="escondido" onclick="proximaPagina()">Próxima Página</button>
+</p>
+
+<!-- Resposta (Oculta no início) -->
+<p align="center" style="margin-bottom: 0cm; line-height: 100%">
+    <font size="5" style="font-size: 20pt">
+        <b id="respostaFinal" class="escondido">RESPOSTA: LIVRO</b>
+    </font>
+</p>
+<p align="center" style="margin-bottom: 0cm; line-height: 100%"><br/></p>
+
+<!-- Imagem (Oculta no início) -->
+<p align="center" style="margin-bottom: 0cm; line-height: 100%">
+    <img id="imagemResposta" class="escondido" src="blank.jpg" alt=" " style="max-width: 300px; height: auto;">
+</p>
+
+<script>
+    // Palavra secreta (Altere aqui para a resposta correta da página)
+    const palavraSecreta = "LIVRO";
+    const proximaPaginaURL = "page06.html"; // Nome do arquivo HTML da próxima página
+
+    let tentativas = 0;
+    const maxTentativas = 3;
+
+    // Recupera a pontuação armazenada ou inicia em 0
+    let pontos = parseInt(localStorage.getItem("pontosAtividade")) || 0;
+    document.getElementById("pontos").innerText = pontos;
+
+    function conferirResposta() {
+        let entrada = document.getElementById("respostaUsuario").value.trim().toUpperCase();
+
+        if (entrada === "") {
+            alert("Por favor, digite uma resposta antes de conferir!");
+            return;
+        }
+
+        tentativas++;
+
+        if (entrada === palavraSecreta) {
+            // Ganha pontos baseados na tentativa
+            if (tentativas === 1) pontos += 3;
+            else if (tentativas === 2) pontos += 2;
+            else if (tentativas === 3) pontos += 1;
+
+            localStorage.setItem("pontosAtividade", pontos);
+            document.getElementById("pontos").innerText = pontos;
+
+            revelarTudo();
+            alert("Parabéns! Você acertou!");
+        } else {
+            if (tentativas === 1) {
+                document.getElementById("dica2").classList.remove("escondido");
+                alert("Resposta incorreta! Confira a Dica 2.");
+            } else if (tentativas === 2) {
+                document.getElementById("dica3").classList.remove("escondido");
+                alert("Resposta incorreta! Confira a Dica 3.");
+            } else if (tentativas >= maxTentativas) {
+                revelarTudo();
+                alert("Você gastou suas 3 tentativas!");
+            }
+        }
+    }
+
+    function revelarTudo() {
+        document.getElementById("dica1").classList.remove("escondido");
+        document.getElementById("dica2").classList.remove("escondido");
+        document.getElementById("dica3").classList.remove("escondido");
+        document.getElementById("respostaFinal").classList.remove("escondido");
+        document.getElementById("imagemResposta").classList.remove("escondido");
+        document.getElementById("btnProxima").classList.remove("escondido");
+
+        // Desabilita a entrada e o botão conferir após finalizar
+        document.getElementById("respostaUsuario").disabled = true;
+        document.getElementById("btnConferir").disabled = true;
+    }
+
+    function proximaPagina() {
+        window.location.href = proximaPaginaURL;
+    }
+</script>
+
+</body>
+</html>
