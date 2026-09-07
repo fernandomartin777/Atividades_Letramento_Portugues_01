@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Monte a Palavra</title>
+    <style>
+        body, button, input {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .container { 
+            text-align: center; 
+            max-width: 900px; 
+            margin: auto; 
+            padding: 10px;
+        }
+
+        /* --- PAINEL DE STATUS E BARRA DE PROGRESSO --- */
+        .painel-game {
+            background-color: #2c3e50;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .info-topo {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .barra-container {
+            width: 100%;
+            background-color: #4a627a;
+            height: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .barra-preenchimento {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            transition: width 0.4s ease-in-out;
+        }
+        
+        /* Imagem com 360px de largura */
+        .imagem-palavra { 
+            width: 360px; 
+            height: auto; 
+            max-width: 100%; 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
+        }
+        
+        /* Estrutura dos Slots Dinâmicos */
+        .area-slots { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            gap: 15px; 
+            margin: 20px 0; 
+            flex-wrap: wrap; 
+            min-height: 60px; 
+            padding: 10px;
+        }
+
+        /* Garante que a palavra inteira fique junta ao quebrar linha */
+        .palavra-grupo {
+            display: flex;
+            gap: 6px;
+            white-space: nowrap;
+            margin-bottom: 10px;
+        }
+
+        /* Espaço fixo e visível entre as palavras */
+        .espaco-fixo {
+            width: 30px;
+            height: 50px;
+            background-color: #e2e8f0;
+            border: 2px dashed #94a3b8;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 0 4px;
+        }
+        
+        .area-letras {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            min-height: 60px;
+            padding: 15px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        .slot, .letra {
+            width: 50px; 
+            height: 50px; 
+            border: 2px solid #000;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 24pt; 
+            font-weight: bold; 
+            border-radius: 8px;
+            user-select: none;
+        }
+        .slot { background-color: #f0f0f0; border-style: dashed; }
+        .letra { background-color: #4CAF50; color: white; cursor: grab; }
+        .letra:active { cursor: grabbing; }
+
+        button { font-size: 18pt; padding: 10px 20px; margin: 10px; cursor: pointer; border-radius: 5px; }
+        .btn-conferir { background-color: #008CBA; color: white; border: none; }
+        .btn-proxima { background-color: #28a745; color: white; border: none; }
+        .escondido { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- PAINEL DE STATUS E BARRA DE PROGRESSO -->
+    <div class="painel-game">
+        <div class="info-topo">
+            <span>Página <span id="lblPagina">1/15</span></span>
+            <span>Pontos: <span id="lblPontos">0</span></span>
+        </div>
+        <div class="barra-container">
+            <div class="barra-preenchimento" id="barraProgresso"></div>
+        </div>
+    </div>
+
+    <h2>Monte o nome da figura:</h2>
+    
+    <!-- 1. CAMINHO DA IMAGEM -->
+    <img src="placa.png" class="imagem-palavra" alt="Figura da atividade">
+
+    <!-- Slots da palavra -->
+    <div class="area-slots" id="areaSlots"></div>
+
+    <!-- Área de letras embaralhadas -->
+    <div class="area-letras" id="areaLetras" ondragover="permitirSoltar(event)" ondrop="soltar(event)"></div>
+
+    <div>
+        <button class="btn-conferir" id="btnConferir" onclick="conferirResposta()">Conferir</button>
+    </div>
+
+    <div>
+        <button class="btn-proxima escondido" id="btnProxima" onclick="proximaPagina()">Próxima Página</button>
+    </div>
+</div>
+
+<script>
+    // ===================================================
+    // CONFIGURAÇÕES DA PÁGINA
+    // ===================================================
+    const paginaAtual = 13;
+    const totalPaginas = 15;
+    const palavraCorreta = "placa"; // Aceita qualquer palavra ou frase
+    const proximaPaginaURL = "page14.html";
+
+    let tentativas = 0;
+    let acertou = false;
+
+    // Recupera pontos acumulados
+    let pontosAtuais = parseInt(localStorage.getItem("pontosAluno")) || 0;
+
+    // Atualiza o painel do topo
+    document.getElementById("lblPagina").innerText = `${paginaAtual}/${totalPaginas}`;
+    document.getElementById("lblPontos").innerText = pontosAtuais;
+    document.getElementById("barraProgresso").style.width = `${(paginaAtual / totalPaginas) * 100}%`;
+
+    iniciarJogo();
+
+    function iniciarJogo() {
+        const areaSlots = document.getElementById("areaSlots");
+        const areaLetras = document.getElementById("areaLetras");
+        
+        areaSlots.innerHTML = "";
+        areaLetras.innerHTML = "";
+
+        // Divide a frase em palavras para proteger a integridade das palavras na quebra de linha
+        const palavras = palavraCorreta.split(" ");
+        let globalSlotIndex = 0;
+
+        palavras.forEach((palavra, pIndex) => {
+            const grupoPalavra = document.createElement("div");
+            grupoPalavra.className = "palavra-grupo";
+
+            for (let i = 0; i < palavra.length; i++) {
+                const slot = document.createElement("div");
+                slot.className = "slot";
+                slot.dataset.index = globalSlotIndex++;
+                slot.ondragover = permitirSoltar;
+                slot.ondrop = soltar;
+                grupoPalavra.appendChild(slot);
+            }
+
+            areaSlots.appendChild(grupoPalavra);
+
+            // Insere o espaço fixo e visível entre palavras
+            if (pIndex < palavras.length - 1) {
+                const espacoFixo = document.createElement("div");
+                espacoFixo.className = "espaco-fixo";
+                espacoFixo.title = "Espaço";
+                areaSlots.appendChild(espacoFixo);
+            }
+        });
+
+        // Coleta apenas caracteres móveis (exclui espaços)
+        let letrasArray = [];
+        let idCounter = 0;
+
+        for (let char of palavraCorreta) {
+            if (char !== " ") {
+                letrasArray.push({
+                    id: "letra-" + (idCounter++),
+                    char: char
+                });
+            }
+        }
+
+        // Embaralha as letras
+        letrasArray.sort(() => Math.random() - 0.5);
+
+        // Renderiza as letras móveis
+        letrasArray.forEach(item => {
+            const divLetra = document.createElement("div");
+            divLetra.className = "letra";
+            divLetra.draggable = true;
+            divLetra.id = item.id;
+            divLetra.innerText = item.char;
+            divLetra.ondragstart = arrastar;
+            areaLetras.appendChild(divLetra);
+        });
+    }
+
+    function arrastar(evento) {
+        if (acertou) return;
+        evento.dataTransfer.setData("text", evento.target.id);
+    }
+
+    function permitirSoltar(evento) {
+        evento.preventDefault();
+    }
+
+    function soltar(evento) {
+        if (acertou) return;
+        evento.preventDefault();
+        const idLetra = evento.dataTransfer.getData("text");
+        const elementoLetra = document.getElementById(idLetra);
+        let destino = evento.target;
+
+        if (destino.classList.contains("letra")) {
+            destino = destino.parentElement;
+        }
+
+        if (destino.classList.contains("slot") && destino.children.length === 0) {
+            destino.appendChild(elementoLetra);
+        }
+        else if (destino.id === "areaLetras" || destino.classList.contains("area-letras")) {
+            destino.appendChild(elementoLetra);
+        }
+    }
+
+    function conferirResposta() {
+        if (acertou) return;
+
+        // Seleciona os slots ordenadamente como aparecem na estrutura DOM
+        const slots = document.querySelectorAll(".slot");
+        const totalLetrasNecessarias = palavraCorreta.replace(/ /g, "").length;
+        let preenchidos = 0;
+
+        // Reconstrói a frase inserindo os espaços originais
+        let palavraFormada = "";
+        let slotIndex = 0;
+
+        const palavras = palavraCorreta.split(" ");
+        for (let pIndex = 0; pIndex < palavras.length; pIndex++) {
+            const palavra = palavras[pIndex];
+            for (let i = 0; i < palavra.length; i++) {
+                const slot = slots[slotIndex++];
+                if (slot && slot.firstElementChild) {
+                    palavraFormada += slot.firstElementChild.innerText;
+                    preenchidos++;
+                }
+            }
+            if (pIndex < palavras.length - 1) {
+                palavraFormada += " ";
+            }
+        }
+
+        if (preenchidos < totalLetrasNecessarias) {
+            alert("Preencha todos os espaços antes de conferir!");
+            return;
+        }
+
+        if (palavraFormada === palavraCorreta) {
+            acertou = true;
+            let pontosGanhos = 0;
+
+            if (tentativas === 0) pontosGanhos = 3;
+            else if (tentativas === 1) pontosGanhos = 2;
+            else if (tentativas === 2) pontosGanhos = 1;
+
+            pontosAtuais += pontosGanhos;
+            localStorage.setItem("pontosAluno", pontosAtuais);
+            document.getElementById("lblPontos").innerText = pontosAtuais;
+
+            alert(`🎉 Parabéns! Você acertou a palavra e ganhou +${pontosGanhos} pontos!`);
+            document.getElementById("btnProxima").classList.remove("escondido");
+            document.getElementById("btnConferir").disabled = true;
+            document.getElementById("btnConferir").style.opacity = "0.5";
+        } else {
+            tentativas++;
+            alert(`❌ A palavra não está correta. (Tentativa ${tentativas}) Mude as letras de lugar e tente novamente!`);
+        }
+    }
+
+    function proximaPagina() {
+        window.location.href = proximaPaginaURL;
+    }
+</script>
+
+</body>
+</html>
