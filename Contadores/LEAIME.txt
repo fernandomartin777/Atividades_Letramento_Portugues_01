@@ -1,0 +1,1 @@
+Contadores para demonstrar a mudança de algarismos e treinar contagem de objetos e dinheiro.
