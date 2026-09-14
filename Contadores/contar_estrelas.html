@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Conte as Estrelas</title>
   <style>
     /* RESET E FUNDO AZUL NOTURNO */
@@ -13,17 +13,26 @@
       font-family: Georgia, 'Times New Roman', serif;
     }
 
-    body {
-      background-color: #0a192f; /* Azul escuro noturno mais perceptível */
-      color: #e0e6ed;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px;
-      overflow: hidden; /* Evita rolagens desnecessárias */
-    }
+/* AJUSTE RESPONSIVO PARA TELAS DE CELULAR */
+html {
+  height: 100%;
+}
 
+body {
+  background-color: #ffffff; /* ou a cor do seu tema */
+  color: #4a3e56;
+  /* 100dvh se adapta perfeitamente com ou sem barras do navegador */
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 15px;
+  /* Margem de segurança inferior para iPhones e Androids */
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  overflow: hidden;
+  user-select: none;
+}
     /* CABEÇALHO PERMANENTE */
     header {
       width: 100%;
@@ -162,11 +171,12 @@
 
     /* ÁREA DE RESPOSTA (INFERIOR) */
     .painel-resposta {
-      display: none; /* Exibido apenas no jogo */
+      display: none;
       align-items: center;
       gap: 12px;
-      margin: 5px 0 10px 0;
-      flex-shrink: 0;
+      margin: 5px 0 5px 0;
+      flex-shrink: 0; /* Impede que o campo de resposta seja empurrado para fora */
+      z-index: 20;
     }
 
     .input-resposta {
