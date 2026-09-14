@@ -13,26 +13,27 @@
       font-family: Georgia, 'Times New Roman', serif;
     }
 
-/* AJUSTE RESPONSIVO PARA TELAS DE CELULAR */
-html {
-  height: 100%;
-}
+    /* AJUSTE RESPONSIVO PARA TELAS DE CELULAR */
+    html {
+      height: 100%;
+    }
 
-body {
-  background-color: #ffffff; /* ou a cor do seu tema */
-  color: #4a3e56;
-  /* 100dvh se adapta perfeitamente com ou sem barras do navegador */
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 15px;
-  /* Margem de segurança inferior para iPhones e Androids */
-  padding-bottom: calc(10px + env(safe-area-inset-bottom));
-  overflow: hidden;
-  user-select: none;
-}
+    body {
+      background-color: #0b1329; /* Tema Azul Escuro Noturno Restaurado */
+      color: #e0e6ed;
+      /* 100dvh se adapta perfeitamente com ou sem barras do navegador */
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 15px;
+      /* Margem de segurança inferior para iPhones e Androids */
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      overflow: hidden;
+      user-select: none;
+    }
+
     /* CABEÇALHO PERMANENTE */
     header {
       width: 100%;
@@ -55,7 +56,7 @@ body {
     .btn-fechar {
       font-size: 1.8rem;
       font-weight: bold;
-      color: #2c5282; /* Azul discreto que não confunde com estrela */
+      color: #4299e1;
       text-decoration: none;
       cursor: pointer;
       transition: color 0.2s;
@@ -63,7 +64,7 @@ body {
     }
 
     .btn-fechar:hover {
-      color: #4299e1;
+      color: #63b3ed;
     }
 
     /* CONTAINER PRINCIPAL */
@@ -144,12 +145,12 @@ body {
     .campo-ceu {
       width: 100%;
       flex: 1; /* Ocupa dinamicamente a altura máxima da tela */
-      min-height: 50vh;
+      min-height: 40vh;
       position: relative;
       margin: 10px 0;
       border-radius: 12px;
-      background: rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       display: none; /* Exibido apenas no jogo */
       overflow: hidden;
     }
@@ -157,15 +158,15 @@ body {
     /* ESTRELAS */
     .estrela {
       position: absolute;
-      width: 24px;
-      height: 24px;
-      color: #d4e6ff; /* Tom claro e azulado natural */
-      text-shadow: 0 0 6px #a3c8ff;
+      width: 28px;
+      height: 28px;
+      color: #fef08a; /* Amarelo suave brilhante */
+      text-shadow: 0 0 10px #facc15;
       user-select: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 26px;
       line-height: 1;
     }
 
@@ -194,7 +195,7 @@ body {
     }
 
     .input-erro {
-      background-color: #63171b !important; /* Vermelho claro/suave */
+      background-color: #63171b !important; /* Vermelho suave */
       border-color: #e53e3e !important;
     }
 
@@ -295,21 +296,19 @@ body {
 
   <script>
     // ESTADO DO JOGO
-    let modoAtual = ''; // 'linear' ou 'aleatorio'
+    let modoAtual = ''; 
     let valMinimo = 1;
     let valMaximo = 10;
     let sequenciaSorteio = [];
     let indiceAtual = 0;
     let quantidadeEstrelasAtual = 0;
 
-    // LIMITA INPUTS A NO MÁXIMO 3 DÍGITOS E APENAS POSITIVOS
     function validarDigitos(input) {
       if (input.value.length > 3) {
         input.value = input.value.slice(0, 3);
       }
     }
 
-    // INICIA O JOGO A PARTIR DO MODO ESCOLHIDO
     function iniciarJogo(modo) {
       const minInput = parseInt(document.getElementById('input-minimo').value) || 1;
       const maxInput = parseInt(document.getElementById('input-maximo').value) || 1;
@@ -318,17 +317,14 @@ body {
       valMaximo = Math.max(minInput, maxInput);
       modoAtual = modo;
 
-      // OCULTA TELA INICIAL E MOSTRA ÁREA DO JOGO
       document.getElementById('painel-configuracao').style.display = 'none';
       document.getElementById('campo-ceu').style.display = 'block';
       document.getElementById('painel-resposta').style.display = 'flex';
       document.getElementById('painel-congratulacoes').style.display = 'none';
 
       if (modoAtual === 'linear') {
-        // MODO LINEAR: COMEÇA NO MÍNIMO E AUMENTA SEQUENCIALMENTE DE 1 EM 1
         quantidadeEstrelasAtual = valMinimo;
       } else {
-        // MODO ALEATÓRIO: EMBARALHA TODOS OS VALORES ENTRE MÍNIMO E MÁXIMO
         sequenciaSorteio = [];
         for (let i = valMinimo; i <= valMaximo; i++) {
           sequenciaSorteio.push(i);
@@ -338,13 +334,11 @@ body {
         quantidadeEstrelasAtual = sequenciaSorteio[indiceAtual];
       }
 
-      // Pequeno timeout para o container calcular o tamanho final correto
       setTimeout(() => {
         exibirEstrelas(quantidadeEstrelasAtual);
       }, 50);
     }
 
-    // EMBARALHA ARRAY (PARA O MODO ALEATÓRIO NÃO REPETIR QUANTIDADES)
     function embaralharArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -352,7 +346,6 @@ body {
       }
     }
 
-    // GERA AS ESTRELAS EM POSIÇÕES ALEATÓRIAS
     function exibirEstrelas(quantidade) {
       const ceu = document.getElementById('campo-ceu');
       ceu.innerHTML = '';
@@ -370,7 +363,6 @@ body {
         let top, left, colisao;
         let tentativas = 0;
 
-        // TENTA POSICIONAR EVITANDO SOBREPOSIÇÃO EXCESSIVA
         do {
           colisao = false;
           top = Math.random() * (alturaCeu - 20) + 10;
@@ -378,7 +370,7 @@ body {
 
           for (let pos of posicoes) {
             const dist = Math.hypot(pos.top - top, pos.left - left);
-            if (dist < 28) { // DISTÂNCIA MÍNIMA ENTRE ESTRELAS
+            if (dist < 32) { 
               colisao = true;
               break;
             }
@@ -394,31 +386,25 @@ body {
       }
     }
 
-    // REDIMENSIONA AS ESTRELAS CASO A JANELA MUDE DE TAMANHO
     window.onresize = function() {
       if (document.getElementById('campo-ceu').style.display === 'block') {
         exibirEstrelas(quantidadeEstrelasAtual);
       }
     };
 
-    // CONFERE A RESPOSTA DIGITADA PELO ALUNO
     function conferirResposta() {
       const inputResp = document.getElementById('input-resposta');
       const valorDigitado = parseInt(inputResp.value);
 
       if (valorDigitado === quantidadeEstrelasAtual) {
-        // RESPOSTA CERTA
         inputResp.classList.remove('input-erro');
         inputResp.value = '';
-
         avancarJogo();
       } else {
-        // RESPOSTA ERRADA
         inputResp.classList.add('input-erro');
       }
     }
 
-    // AVANÇA PARA A PRÓXIMA QUANTIDADE OU CONCLUI A ATIVIDADE
     function avancarJogo() {
       if (modoAtual === 'linear') {
         if (quantidadeEstrelasAtual < valMaximo) {
@@ -438,14 +424,12 @@ body {
       }
     }
 
-    // PERMITE DAR ENTER NO CAMPO DE RESPOSTA
     function tratarEnter(event) {
       if (event.key === 'Enter') {
         conferirResposta();
       }
     }
 
-    // MOSTRA TELA DE CONGRATULAÇÕES
     function finalizarAtividade() {
       document.getElementById('campo-ceu').style.display = 'none';
       document.getElementById('painel-resposta').style.display = 'none';
@@ -457,7 +441,6 @@ body {
       painelCongrat.style.display = 'flex';
     }
 
-    // RETORNA A PÁGINA AO ESTADO INICIAL
     function reiniciarParaEstadoInicial() {
       document.getElementById('painel-congratulacoes').style.display = 'none';
       document.getElementById('painel-configuracao').style.display = 'flex';
