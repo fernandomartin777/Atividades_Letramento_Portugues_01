@@ -1,0 +1,114 @@
+Você pode ajustar a velocidade e a quantidade de bolhas alterando **4 variáveis/parâmetros específicos** no bloco de `<script>` no final do código.
+
+As áreas para alteração são as seguintes:
+
+---
+
+### 1. Alterar a Velocidade de Subida
+
+A velocidade é calculada em segundos dentro da função `criarBolha()`. Quanto **menor** o número em segundos, **mais rápido** a bolha sobe.
+
+Procure esta linha no `<script>`:
+
+```javascript
+const duracao = Math.random() * 4 + 7; // entre 7 e 11 segundos
+
+```
+
+* **Para subir mais rápido:** diminua os valores. Exemplo (entre 3 e 5 segundos):
+```javascript
+const duracao = Math.random() * 2 + 3;
+
+```
+
+
+* **Para subir mais devagar:** aumente os valores. Exemplo (entre 10 e 15 segundos):
+```javascript
+const duracao = Math.random() * 5 + 10;
+
+```
+
+
+
+---
+
+### 2. Alterar a Quantidade Máxima de Bolhas Simultâneas
+
+No início da função `criarBolha()`, existe uma trava para limitar quantas bolhas podem estar na tela ao mesmo tempo.
+
+Procure esta linha no `<script>`:
+
+```javascript
+if (campoCeu.childElementCount >= 7) return;
+
+```
+
+* **Para ter mais bolhas na tela:** aumente o número `7` para `12` ou `15`.
+* **Para ter menos bolhas na tela:** diminua para `3` ou `4`.
+
+---
+
+### 3. Alterar a Frequência/Intervalo de Aparecimento
+
+No final do arquivo, dentro da função `window.onload`, existe um temporizador (`setInterval`) que define de quanto em quanto tempo o código tenta criar uma nova bolha. O tempo é medido em **milissegundos** (1000ms = 1 segundo).
+
+Procure esta linha no final do `<script>`:
+
+```javascript
+setInterval(criarBolha, 1400); // Cria uma tentativa a cada 1.4 segundos
+
+```
+
+* **Para aparecerem mais rápido/seguidas:** diminua o tempo (ex: `600` para tentar criar a cada 0.6s).
+* **Para aparecerem mais espaçadas:** aumente o tempo (ex: `2500` para tentar criar a cada 2.5s).
+
+---
+
+### 4. Quantidade Inicial de Bolhas (Assim que a página carrega)
+
+Logo abaixo do `setInterval`, existem duas chamadas para criar bolhas assim que o aluno abre o jogo.
+
+```javascript
+setTimeout(criarBolha, 300);
+setTimeout(criarBolha, 800);
+
+```
+
+Se quiser que a tela já comece com mais bolhas subindo logo de início, basta duplicar essas linhas alterando o tempo de atraso (ex: adicionando `setTimeout(criarBolha, 1200);`).
+
+
+A **quantidade inicial** define quantas bolhas vão aparecer logo nos primeiros instantes em que a página é carregada, para que o aluno não precise esperar o tempo normal da fila até a tela começar a preencher.
+
+---
+
+### Como funciona no código
+
+No final do script, existem dois comandos `setTimeout`:
+
+```javascript
+setTimeout(criarBolha, 300); // Cria 1ª bolha após 0,3 segundos
+setTimeout(criarBolha, 800); // Cria 2ª bolha após 0,8 segundos
+
+```
+
+O `setTimeout(função, tempo)` serve para **agendar** a execução de uma ação uma única vez. O tempo é sempre contato em milissegundos (onde **1000ms = 1 segundo**).
+
+---
+
+### Exemplos práticos de alteração
+
+* **Se quiser que a página comece vazia (sem bolhas de início):**
+Basta apagar ou comentar essas duas linhas. A primeira bolha só surgirá após o tempo configurado no `setInterval`.
+* **Se quiser que a tela já comece bem cheia (ex: 4 bolhas logo de cara):**
+Adicione mais agendamentos com tempos baixos e diferentes:
+```javascript
+setTimeout(criarBolha, 200);  // 1ª bolha
+setTimeout(criarBolha, 500);  // 2ª bolha
+setTimeout(criarBolha, 800);  // 3ª bolha
+setTimeout(criarBolha, 1100); // 4ª bolha
+
+```
+
+
+
+> **Nota:** A regra do limite máximo de bolhas simultâneas (o `childElementCount >= 7`) continua valendo. Se você agendar mais bolhas do que o limite permite, as excedentes simplesmente não serão criadas.

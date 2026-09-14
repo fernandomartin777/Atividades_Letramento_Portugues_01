@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conte o dinheiro</title>
+  <style>
+    /* RESET E PALETA TERRACOTA */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    body {
+      background-color: #fdf8f5;
+      color: #4a2c2a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      overflow: hidden;
+    }
+
+    /* CABEÇALHO PERMANENTE */
+    header {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0 12px 0;
+      border-bottom: 2px solid #e8d8d0;
+      flex-shrink: 0;
+    }
+
+    .titulo-pagina {
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-weight: bold;
+      color: #8b3a2b;
+      text-shadow: 0 1px 2px rgba(139, 58, 43, 0.1);
+    }
+
+    .btn-fechar {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #c49a8e;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+
+    .btn-fechar:hover {
+      color: #8b3a2b;
+    }
+
+    /* CONTAINER PRINCIPAL */
+    .container-jogo {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      margin-top: 10px;
+      min-height: 0;
+    }
+
+    /* TELA DE CONFIGURAÇÃO INICIAL */
+    .painel-configuracao {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: auto;
+      margin-bottom: auto;
+      background: #ffffff;
+      padding: 35px;
+      border-radius: 12px;
+      border: 2px solid #e8d8d0;
+      box-shadow: 0 4px 15px rgba(139, 58, 43, 0.08);
+    }
+
+    .linha-inputs {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      color: #6e3c33;
+    }
+
+    .campo-config {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-numero {
+      width: 100px;
+      padding: 8px;
+      font-size: 1.2rem;
+      text-align: center;
+      border: 2px solid #d4a395;
+      border-radius: 6px;
+      background: #fffdfc;
+      color: #4a2c2a;
+      outline: none;
+    }
+
+    .input-numero:focus {
+      border-color: #8b3a2b;
+    }
+
+    .btn-modo {
+      padding: 10px 32px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background-color: #8b3a2b;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 2px 6px rgba(139, 58, 43, 0.2);
+    }
+
+    .btn-modo:hover {
+      background-color: #6e2c20;
+    }
+
+    .btn-modo:active {
+      transform: scale(0.98);
+    }
+
+    /* CAMPO DE DINHEIRO RESPONSIVO */
+    .campo-mesa {
+      width: 100%;
+      flex: 1;
+      min-height: 40vh;
+      position: relative;
+      margin: 10px 0;
+      border-radius: 12px;
+      background: #f7ede8;
+      border: 2px dashed #d4a395;
+      display: none;
+      overflow: hidden;
+    }
+
+    /* ITEM DE DINHEIRO (CÉDULA OU MOEDA) */
+    .item-dinheiro {
+      position: absolute;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.18));
+      transition: transform 0.2s ease, top 0.3s ease, left 0.3s ease;
+    }
+
+    .item-dinheiro img {
+      width: 100%;
+      height: auto;
+      display: block;
+      pointer-events: none;
+      image-rendering: -webkit-optimize-contrast; /* Melhora nitidez */
+    }
+
+    /* DIMENSÕES DINÂMICAS REDIMENSIONÁVEIS VIA JAVASCRIPT */
+    .tipo-moeda {
+      width: clamp(55px, 8vw, 85px);
+    }
+
+    .tipo-nota {
+      width: clamp(170px, 22vw, 270px);
+    }
+
+    /* ÁREA DE RESPOSTA (INFERIOR) */
+    .painel-resposta {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin: 5px 0 10px 0;
+      flex-shrink: 0;
+    }
+
+    .input-resposta {
+      width: 140px;
+      height: 55px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
+      border: 2px solid #d4a395;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #4a2c2a;
+      outline: none;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .input-resposta:focus {
+      border-color: #8b3a2b;
+    }
+
+    .input-erro {
+      background-color: #fbe3e4 !important;
+      border-color: #e53e3e !important;
+    }
+
+    .btn-continuar {
+      width: 55px;
+      height: 55px;
+      font-size: 1.6rem;
+      background-color: #8b3a2b;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+      box-shadow: 0 2px 6px rgba(139, 58, 43, 0.2);
+    }
+
+    .btn-continuar:hover {
+      background-color: #6e2c20;
+    }
+
+    /* TELA DE CONGRATULAÇÕES */
+    .painel-congratulacoes {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: auto;
+      margin-bottom: auto;
+      text-align: center;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      border: 2px solid #d4a395;
+      box-shadow: 0 4px 15px rgba(139, 58, 43, 0.1);
+    }
+
+    .mensagem-vitoria {
+      font-size: 1.4rem;
+      line-height: 1.6;
+      color: #6e2c20;
+    }
+
+    /* ESCONDER ELEMENTOS NATIVOS DE INPUT NUMBER */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO PERMANENTE -->
+  <header>
+    <div class="titulo-pagina">Conte o dinheiro</div>
+    <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fechar" title="Sair da atividade">✕</a>
+  </header>
+
+  <div class="container-jogo">
+    
+    <!-- TELA 1: CONFIGURAÇÃO INICIAL -->
+    <div id="painel-configuracao" class="painel-configuracao">
+      <div class="linha-inputs">
+        <div class="campo-config">
+          <label for="input-minimo">Mínimo:</label>
+          <input type="number" id="input-minimo" class="input-numero" min="1" max="99999" value="1" oninput="validarDigitos(this)">
+        </div>
+        <div class="campo-config">
+          <label for="input-maximo">Máximo:</label>
+          <input type="number" id="input-maximo" class="input-numero" min="1" max="99999" value="10" oninput="validarDigitos(this)">
+        </div>
+      </div>
+      <button class="btn-modo" onclick="iniciarJogo()">Iniciar</button>
+    </div>
+
+    <!-- TELA 2: MESA COM DINHEIRO PARA CONTAR -->
+    <div id="campo-mesa" class="campo-mesa"></div>
+
+    <div id="painel-resposta" class="painel-resposta">
+      <input type="number" id="input-resposta" class="input-resposta" placeholder="R$" oninput="validarDigitos(this)" onkeypress="tratarEnter(event)">
+      <button class="btn-continuar" onclick="conferirResposta()" title="Continuar">➔</button>
+    </div>
+
+    <!-- TELA 3: CONGRATULAÇÕES -->
+    <div id="painel-congratulacoes" class="painel-congratulacoes">
+      <div id="mensagem-vitoria" class="mensagem-vitoria"></div>
+      <button class="btn-modo" onclick="reiniciarParaEstadoInicial()">Terminar</button>
+    </div>
+
+  </div>
+
+  <script>
+    // VALORES DAS NOTAS E MOEDAS
+    const DINHEIRO_OPCOES = [
+      { valor: 200, img: '200.png', tipo: 'nota' },
+      { valor: 100, img: '100.png', tipo: 'nota' },
+      { valor: 50,  img: '50.png',  tipo: 'nota' },
+      { valor: 20,  img: '20.png',  tipo: 'nota' },
+      { valor: 10,  img: '10.png',  tipo: 'nota' },
+      { valor: 5,   img: '5.png',   tipo: 'nota' },
+      { valor: 1,   img: '1.png',   tipo: 'moeda' }
+    ];
+
+    let valMinimo = 1;
+    let valMaximo = 10;
+    let sequenciaSorteio = [];
+    let indiceAtual = 0;
+    let valorDinheiroAtual = 0;
+
+    function validarDigitos(input) {
+      if (input.value.length > 5) {
+        input.value = input.value.slice(0, 5);
+      }
+    }
+
+    function iniciarJogo() {
+      const minInput = parseInt(document.getElementById('input-minimo').value) || 1;
+      const maxInput = parseInt(document.getElementById('input-maximo').value) || 1;
+
+      valMinimo = Math.min(minInput, maxInput);
+      valMaximo = Math.max(minInput, maxInput);
+
+      document.getElementById('painel-configuracao').style.display = 'none';
+      document.getElementById('campo-mesa').style.display = 'block';
+      document.getElementById('painel-resposta').style.display = 'flex';
+      document.getElementById('painel-congratulacoes').style.display = 'none';
+
+      sequenciaSorteio = [];
+      for (let i = valMinimo; i <= valMaximo; i++) {
+        sequenciaSorteio.push(i);
+      }
+      embaralharArray(sequenciaSorteio);
+
+      indiceAtual = 0;
+      valorDinheiroAtual = sequenciaSorteio[indiceAtual];
+
+      setTimeout(() => {
+        gerarEMostrarDinheiro(valorDinheiroAtual);
+      }, 50);
+    }
+
+    function embaralharArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function decomporValorAleatorio(valorAlvo) {
+      let restante = valorAlvo;
+      let itensSorteados = [];
+
+      while (restante > 0) {
+        let opcoesValidas = DINHEIRO_OPCOES.filter(d => d.valor <= restante);
+        let escolha = opcoesValidas[Math.floor(Math.random() * opcoesValidas.length)];
+        itensSorteados.push(escolha);
+        restante -= escolha.valor;
+      }
+
+      return itensSorteados;
+    }
+
+    // ALGORITMO BASEADO EM GRADE PARA EVITAR QUALQUER SOBREPOSIÇÃO
+    function gerarEMostrarDinheiro(valor) {
+      const mesa = document.getElementById('campo-mesa');
+      mesa.innerHTML = '';
+
+      const itens = decomporValorAleatorio(valor);
+      const totalItens = itens.length;
+
+      const larguraMesa = mesa.clientWidth;
+      const alturaMesa = mesa.clientHeight;
+
+      // CALCULA O NÚMERO DE COLUNAS E LINHAS DA GRADE DE ACORDO COM A QUANTIDADE DE NOTAS
+      let colunas = Math.ceil(Math.sqrt(totalItens * (larguraMesa / alturaMesa)));
+      colunas = Math.max(2, Math.min(colunas, 5)); // entre 2 e 5 colunas
+      let linhas = Math.ceil(totalItens / colunas);
+
+      const celulaLargura = larguraMesa / colunas;
+      const celulaAltura = alturaMesa / linhas;
+
+      // ESCALONAMENTO DE SEGURANÇA SE A TELA FOR MUITO PEQUENA (EX: CELULARES)
+      let fatorEscala = 1;
+      const notaMaxLargura = 250;
+      const notaMaxAltura = 120;
+
+      if (celulaLargura < notaMaxLargura || celulaAltura < notaMaxAltura) {
+        fatorEscala = Math.min(celulaLargura / notaMaxLargura, celulaAltura / notaMaxAltura) * 0.85;
+        fatorEscala = Math.max(fatorEscala, 0.45); // limite mínimo de legibilidade
+      }
+
+      // CRIAR EMBARALHAMENTO DE POSIÇÕES NA GRADE
+      let celulasGrid = [];
+      for (let l = 0; l < linhas; l++) {
+        for (let c = 0; c < colunas; c++) {
+          celulasGrid.push({ linha: l, coluna: c });
+        }
+      }
+      embaralharArray(celulasGrid);
+
+      itens.forEach((item, index) => {
+        const el = document.createElement('div');
+        const eNota = item.tipo === 'nota';
+        
+        el.className = `item-dinheiro ${eNota ? 'tipo-nota' : 'tipo-moeda'}`;
+        
+        const img = document.createElement('img');
+        img.src = item.img;
+        img.alt = `R$ ${item.valor}`;
+        el.appendChild(img);
+
+        // Aplica o fator de escala calculado para a tela
+        if (fatorEscala < 1) {
+          el.style.transform = `scale(${fatorEscala.toFixed(2)})`;
+        }
+
+        const celula = celulasGrid[index];
+
+        // LARGURA/ALTURA ESTIMADAS PARA O CÁLCULO DE CENTRALIZAÇÃO
+        const larguraEstimada = (eNota ? 220 : 70) * fatorEscala;
+        const alturaEstimada = (eNota ? 105 : 70) * fatorEscala;
+
+        // Ponto central da célula na grade
+        const centroX = (celula.coluna * celulaLargura) + (celulaLargura / 2);
+        const centroY = (celula.linha * celulaAltura) + (celulaAltura / 2);
+
+        // Pequeno deslocamento aleatório (jitter) dentro da própria célula para manter visual natural
+        const maxJitterX = Math.max(0, (celulaLargura - larguraEstimada) / 3);
+        const maxJitterY = Math.max(0, (celulaAltura - alturaEstimada) / 3);
+
+        const offsetX = (Math.random() * 2 - 1) * maxJitterX;
+        const offsetY = (Math.random() * 2 - 1) * maxJitterY;
+
+        const posX = centroX - (larguraEstimada / 2) + offsetX;
+        const posY = centroY - (alturaEstimada / 2) + offsetY;
+
+        // Rotação sutil
+        const anguloRpt = (Math.random() * 14 - 7).toFixed(1);
+
+        el.style.left = Math.max(5, Math.min(posX, larguraMesa - larguraEstimada - 5)) + 'px';
+        el.style.top = Math.max(5, Math.min(posY, alturaMesa - alturaEstimada - 5)) + 'px';
+
+        if (fatorEscala < 1) {
+          el.style.transform = `scale(${fatorEscala.toFixed(2)}) rotate(${anguloRpt}deg)`;
+        } else {
+          el.style.transform = `rotate(${anguloRpt}deg)`;
+        }
+
+        mesa.appendChild(el);
+      });
+    }
+
+    window.onresize = function() {
+      if (document.getElementById('campo-mesa').style.display === 'block') {
+        gerarEMostrarDinheiro(valorDinheiroAtual);
+      }
+    };
+
+    function conferirResposta() {
+      const inputResp = document.getElementById('input-resposta');
+      const valorDigitado = parseInt(inputResp.value);
+
+      if (valorDigitado === valorDinheiroAtual) {
+        inputResp.classList.remove('input-erro');
+        inputResp.value = '';
+        avancarJogo();
+      } else {
+        inputResp.classList.add('input-erro');
+      }
+    }
+
+    function avancarJogo() {
+      indiceAtual++;
+      if (indiceAtual < sequenciaSorteio.length) {
+        valorDinheiroAtual = sequenciaSorteio[indiceAtual];
+        gerarEMostrarDinheiro(valorDinheiroAtual);
+      } else {
+        finalizarAtividade();
+      }
+    }
+
+    function tratarEnter(event) {
+      if (event.key === 'Enter') {
+        conferirResposta();
+      }
+    }
+
+    function finalizarAtividade() {
+      document.getElementById('campo-mesa').style.display = 'none';
+      document.getElementById('painel-resposta').style.display = 'none';
+
+      const painelCongrat = document.getElementById('painel-congratulacoes');
+      const msg = document.getElementById('mensagem-vitoria');
+
+      msg.innerHTML = `Parabéns! Você contou com sucesso<br>todos os valores de <strong>R$ ${valMinimo}</strong> até <strong>R$ ${valMaximo}</strong>!`;
+      painelCongrat.style.display = 'flex';
+    }
+
+    function reiniciarParaEstadoInicial() {
+      document.getElementById('painel-congratulacoes').style.display = 'none';
+      document.getElementById('painel-configuracao').style.display = 'flex';
+      
+      const inputResp = document.getElementById('input-resposta');
+      inputResp.value = '';
+      inputResp.classList.remove('input-erro');
+    }
+  </script>
+</body>
+</html>

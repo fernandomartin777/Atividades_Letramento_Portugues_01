@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contador de Bolhas de Sabão</title>
+  <style>
+    /* RESET E ESTILOS GERAIS (TEMA LAVANDA & FUNDO BRANCO) */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: #4a3e56;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* CABEÇALHO PERMANENTE */
+    header {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0 12px 0;
+      border-bottom: 2px solid #e6e1f0;
+      z-index: 10;
+      background-color: #ffffff;
+    }
+
+    .titulo-pagina {
+      font-size: clamp(1.2rem, 3vw, 1.9rem);
+      font-weight: bold;
+      color: #735398;
+      text-shadow: 0 1px 2px rgba(115, 83, 152, 0.1);
+    }
+
+    .btn-fechar {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #bfa8d8;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+
+    .btn-fechar:hover {
+      color: #735398;
+    }
+
+    /* ÁREA ONDE AS BOLHAS SOBEM */
+    .campo-ceu {
+      width: 100%;
+      max-width: 1100px;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* BOLHAS DE SABÃO VIA CSS */
+    .bolha {
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      touch-action: manipulation;
+      animation: subirBolha linear forwards;
+      box-shadow: inset -5px -5px 12px rgba(255, 255, 255, 0.9),
+                  inset 3px 3px 8px rgba(255, 255, 255, 0.8),
+                  0 4px 10px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(1px);
+    }
+
+    /* Brilho reflexivo interno */
+    .bolha::after {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 18%;
+      width: 25%;
+      height: 25%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes subirBolha {
+      0% {
+        top: 100%;
+      }
+      100% {
+        top: -120px;
+      }
+    }
+
+    /* EFEITO DE ESTOURO DA BOLHA EXATAMENTE NO LOCAL */
+    .estouro {
+      animation: animEstouro 0.18s ease-out forwards !important;
+      pointer-events: none;
+    }
+
+    @keyframes animEstouro {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.3);
+        opacity: 0.5;
+        border-width: 4px;
+      }
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+
+    /* CONTADOR ESTILO ROLO/ROTAÇÃO MECÂNICA */
+    .painel-contador {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      background: #f4effa;
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: 2px solid #dcd0eb;
+      box-shadow: 0 4px 12px rgba(115, 83, 152, 0.1);
+      margin-bottom: 10px;
+      z-index: 10;
+    }
+
+    .digito-slot {
+      width: 45px;
+      height: 65px;
+      background-color: #ffffff;
+      border: 2px solid #bfa8d8;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .digito-carretel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .digito-numero {
+      width: 100%;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #735398;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO PERMANENTE -->
+  <header>
+    <div class="titulo-pagina">Quantas bolhas de sabão você consegue estourar?</div>
+    <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fechar" title="Sair da atividade">✕</a>
+  </header>
+
+  <!-- ÁREA DE SUBIDA DAS BOLHAS -->
+  <div class="campo-ceu" id="campo-ceu"></div>
+
+  <!-- CONTADOR MECO/MÓVEL DE 4 DÍGITOS -->
+  <div class="painel-contador">
+    <div class="digito-slot">
+      <div class="digito-carretel" id="carretel-3"></div>
+    </div>
+    <div class="digito-slot">
+      <div class="digito-carretel" id="carretel-2"></div>
+    </div>
+    <div class="digito-slot">
+      <div class="digito-carretel" id="carretel-1"></div>
+    </div>
+    <div class="digito-slot">
+      <div class="digito-carretel" id="carretel-0"></div>
+    </div>
+  </div>
+
+  <script>
+    let contadorPontos = 0;
+    const campoCeu = document.getElementById('campo-ceu');
+
+    const CORES_BOLHAS = [
+      'rgba(179, 157, 219, 0.45)',
+      'rgba(149, 117, 205, 0.4)',
+      'rgba(129, 212, 250, 0.4)',
+      'rgba(244, 143, 177, 0.4)',
+      'rgba(165, 214, 167, 0.4)'
+    ];
+
+    const BORDAS_BOLHAS = [
+      'rgba(149, 117, 205, 0.8)',
+      'rgba(103, 58, 183, 0.7)',
+      'rgba(41, 182, 246, 0.7)',
+      'rgba(240, 98, 146, 0.7)',
+      'rgba(102, 187, 106, 0.7)'
+    ];
+
+    function inicializarCarreteis() {
+      for (let i = 0; i < 4; i++) {
+        const carretel = document.getElementById(`carretel-${i}`);
+        carretel.innerHTML = '';
+        for (let n = 0; n <= 9; n++) {
+          const divNum = document.createElement('div');
+          divNum.className = 'digito-numero';
+          divNum.innerText = n;
+          carretel.appendChild(divNum);
+        }
+      }
+      atualizarContadorVisual(0);
+    }
+
+    function atualizarContadorVisual(valor) {
+      const strVal = valor.toString().padStart(4, '0');
+      
+      for (let i = 0; i < 4; i++) {
+        const digito = parseInt(strVal[3 - i]);
+        const carretel = document.getElementById(`carretel-${i}`);
+        carretel.style.transform = `translateY(-${digito * 65}px)`;
+      }
+    }
+
+    function criarBolha() {
+      if (campoCeu.childElementCount >= 7) return;
+
+      const bolha = document.createElement('div');
+      bolha.className = 'bolha';
+
+      const tamanho = Math.floor(Math.random() * 35) + 60;
+      const idxCor = Math.floor(Math.random() * CORES_BOLHAS.length);
+      const corFundo = CORES_BOLHAS[idxCor];
+      const corBorda = BORDAS_BOLHAS[idxCor];
+
+      const larguraCampo = campoCeu.clientWidth - tamanho;
+      const posX = Math.max(10, Math.random() * larguraCampo);
+      const duracao = Math.random() * 4 + 7;
+
+      bolha.style.width = `${tamanho}px`;
+      bolha.style.height = `${tamanho}px`;
+      bolha.style.backgroundColor = corFundo;
+      bolha.style.border = `2px solid ${corBorda}`;
+      bolha.style.left = `${posX}px`;
+      bolha.style.animationDuration = `${duracao}s`;
+
+      const estourarAcao = function(e) {
+        e.preventDefault();
+        if (bolha.classList.contains('estouro')) return;
+
+        // Pega a posição exata da bolha na tela
+        const rect = bolha.getBoundingClientRect();
+        const campoRect = campoCeu.getBoundingClientRect();
+
+        // Congela a posição exata no instante do toque
+        bolha.style.animation = 'none';
+        bolha.style.top = `${rect.top - campoRect.top}px`;
+        bolha.style.left = `${rect.left - campoRect.left}px`;
+
+        // Ativa a animação de estouro local
+        bolha.classList.add('estouro');
+        
+        contadorPontos++;
+        atualizarContadorVisual(contadorPontos);
+
+        setTimeout(() => {
+          if (bolha.parentNode) {
+            bolha.parentNode.removeChild(bolha);
+          }
+        }, 180);
+      };
+
+      bolha.addEventListener('mousedown', estourarAcao);
+      bolha.addEventListener('touchstart', estourarAcao, { passive: false });
+
+      bolha.addEventListener('animationend', (e) => {
+        if (e.animationName === 'subirBolha' && bolha.parentNode) {
+          bolha.parentNode.removeChild(bolha);
+        }
+      });
+
+      campoCeu.appendChild(bolha);
+    }
+
+    window.onload = function() {
+      inicializarCarreteis();
+      setInterval(criarBolha, 1400);
+      setTimeout(criarBolha, 300);
+      setTimeout(criarBolha, 800);
+    };
+  </script>
+</body>
+</html>
