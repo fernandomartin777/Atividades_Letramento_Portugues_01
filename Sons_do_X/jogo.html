@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escrita de nomes de imagens</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #000000;
+    }
+
+    html {
+      font-size: 18px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 16px;
+      }
+    }
+
+    body {
+      background-color: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border: 2px solid #2980b9;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE AZUL */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #ebf5fb;
+      border: 2px solid #3498db;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #2980b9;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .info-pontos {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #1a5276;
+    }
+
+    /* TÍTULO E PARÁGRAFOS */
+    .titulo-questao {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0 15px 0;
+    }
+
+    /* IMAGEM DA QUESTÃO */
+    .container-imagem {
+      margin: 10px 0 20px 0;
+      text-align: center;
+    }
+
+    .imagem-exibida {
+      max-width: 100%;
+      max-height: 280px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      border: 2px solid #aeb6bf;
+      object-fit: contain;
+    }
+
+    /* ÁREA DE TEXTOS / PARÁGRAFOS */
+    .painel-paragrafos {
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .painel-paragrafos p {
+      font-size: clamp(1.1rem, 3.2vw, 1.3rem);
+      line-height: 1.6;
+      margin: 0 0 12px 0;
+    }
+
+    /* TRILHO DO MONSTRO (AUMENTADO) */
+    .pista-monstro-container {
+      width: 100%;
+      background-color: #eaf2f8;
+      border: 2px solid #a9cce3;
+      border-radius: 12px;
+      height: 140px;
+      position: relative;
+      margin: 15px 0 25px 0;
+      overflow: hidden;
+    }
+
+    .entidade-pista {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: left 0.4s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* TAMANHOS DO MONSTRO E AVATAR */
+    #monstro-box {
+      left: 0%;
+      z-index: 2;
+      width: 150px;
+      height: 150px;
+    }
+
+    #avatar-box {
+      right: 15px;
+      z-index: 1;
+      width: 95px;
+      height: 95px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 3px solid #2980b9;
+      background: #fff;
+    }
+
+    .entidade-pista img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* QUADRADOS DE RESPOSTA */
+    .container-quadrados {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .quadrado-letra {
+      width: clamp(38px, 8vw, 48px);
+      height: clamp(48px, 9vw, 58px);
+      border: 2px solid #2c3e50;
+      border-radius: 6px;
+      text-align: center;
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-transform: none;
+      outline: none;
+    }
+
+    .quadrado-letra.brancoi {
+      background-color: #ffffff;
+    }
+
+    .quadrado-espaco {
+      background-color: #bdc3c7 !important;
+      border-color: #95a5a6;
+      cursor: default;
+    }
+
+    .quadrado-correto {
+      background-color: #d4efdf !important;
+      border-color: #27ae60;
+    }
+
+    .quadrado-incorreto {
+      background-color: #fadbd8 !important;
+      border-color: #e74c3c;
+    }
+
+    /* BOTÕES EMPILHADOS VERTICALMENTE */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #2980b9;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-acao:hover {
+      background-color: #1f618d;
+    }
+
+    .btn-proximo {
+      background-color: #27ae60;
+      display: none;
+    }
+
+    .btn-proximo:hover {
+      background-color: #1e8449;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-pontos">
+        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">100</span>
+      </div>
+    </div>
+
+    <!-- TÍTULO DA QUESTÃO -->
+    <div id="titulo-questao" class="titulo-questao">Escreva o nome das palavras</div>
+
+    <!-- IMAGEM DA QUESTÃO -->
+    <div class="container-imagem">
+      <img id="imagem-questao" class="imagem-exibida" src="imagem01.jpg" alt="Imagem da questão">
+    </div>
+
+    <!-- PARÁGRAFOS DEDICADOS -->
+    <div id="painel-paragrafos" class="painel-paragrafos"></div>
+
+    <!-- TRILHO DO MONSTRO -->
+    <div class="pista-monstro-container" id="pista-monstro">
+      <div id="monstro-box" class="entidade-pista">
+        <img id="img-monstro" src="monster01.png" alt="Monstro">
+      </div>
+      <div id="avatar-box" class="entidade-pista">
+        <img id="img-avatar" src="" alt="Avatar">
+      </div>
+    </div>
+
+    <!-- QUADRADOS DE RESPOSTA -->
+    <div id="container-quadrados" class="container-quadrados"></div>
+
+    <!-- BOTÕES DE AÇÃO EMPILHADOS -->
+    <div class="area-botoes">
+      <button id="btn-conferir" class="btn-acao" onclick="conferirResposta()">Conferir a resposta</button>
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarQuestao()">Próxima questão</button>
+    </div>
+  </div>
+
+  <script>
+    const questoes = [
+      {
+        resposta: "caixa",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "caixa.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "exercício",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "exercicio.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "exército",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "exercito.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "explosão",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "explosao.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "extintor de incêndio",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "extintor.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "lagartixa",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "lagartixa.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "saxofone",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "saxofone.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "táxi",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "taxi.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "xadrez",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "xadrez.jpg",
+        paragrafos: [" "]
+      },
+      {
+        resposta: "xícara",
+        sensivelCase: false,
+        titulo: "Escreva o nome das palavras. Todas tem X.",
+        imagem: "xicara.jpg",
+        paragrafos: [" "]
+      }
+    ];
+
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    let tentativasQuestao = 0;
+    let passosMonstro = 0;
+    const maxPassos = questoes.length;
+
+    window.onload = function() {
+      const avatarSalvo = localStorage.getItem('avatarData');
+      if (avatarSalvo) {
+        document.getElementById('img-avatar').src = avatarSalvo;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        let questaoInformada = parseInt(qParam, 10) - 1;
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
+      }
+
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || '0', 10);
+      }
+
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+      document.getElementById('pontos-maximos').innerText = questoes.length * 5;
+      carregarQuestao(indiceAtual);
+      atualizarInterface();
+    };
+
+    function carregarQuestao(index) {
+      tentativasQuestao = 0;
+      document.getElementById('btn-proximo').style.display = 'none';
+
+      const q = questoes[index];
+
+      document.getElementById('titulo-questao').innerText = q.titulo;
+      document.getElementById('imagem-questao').src = q.imagem;
+
+      const painelParaf = document.getElementById('painel-paragrafos');
+      painelParaf.innerHTML = '';
+      q.paragrafos.forEach(pTexto => {
+        const p = document.createElement('p');
+        p.innerText = pTexto;
+        painelParaf.appendChild(p);
+      });
+
+      gerarQuadradosResposta(q.resposta);
+    }
+
+    function gerarQuadradosResposta(resposta) {
+      const container = document.getElementById('container-quadrados');
+      container.innerHTML = '';
+
+      for (let i = 0; i < resposta.length; i++) {
+        const char = resposta[i];
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 2; // Permite temporariamente o estado de composição de acentos
+        input.autocomplete = 'off';
+        input.autocorrect = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        input.className = 'quadrado-letra';
+
+        if (char === ' ') {
+          input.value = ' ';
+          input.readOnly = true;
+          input.classList.add('quadrado-espaco');
+        } else {
+          input.classList.add('brancoi');
+          let emComposicao = false;
+
+          // Impede o espaço via evento de entrada
+          input.addEventListener('beforeinput', function(e) {
+            if (e.data === ' ') {
+              e.preventDefault();
+            }
+          });
+
+          input.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.keyCode === 32) {
+              e.preventDefault();
+              return false;
+            }
+
+            if (e.key === 'Backspace' && input.value === '') {
+              const anteriores = Array.from(container.children);
+              for (let j = i - 1; j >= 0; j--) {
+                if (!anteriores[j].readOnly) {
+                  anteriores[j].focus();
+                  break;
+                }
+              }
+            }
+          });
+
+          // Detecta quando um acento "morto" (dead key) é iniciado
+          input.addEventListener('compositionstart', function() {
+            emComposicao = true;
+          });
+
+          // Trata a finalização da letra acentuada
+          input.addEventListener('compositionend', function(e) {
+            emComposicao = false;
+            processarCaractere(input, container, i);
+          });
+
+          input.addEventListener('input', function(e) {
+            input.classList.remove('quadrado-correto', 'quadrado-incorreto');
+
+            // Se não estiver no meio da digitação do acento, processa a transição de campo
+            if (!emComposicao) {
+              processarCaractere(input, container, i);
+            }
+          });
+        }
+
+        container.appendChild(input);
+      }
+    }
+
+    function processarCaractere(input, container, i) {
+      // Remove espaços acidentais
+      if (input.value.includes(' ')) {
+        input.value = input.value.replace(/\s/g, '');
+      }
+
+      // Normaliza mantendo apenas o último caractere (acentuado ou não)
+      if (Array.from(input.value).length > 1) {
+        const caracters = Array.from(input.value);
+        input.value = caracters[caracters.length - 1];
+      }
+
+      // Se houver 1 caractere válido, avança para o próximo campo
+      if (Array.from(input.value).length === 1) {
+        const proximos = Array.from(container.children);
+        for (let j = i + 1; j < proximos.length; j++) {
+          if (!proximos[j].readOnly) {
+            proximos[j].focus();
+            break;
+          }
+        }
+      }
+    }
+
+    function conferirResposta() {
+      const q = questoes[indiceAtual];
+      const inputs = document.querySelectorAll('.quadrado-letra');
+      let acertosCompletos = true;
+
+      tentativasQuestao++;
+
+      for (let i = 0; i < q.resposta.length; i++) {
+        const esperado = q.resposta[i];
+        const digitado = inputs[i].value;
+
+        let ehCorreto = false;
+
+        if (esperado === ' ') {
+          ehCorreto = true;
+        } else if (q.sensivelCase) {
+          ehCorreto = (digitado === esperado);
+        } else {
+          ehCorreto = (digitado.toLowerCase() === esperado.toLowerCase());
+        }
+
+        if (ehCorreto) {
+          inputs[i].classList.remove('quadrado-incorreto');
+          inputs[i].classList.add('quadrado-correto');
+        } else {
+          inputs[i].classList.remove('quadrado-correto');
+          inputs[i].classList.add('quadrado-incorreto');
+          acertosCompletos = false;
+        }
+      }
+
+      if (acertosCompletos) {
+        let pontosGanhos = Math.max(0, 6 - tentativasQuestao);
+        pontuacaoAcumulada += pontosGanhos;
+        localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+        localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+        passosMonstro = Math.max(0, passosMonstro - 2);
+
+        const btnProximo = document.getElementById('btn-proximo');
+        
+        if (indiceAtual === questoes.length - 1) {
+          btnProximo.innerText = "Terminar atividade";
+        } else {
+          btnProximo.innerText = "Próxima questão";
+        }
+        btnProximo.style.display = 'block';
+
+      } else {
+        passosMonstro = Math.min(maxPassos, passosMonstro + 1);
+      }
+
+      atualizarInterface();
+    }
+
+    function atualizarInterface() {
+      const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      const porcentagemAproximacao = (passosMonstro / maxPassos) * 82;
+      const monstroBox = document.getElementById('monstro-box');
+      const imgMonstro = document.getElementById('img-monstro');
+
+      monstroBox.style.left = `${porcentagemAproximacao}%`;
+
+      if ((passosMonstro / maxPassos) >= 0.5) {
+        imgMonstro.src = "monster02.png";
+      } else {
+        imgMonstro.src = "monster01.png";
+      }
+
+      if (passosMonstro >= maxPassos) {
+        monstroBox.style.zIndex = "3";
+      } else {
+        monstroBox.style.zIndex = "2";
+      }
+    }
+
+    function avancarQuestao() {
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+        atualizarInterface();
+      } else {
+        window.location.href = "end.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
