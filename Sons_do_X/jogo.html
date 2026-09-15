@@ -161,14 +161,22 @@
       object-fit: contain;
     }
 
-    /* QUADRADOS DE RESPOSTA */
+    /* QUADRADOS DE RESPOSTA (AGRUPADOS POR PALAVRA) */
     .container-quadrados {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 12px 8px; /* Maior espaçamento vertical e horizontal entre elementos */
       justify-content: center;
+      align-items: center;
       margin-bottom: 20px;
       width: 100%;
+    }
+
+    /* GARANTE QUE CADA PALAVRA FIQUE INSEPARÁVEL NA MESMA LINHA */
+    .palavra-grupo {
+      display: inline-flex;
+      gap: 8px;
+      white-space: nowrap;
     }
 
     .quadrado-letra {
@@ -191,6 +199,7 @@
       background-color: #bdc3c7 !important;
       border-color: #95a5a6;
       cursor: default;
+      margin: 0 4px; /* Separação visual extra nos espaços */
     }
 
     .quadrado-correto {
@@ -416,92 +425,108 @@
       const container = document.getElementById('container-quadrados');
       container.innerHTML = '';
 
-      for (let i = 0; i < resposta.length; i++) {
-        const char = resposta[i];
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = 2; // Permite temporariamente o estado de composição de acentos
-        input.autocomplete = 'off';
-        input.autocorrect = 'off';
-        input.autocapitalize = 'off';
-        input.spellcheck = false;
-        input.className = 'quadrado-letra';
+      // Divisão das palavras para quebrar linhas apenas nos espaços reais
+      const palavras = resposta.split(' ');
 
-        if (char === ' ') {
-          input.value = ' ';
-          input.readOnly = true;
-          input.classList.add('quadrado-espaco');
-        } else {
-          input.classList.add('brancoi');
-          let emComposicao = false;
+      palavras.forEach((palavra, indexPalavra) => {
+        const palavraGroup = document.createElement('span');
+        palavraGroup.className = 'palavra-grupo';
 
-          // Impede o espaço via evento de entrada
-          input.addEventListener('beforeinput', function(e) {
-            if (e.data === ' ') {
-              e.preventDefault();
-            }
-          });
-
-          input.addEventListener('keydown', function(e) {
-            if (e.key === ' ' || e.keyCode === 32) {
-              e.preventDefault();
-              return false;
-            }
-
-            if (e.key === 'Backspace' && input.value === '') {
-              const anteriores = Array.from(container.children);
-              for (let j = i - 1; j >= 0; j--) {
-                if (!anteriores[j].readOnly) {
-                  anteriores[j].focus();
-                  break;
-                }
-              }
-            }
-          });
-
-          // Detecta quando um acento "morto" (dead key) é iniciado
-          input.addEventListener('compositionstart', function() {
-            emComposicao = true;
-          });
-
-          // Trata a finalização da letra acentuada
-          input.addEventListener('compositionend', function(e) {
-            emComposicao = false;
-            processarCaractere(input, container, i);
-          });
-
-          input.addEventListener('input', function(e) {
-            input.classList.remove('quadrado-correto', 'quadrado-incorreto');
-
-            // Se não estiver no meio da digitação do acento, processa a transição de campo
-            if (!emComposicao) {
-              processarCaractere(input, container, i);
-            }
-          });
+        for (let i = 0; i < palavra.length; i++) {
+          const input = criarInputLetra();
+          palavraGroup.appendChild(input);
         }
 
-        container.appendChild(input);
-      }
+        container.appendChild(palavraGroup);
+
+        // Se não for a última palavra, insere o quadrado cinza de espaço fora do grupo
+        if (indexPalavra < palavras.length - 1) {
+          const inputEspaco = document.createElement('input');
+          inputEspaco.type = 'text';
+          inputEspaco.value = ' ';
+          inputEspaco.readOnly = true;
+          inputEspaco.className = 'quadrado-letra quadrado-espaco';
+          container.appendChild(inputEspaco);
+        }
+      });
+
+      configurarNavegacaoInputs();
     }
 
-    function processarCaractere(input, container, i) {
-      // Remove espaços acidentais
+    function criarInputLetra() {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.maxLength = 2;
+      input.autocomplete = 'off';
+      input.autocorrect = 'off';
+      input.autocapitalize = 'off';
+      input.spellcheck = false;
+      input.className = 'quadrado-letra brancoi';
+      return input;
+    }
+
+    function configurarNavegacaoInputs() {
+      const inputs = Array.from(document.querySelectorAll('.quadrado-letra'));
+
+      inputs.forEach((input, index) => {
+        if (input.readOnly) return;
+
+        let emComposicao = false;
+
+        input.addEventListener('beforeinput', function(e) {
+          if (e.data === ' ') {
+            e.preventDefault();
+          }
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === ' ' || e.keyCode === 32) {
+            e.preventDefault();
+            return false;
+          }
+
+          if (e.key === 'Backspace' && input.value === '') {
+            for (let j = index - 1; j >= 0; j--) {
+              if (!inputs[j].readOnly) {
+                inputs[j].focus();
+                break;
+              }
+            }
+          }
+        });
+
+        input.addEventListener('compositionstart', function() {
+          emComposicao = true;
+        });
+
+        input.addEventListener('compositionend', function() {
+          emComposicao = false;
+          processarAvanco(input, inputs, index);
+        });
+
+        input.addEventListener('input', function() {
+          input.classList.remove('quadrado-correto', 'quadrado-incorreto');
+          if (!emComposicao) {
+            processarAvanco(input, inputs, index);
+          }
+        });
+      });
+    }
+
+    function processarAvanco(input, inputs, index) {
       if (input.value.includes(' ')) {
         input.value = input.value.replace(/\s/g, '');
       }
 
-      // Normaliza mantendo apenas o último caractere (acentuado ou não)
       if (Array.from(input.value).length > 1) {
         const caracters = Array.from(input.value);
         input.value = caracters[caracters.length - 1];
       }
 
-      // Se houver 1 caractere válido, avança para o próximo campo
       if (Array.from(input.value).length === 1) {
-        const proximos = Array.from(container.children);
-        for (let j = i + 1; j < proximos.length; j++) {
-          if (!proximos[j].readOnly) {
-            proximos[j].focus();
+        for (let j = index + 1; j < inputs.length; j++) {
+          if (!inputs[j].readOnly) {
+            inputs[j].focus();
             break;
           }
         }
