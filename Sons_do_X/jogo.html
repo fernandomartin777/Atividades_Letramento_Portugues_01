@@ -77,12 +77,22 @@
       color: #1a5276;
     }
 
-    /* TÍTULO E PARÁGRAFOS */
+    /* CONTADOR DE QUESTÕES E TÍTULO */
+    .contador-questoes {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #2980b9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
     .titulo-questao {
       font-size: clamp(1.4rem, 4vw, 1.8rem);
       font-weight: bold;
       text-align: center;
-      margin: 10px 0 15px 0;
+      margin: 5px 0 15px 0;
     }
 
     /* IMAGEM DA QUESTÃO */
@@ -261,7 +271,8 @@
       </div>
     </div>
 
-    <!-- TÍTULO DA QUESTÃO -->
+    <!-- NUMERAÇÃO E TÍTULO DA QUESTÃO -->
+    <div id="contador-questoes" class="contador-questoes">Questão 1 de 10</div>
     <div id="titulo-questao" class="titulo-questao">Escreva o nome das palavras</div>
 
     <!-- IMAGEM DA QUESTÃO -->
@@ -407,6 +418,7 @@
 
       const q = questoes[index];
 
+      document.getElementById('contador-questoes').innerText = `Questão ${index + 1} de ${questoes.length}`;
       document.getElementById('titulo-questao').innerText = q.titulo;
       document.getElementById('imagem-questao').src = q.imagem;
 
