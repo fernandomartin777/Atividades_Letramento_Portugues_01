@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo de Dicaso</title>
+  <title>Jogo de Dicas</title>
   <style>
     /* RESET E TIPOGRAFIA DE SERIFAS */
     * {
@@ -69,12 +69,22 @@
       transition: width 0.4s ease-in-out;
     }
 
-    .info-pontos {
+    /* PAINEL INFORMATIVO ABAIXO DA BARRA (QUESTÃO E PONTOS) */
+    .info-header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       font-weight: bold;
       font-size: 1.1rem;
       margin-top: 6px;
+      color: #7d6608;
+    }
+
+    .info-questao {
+      color: #7d6608;
+    }
+
+    .info-pontos {
       color: #7d6608;
     }
 
@@ -320,8 +330,13 @@
       <div class="trilho-barra">
         <div id="barra-preenchimento" class="preenchimento-barra"></div>
       </div>
-      <div class="info-pontos">
-        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">120</span>
+      <div class="info-header">
+        <div class="info-questao">
+          QUESTÃO: <span id="questao-atual">1</span> / <span id="questao-total">20</span>
+        </div>
+        <div class="info-pontos">
+          PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">120</span>
+        </div>
       </div>
     </div>
 
@@ -569,6 +584,7 @@
       localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
 
       document.getElementById('pontos-maximos').innerText = questoes.length * MAX_ERROS_QUESTAO;
+      document.getElementById('questao-total').innerText = questoes.length;
       carregarQuestao(indiceAtual);
       atualizarInterface();
     };
@@ -781,6 +797,7 @@
     function atualizarInterface() {
       const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
       document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('questao-atual').innerText = indiceAtual + 1;
       document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
 
       const porcentagemAproximacao = (errosQuestao / MAX_ERROS_QUESTAO) * 82;
