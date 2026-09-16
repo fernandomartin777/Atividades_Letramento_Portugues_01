@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo de Dicaso</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #2c3e50;
+    }
+
+    html {
+      font-size: 18px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 16px;
+      }
+    }
+
+    /* PALETA ÂMBAR & MOSTARDA SUAVE */
+    body {
+      background-color: #fdfbf7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #fffefb;
+      border: 2px solid #d4ac0d;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(212, 172, 13, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE ÂMBAR */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #fef9e7;
+      border: 2px solid #f1c40f;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #d4ac0d;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .info-pontos {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #7d6608;
+    }
+
+    /* TÍTULO E PARÁGRAFOS */
+    .titulo-questao {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0 15px 0;
+      color: #b7950b;
+    }
+
+    /* IMAGEM DA QUESTÃO */
+    .container-imagem {
+      margin: 10px 0 20px 0;
+      text-align: center;
+    }
+
+    .imagem-exibida {
+      max-width: 100%;
+      max-height: 300px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      border: 2px solid #f9e79f;
+      object-fit: contain;
+    }
+
+    /* ÁREA DE TEXTOS / PARÁGRAFOS DICAS */
+    .painel-paragrafos {
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .painel-paragrafos p {
+      font-size: clamp(1.1rem, 3.2vw, 1.3rem);
+      line-height: 1.6;
+      margin: 0 0 12px 0;
+    }
+
+    /* TRILHO DO MONSTRO */
+    .pista-monstro-container {
+      width: 100%;
+      background-color: #fef9e7;
+      border: 2px solid #f9e79f;
+      border-radius: 12px;
+      height: 140px;
+      position: relative;
+      margin: 15px 0 25px 0;
+      overflow: hidden;
+    }
+
+    .entidade-pista {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: left 0.4s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #monstro-box {
+      left: 0%;
+      z-index: 2;
+      width: 150px;
+      height: 150px;
+    }
+
+    #avatar-box {
+      right: 15px;
+      z-index: 1;
+      width: 95px;
+      height: 95px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 3px solid #d4ac0d;
+      background: #fff;
+    }
+
+    .entidade-pista img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* SLOTS DE ENCAIXE DA PALAVRA/FRASE (AGRUPADOS POR PALAVRA) */
+    .container-quadrados {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 8px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    /* GARANTE QUE CADA PALAVRA FIQUE INSEPARÁVEL NA MESMA LINHA */
+    .palavra-grupo {
+      display: inline-flex;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .slot-letra {
+      width: clamp(42px, 8.5vw, 54px);
+      height: clamp(52px, 9.5vw, 64px);
+      border: 2px solid #b7950b;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fffdf5;
+      font-size: clamp(1.5rem, 4.5vw, 2rem);
+      font-weight: bold;
+    }
+
+    .slot-espaco {
+      background-color: #ebedef !important;
+      border: 2px solid #bdc3c7;
+      margin: 0 4px;
+    }
+
+    /* ANIMAÇÃO PISCAR PARA SLOTS VAZIOS DURANTE O TIMEOUT */
+    @keyframes piscarBrando {
+      0% { background-color: #fffdf5; }
+      50% { background-color: #f9e79f; }
+      100% { background-color: #fffdf5; }
+    }
+
+    .slot-letra.piscar-slot {
+      animation: piscarBrando 1.2s infinite ease-in-out;
+    }
+
+    /* TECLADO VIRTUAL DE A-Z */
+    .container-teclado {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 15px;
+      width: 100%;
+      padding: 12px;
+      background-color: #fefcf5;
+      border: 1px solid #f7dc6f;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .teclado-bloqueado {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .tecla-letra {
+      width: clamp(40px, 7.5vw, 50px);
+      height: clamp(48px, 8.5vw, 58px);
+      border: 2px solid #d4ac0d;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #2c3e50;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    /* DESTAQUE PARA AS VOGAIS */
+    .tecla-vogal {
+      background-color: #fbeee6;
+      border-color: #e59866;
+      color: #d35400;
+    }
+
+    .tecla-letra:active {
+      transform: scale(0.95);
+    }
+
+    .tecla-oculta {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* RELÓGIO DE CONTAGEM REGRESSIVA */
+    .container-timer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #d35400;
+      min-height: 36px;
+      margin-bottom: 15px;
+    }
+
+    .icone-relogio {
+      font-size: 1.3rem;
+    }
+
+    /* BOTÕES EMPILHADOS VERTICALMENTE */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #d35400;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-acao:hover {
+      background-color: #a04000;
+    }
+
+    .btn-proximo {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-pontos">
+        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">120</span>
+      </div>
+    </div>
+
+    <!-- TÍTULO DA QUESTÃO -->
+    <div id="titulo-questao" class="titulo-questao">Título</div>
+
+    <!-- IMAGEM DA QUESTÃO (SEMPRE VISÍVEL) -->
+    <div class="container-imagem">
+      <img id="imagem-questao" class="imagem-exibida" src="imagem01.jpg" alt="Imagem da questão">
+    </div>
+
+    <!-- PARÁGRAFOS DEDICADOS (EXIBIÇÃO GRADUAL CONFORME ERROS) -->
+    <div id="painel-paragrafos" class="painel-paragrafos"></div>
+
+    <!-- TRILHO DO MONSTRO -->
+    <div class="pista-monstro-container" id="pista-monstro">
+      <div id="monstro-box" class="entidade-pista">
+        <img id="img-monstro" src="monster01.png" alt="Monstro">
+      </div>
+      <div id="avatar-box" class="entidade-pista">
+        <img id="img-avatar" src="" alt="Avatar">
+      </div>
+    </div>
+
+    <!-- SLOTS DAS LETRAS DAS RESPOSTAS -->
+    <div id="container-quadrados" class="container-quadrados"></div>
+
+    <!-- TECLADO VIRTUAL DE A-Z -->
+    <div id="container-teclado" class="container-teclado"></div>
+
+    <!-- PAINEL DO TIMER DE ESPERA ANTI-SPAM -->
+    <div id="container-timer" class="container-timer"></div>
+
+    <!-- BOTÃO PARA AVANÇAR -->
+    <div class="area-botoes">
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarQuestao()">Próxima questão</button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÕES E BANCO DE QUESTÕES
+    // =========================================================================
+    const MAX_ERROS_QUESTAO = 6; // Quantidade de erros até o monstro alcançar o avatar
+
+    const questoes = [
+      {
+        resposta: "MOCHILA",
+        titulo: "Descubra a palavra.",
+        imagem: "Luana.png",
+        paragrafos: [
+          "Luana foi à escola e levou uma ______",
+          "O que ela está carregando?",
+          " "
+        ]
+      },
+      {
+        resposta: "COLA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: [
+          "Dentro da mochila dela tem ____",
+          "Líquido branco",
+          " "
+        ]
+      },
+      {
+        resposta: "CANETA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: [
+          "O que mais tem na mochila?",
+          "Escreve.",
+          " "
+        ]
+      },
+      {
+        resposta: "LÁPIS",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Também escreve.", "Fácil de apagar."]
+      },
+      {
+        resposta: "BORRACHA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Apaga.", "É pequena."]
+      },
+      {
+        resposta: "CADERNO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Tem folhas.", "Ela escreve nele."]
+      },
+      {
+        resposta: "LIVRO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Serve para ler.", "Tem páginas."]
+      },
+      {
+        resposta: "RÉGUA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Serve para riscar.", "Tem números."]
+      },
+      {
+        resposta: "TELEFONE CELULAR",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Tira fotos.", "Serve para falar com outros."]
+      },
+      {
+        resposta: "MAQUIAGEM",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Serve para ficar mais bonita.", "Ela passa no rosto."]
+      },
+      {
+        resposta: "ESPELHO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Serve para ela se olhar.", "Tem vidro."]
+      },
+      {
+        resposta: "BISCOITO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "É de comer.", "Vem num pacote."]
+      },
+      {
+        resposta: "BICHINHO DE PELÚCIA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "É para brincar no intervalo.", "É macio e peludo."]
+      },
+      {
+        resposta: "CARTEIRA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Serve para colocar coisas dentro.", "É de couro."]
+      },
+      {
+        resposta: "DINHEIRO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Está dentro da carteira.", "Serve para comprar as coisas."]
+      },
+      {
+        resposta: "ESCOVA DE DENTES",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Ela usa depois de comer.", "Usa dentro da boca."]
+      },
+      {
+        resposta: "PASTA DE DENTE",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Ela passa na escova.", " "]
+      },
+      {
+        resposta: "ESCOVA DE CABELO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Usa na cabeça.", "Penteia o cabelo."]
+      },
+      {
+        resposta: "PULSEIRA",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "Coloca no braço.", "Serve para ficar mais bonita."]
+      },
+      {
+        resposta: "LAÇO",
+        titulo: "Descubra a palavra.",
+        imagem: "mochila.png",
+        paragrafos: ["O que mais tem na mochila?", "É um enfeite de cabelo.", " "]
+      }
+    ];
+
+    // MAPA DE EQUIVALÊNCIAS DE LETRAS (ACENTOS, MAIÚSCULAS E CEDILHA)
+    const mapaEquivalencias = {
+      'A': ['A', 'a', 'Á', 'á', 'À', 'à', 'Â', 'â', 'Ã', 'ã'],
+      'B': ['B', 'b'],
+      'C': ['C', 'c', 'Ç', 'ç'],
+      'D': ['D', 'd'],
+      'E': ['E', 'e', 'É', 'é', 'Ê', 'ê'],
+      'F': ['F', 'f'],
+      'G': ['G', 'g'],
+      'H': ['H', 'h'],
+      'I': ['I', 'i', 'Í', 'í'],
+      'J': ['J', 'j'],
+      'K': ['K', 'k'],
+      'L': ['L', 'l'],
+      'M': ['M', 'm'],
+      'N': ['N', 'n'],
+      'O': ['O', 'o', 'Ó', 'ó', 'Ô', 'ô', 'Õ', 'õ'],
+      'P': ['P', 'p'],
+      'Q': ['Q', 'q'],
+      'R': ['R', 'r'],
+      'S': ['S', 's'],
+      'T': ['T', 't'],
+      'U': ['U', 'u', 'Ú', 'ú', 'Ü', 'ü'],
+      'V': ['V', 'v'],
+      'W': ['W', 'w'],
+      'X': ['X', 'x'],
+      'Y': ['Y', 'y'],
+      'Z': ['Z', 'z']
+    };
+
+    const VOGAIS = ['A', 'E', 'I', 'O', 'U'];
+
+    // =========================================================================
+    // VARIÁVEIS DE ESTADO
+    // =========================================================================
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    let errosQuestao = 0;
+    let slotsRevelados = 0;
+    let totalSlotsLetras = 0;
+    let emEsperaTimer = false;
+
+    window.onload = function() {
+      const avatarSalvo = localStorage.getItem('avatarData');
+      if (avatarSalvo) {
+        document.getElementById('img-avatar').src = avatarSalvo;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        let questaoInformada = parseInt(qParam, 10) - 1;
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
+      }
+
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || '0', 10);
+      }
+
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+      document.getElementById('pontos-maximos').innerText = questoes.length * MAX_ERROS_QUESTAO;
+      carregarQuestao(indiceAtual);
+      atualizarInterface();
+    };
+
+    function carregarQuestao(index) {
+      errosQuestao = 0;
+      slotsRevelados = 0;
+      emEsperaTimer = false;
+      document.getElementById('btn-proximo').style.display = 'none';
+      document.getElementById('container-timer').innerHTML = '';
+
+      const q = questoes[index];
+
+      document.getElementById('titulo-questao').innerText = q.titulo;
+      document.getElementById('imagem-questao').src = q.imagem;
+
+      atualizarParagrafosDicas();
+      montarSlots(q.resposta);
+      montarTecladoVirtual();
+    }
+
+    // EXIBE APENAS OS PARÁGRAFOS CORRESPONDENTES AOS ERROS ACUMULADOS
+    function atualizarParagrafosDicas() {
+      const q = questoes[indiceAtual];
+      const painel = document.getElementById('painel-paragrafos');
+      painel.innerHTML = '';
+
+      if (q.paragrafos && q.paragrafos.length > 0) {
+        // Parágrafo 1: sempre visível
+        const p1 = document.createElement('p');
+        p1.innerText = q.paragrafos[0];
+        painel.appendChild(p1);
+
+        // Parágrafo 2: visível após 2 erros
+        if (errosQuestao >= 2 && q.paragrafos.length > 1) {
+          const p2 = document.createElement('p');
+          p2.innerText = q.paragrafos[1];
+          painel.appendChild(p2);
+        }
+
+        // Parágrafo 3: visível após 4 erros
+        if (errosQuestao >= 4 && q.paragrafos.length > 2) {
+          const p3 = document.createElement('p');
+          p3.innerText = q.paragrafos[2];
+          painel.appendChild(p3);
+        }
+      }
+    }
+
+    // CONSTRÓI OS QUADRADOS/SLOTS DA PALAVRA AGRUPANDO POR PALAVRAS REAIS
+    function montarSlots(resposta) {
+      const containerSlots = document.getElementById('container-quadrados');
+      containerSlots.innerHTML = '';
+      totalSlotsLetras = 0;
+
+      const palavras = resposta.split(' ');
+
+      palavras.forEach((palavra, indexPalavra) => {
+        const palavraGroup = document.createElement('span');
+        palavraGroup.className = 'palavra-grupo';
+
+        for (let i = 0; i < palavra.length; i++) {
+          const char = palavra[i];
+          const slot = document.createElement('div');
+          slot.className = 'slot-letra';
+          slot.dataset.espaco = "false";
+          slot.dataset.char = char;
+          slot.innerText = ''; // Oculto inicialmente
+          totalSlotsLetras++;
+          palavraGroup.appendChild(slot);
+        }
+
+        containerSlots.appendChild(palavraGroup);
+
+        // Insere o slot cinza de espaço entre as palavras
+        if (indexPalavra < palavras.length - 1) {
+          const slotEspaco = document.createElement('div');
+          slotEspaco.className = 'slot-letra slot-espaco';
+          slotEspaco.dataset.espaco = "true";
+          containerSlots.appendChild(slotEspaco);
+        }
+      });
+    }
+
+    // CONSTRÓI O TECLADO VIRTUAL A-Z
+    function montarTecladoVirtual() {
+      const containerTeclado = document.getElementById('container-teclado');
+      containerTeclado.innerHTML = '';
+      containerTeclado.classList.remove('teclado-bloqueado');
+
+      const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+      alfabeto.forEach(letra => {
+        const btn = document.createElement('button');
+        btn.className = 'tecla-letra';
+        if (VOGAIS.includes(letra)) {
+          btn.classList.add('tecla-vogal');
+        }
+        btn.innerText = letra;
+        btn.onclick = function() {
+          pressionarTecla(letra, btn);
+        };
+        containerTeclado.appendChild(btn);
+      });
+    }
+
+    // PROCESSA O CLIQUE NA TECLA
+    function pressionarTecla(letraTeclado, elementoBtn) {
+      if (emEsperaTimer) return;
+
+      // Desaparece com a tecla selecionada
+      elementoBtn.classList.add('tecla-oculta');
+
+      const q = questoes[indiceAtual];
+      const equivalentes = mapaEquivalencias[letraTeclado] || [letraTeclado];
+      const slots = document.querySelectorAll('.slot-letra[data-espaco="false"]');
+
+      let acertou = false;
+
+      slots.forEach(slot => {
+        const charSlot = slot.dataset.char;
+        if (slot.innerText === '' && equivalentes.includes(charSlot)) {
+          slot.innerText = charSlot;
+          acertou = true;
+          slotsRevelados++;
+        }
+      });
+
+      if (!acertou) {
+        errosQuestao++;
+        atualizarParagrafosDicas();
+      }
+
+      atualizarInterface();
+
+      // Checa se a questão acabou (ganhou ou perdeu)
+      if (slotsRevelados === totalSlotsLetras) {
+        finalizarQuestao(true);
+      } else if (errosQuestao >= MAX_ERROS_QUESTAO) {
+        finalizarQuestao(false);
+      } else {
+        // Aplica o congelamento de 5 segundos se a partida ainda continua
+        iniciarTimerCongelamento();
+      }
+    }
+
+    // CONGELAMENTO DE 5 SEGUNDOS DO TECLADO E PISCAR SLOTS VAZIOS
+    function iniciarTimerCongelamento() {
+      emEsperaTimer = true;
+      const teclado = document.getElementById('container-teclado');
+      const timerContainer = document.getElementById('container-timer');
+      const slotsVazios = document.querySelectorAll('.slot-letra[data-espaco="false"]');
+
+      teclado.classList.add('teclado-bloqueado');
+
+      // Aplica efeito de piscar nos slots vazios
+      slotsVazios.forEach(slot => {
+        if (slot.innerText === '') {
+          slot.classList.add('piscar-slot');
+        }
+      });
+
+      let tempoRestante = 5;
+      timerContainer.innerHTML = `<span class="icone-relogio">⏱️</span> <span>${tempoRestante}</span>`;
+
+      const intervalo = setInterval(() => {
+        tempoRestante--;
+        if (tempoRestante > 0) {
+          timerContainer.innerHTML = `<span class="icone-relogio">⏱️</span> <span>${tempoRestante}</span>`;
+        } else {
+          clearInterval(intervalo);
+          timerContainer.innerHTML = '';
+          teclado.classList.remove('teclado-bloqueado');
+          slotsVazios.forEach(slot => slot.classList.remove('piscar-slot'));
+          emEsperaTimer = false;
+        }
+      }, 1000);
+    }
+
+    // FINALIZAÇÃO DA QUESTÃO
+    function finalizarQuestao(vitoria) {
+      emEsperaTimer = true;
+      const teclado = document.getElementById('container-teclado');
+      teclado.classList.add('teclado-bloqueado');
+
+      if (vitoria) {
+        let pontosGanhos = Math.max(0, MAX_ERROS_QUESTAO - errosQuestao);
+        pontuacaoAcumulada += pontosGanhos;
+        localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+        localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+      } else {
+        // Se errou tudo, revela a solução inteira
+        const slots = document.querySelectorAll('.slot-letra[data-espaco="false"]');
+        slots.forEach(slot => {
+          slot.innerText = slot.dataset.char;
+        });
+      }
+
+      const btnProximo = document.getElementById('btn-proximo');
+      if (indiceAtual === questoes.length - 1) {
+        btnProximo.innerText = "Terminar atividade";
+      } else {
+        btnProximo.innerText = "Próxima questão";
+      }
+      btnProximo.style.display = 'block';
+
+      atualizarInterface();
+    }
+
+    function atualizarInterface() {
+      const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      const porcentagemAproximacao = (errosQuestao / MAX_ERROS_QUESTAO) * 82;
+      const monstroBox = document.getElementById('monstro-box');
+      const imgMonstro = document.getElementById('img-monstro');
+
+      monstroBox.style.left = `${porcentagemAproximacao}%`;
+
+      if ((errosQuestao / MAX_ERROS_QUESTAO) >= 0.5) {
+        imgMonstro.src = "monster02.png";
+      } else {
+        imgMonstro.src = "monster01.png";
+      }
+
+      if (errosQuestao >= MAX_ERROS_QUESTAO) {
+        monstroBox.style.zIndex = "3";
+      } else {
+        monstroBox.style.zIndex = "2";
+      }
+    }
+
+    function avancarQuestao() {
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+        atualizarInterface();
+      } else {
+        window.location.href = "end.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
