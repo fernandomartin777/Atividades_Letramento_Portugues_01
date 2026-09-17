@@ -13,12 +13,12 @@
     }
 
     html {
-      font-size: 18px;
+      font-size: 20px; /* Aumentado para melhor visibilidade */
     }
 
     @media (max-width: 600px) {
       html {
-        font-size: 16px;
+        font-size: 17px;
       }
     }
 
@@ -111,7 +111,7 @@
       object-fit: contain;
     }
 
-    /* ÁREA DE TEXTOS / PARÁGRAFOS */
+    /* ÁREA DE TEXTOS / PARÁGRAFOS (FONTE AUMENTADA) */
     .painel-paragrafos {
       width: 100%;
       margin-bottom: 20px;
@@ -119,12 +119,12 @@
     }
 
     .painel-paragrafos p {
-      font-size: clamp(1.1rem, 3.2vw, 1.3rem);
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem); /* Fonte aumentada conforme solicitado */
       line-height: 1.6;
       margin: 0 0 12px 0;
     }
 
-    /* TRILHO DO MONSTRO (AUMENTADO) */
+    /* TRILHO DO MONSTRO */
     .pista-monstro-container {
       width: 100%;
       background-color: #eaf2f8;
@@ -132,7 +132,7 @@
       border-radius: 12px;
       height: 140px;
       position: relative;
-      margin: 15px 0 25px 0;
+      margin: 15px 0 10px 0;
       overflow: hidden;
     }
 
@@ -171,11 +171,32 @@
       object-fit: contain;
     }
 
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 36px;
+      background-color: #f7f9fa;
+      border: 1.5px dashed #2980b9;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
     /* QUADRADOS DE RESPOSTA (AGRUPADOS POR PALAVRA) */
     .container-quadrados {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 8px; /* Maior espaçamento vertical e horizontal entre elementos */
+      gap: 12px 8px;
       justify-content: center;
       align-items: center;
       margin-bottom: 20px;
@@ -209,7 +230,7 @@
       background-color: #bdc3c7 !important;
       border-color: #95a5a6;
       cursor: default;
-      margin: 0 4px; /* Separação visual extra nos espaços */
+      margin: 0 4px;
     }
 
     .quadrado-correto {
@@ -292,6 +313,9 @@
         <img id="img-avatar" src="" alt="Avatar">
       </div>
     </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
 
     <!-- QUADRADOS DE RESPOSTA -->
     <div id="container-quadrados" class="container-quadrados"></div>
@@ -381,7 +405,7 @@
     let pontuacaoAcumulada = 0;
     let tentativasQuestao = 0;
     let passosMonstro = 0;
-    const maxPassos = questoes.length;
+    const maxPassos = 6; // Ajustado para 6 passos máximos até pegar o avatar
 
     window.onload = function() {
       const avatarSalvo = localStorage.getItem('avatarData');
@@ -414,6 +438,7 @@
 
     function carregarQuestao(index) {
       tentativasQuestao = 0;
+      passosMonstro = 0;
       document.getElementById('btn-proximo').style.display = 'none';
 
       const q = questoes[index];
@@ -437,7 +462,6 @@
       const container = document.getElementById('container-quadrados');
       container.innerHTML = '';
 
-      // Divisão das palavras para quebrar linhas apenas nos espaços reais
       const palavras = resposta.split(' ');
 
       palavras.forEach((palavra, indexPalavra) => {
@@ -451,7 +475,6 @@
 
         container.appendChild(palavraGroup);
 
-        // Se não for a última palavra, insere o quadrado cinza de espaço fora do grupo
         if (indexPalavra < palavras.length - 1) {
           const inputEspaco = document.createElement('input');
           inputEspaco.type = 'text';
@@ -582,8 +605,6 @@
         localStorage.setItem('pontosAluno', pontuacaoAcumulada);
         localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
 
-        passosMonstro = Math.max(0, passosMonstro - 2);
-
         const btnProximo = document.getElementById('btn-proximo');
         
         if (indiceAtual === questoes.length - 1) {
@@ -595,6 +616,21 @@
 
       } else {
         passosMonstro = Math.min(maxPassos, passosMonstro + 1);
+
+        // Punição de -2 pontos caso o monstro alcance o avatar
+        if (passosMonstro >= maxPassos) {
+          pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 2);
+          localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+          localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+          const btnProximo = document.getElementById('btn-proximo');
+          if (indiceAtual === questoes.length - 1) {
+            btnProximo.innerText = "Terminar atividade";
+          } else {
+            btnProximo.innerText = "Próxima questão";
+          }
+          btnProximo.style.display = 'block';
+        }
       }
 
       atualizarInterface();
@@ -604,6 +640,17 @@
       const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
       document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
       document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      // Trilha de Prêmios (cópias da imagem prize.png)
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoAcumulada; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
 
       const porcentagemAproximacao = (passosMonstro / maxPassos) * 82;
       const monstroBox = document.getElementById('monstro-box');
@@ -625,6 +672,9 @@
     }
 
     function avancarQuestao() {
+      // Rolar para o topo mantendo o nível de zoom
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       if (indiceAtual < questoes.length - 1) {
         indiceAtual++;
         carregarQuestao(indiceAtual);
