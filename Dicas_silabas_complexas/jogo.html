@@ -13,12 +13,12 @@
     }
 
     html {
-      font-size: 18px;
+      font-size: 20px; /* Aumentado para melhor visibilidade */
     }
 
     @media (max-width: 600px) {
       html {
-        font-size: 16px;
+        font-size: 17px;
       }
     }
 
@@ -90,7 +90,7 @@
 
     /* TÍTULO E PARÁGRAFOS */
     .titulo-questao {
-      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-size: clamp(1.6rem, 4.5vw, 2rem);
       font-weight: bold;
       text-align: center;
       margin: 10px 0 15px 0;
@@ -113,7 +113,7 @@
       object-fit: contain;
     }
 
-    /* ÁREA DE TEXTOS / PARÁGRAFOS DICAS */
+    /* ÁREA DE TEXTOS / PARÁGRAFOS DICAS (FONTE AUMENTADA) */
     .painel-paragrafos {
       width: 100%;
       margin-bottom: 20px;
@@ -121,7 +121,7 @@
     }
 
     .painel-paragrafos p {
-      font-size: clamp(1.1rem, 3.2vw, 1.3rem);
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem); /* Fonte aumentada conforme pedido */
       line-height: 1.6;
       margin: 0 0 12px 0;
     }
@@ -134,7 +134,7 @@
       border-radius: 12px;
       height: 140px;
       position: relative;
-      margin: 15px 0 25px 0;
+      margin: 15px 0 10px 0;
       overflow: hidden;
     }
 
@@ -169,6 +169,27 @@
     .entidade-pista img {
       width: 100%;
       height: 100%;
+      object-fit: contain;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 36px;
+      background-color: #fffdf5;
+      border: 1.5px dashed #f1c40f;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 26px;
+      height: 26px;
       object-fit: contain;
     }
 
@@ -360,6 +381,9 @@
         <img id="img-avatar" src="" alt="Avatar">
       </div>
     </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
 
     <!-- SLOTS DAS LETRAS DAS RESPOSTAS -->
     <div id="container-quadrados" class="container-quadrados"></div>
@@ -773,15 +797,19 @@
       if (vitoria) {
         let pontosGanhos = Math.max(0, MAX_ERROS_QUESTAO - errosQuestao);
         pontuacaoAcumulada += pontosGanhos;
-        localStorage.setItem('pontosAluno', pontuacaoAcumulada);
-        localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
       } else {
-        // Se errou tudo, revela a solução inteira
+        // Punição de -2 pontos se o monstro alcançar o avatar
+        pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 2);
+
+        // Revela a solução inteira
         const slots = document.querySelectorAll('.slot-letra[data-espaco="false"]');
         slots.forEach(slot => {
           slot.innerText = slot.dataset.char;
         });
       }
+
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
 
       const btnProximo = document.getElementById('btn-proximo');
       if (indiceAtual === questoes.length - 1) {
@@ -799,6 +827,17 @@
       document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
       document.getElementById('questao-atual').innerText = indiceAtual + 1;
       document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      // Atualizar Trilha de Prêmios (cópias da imagem prize.png)
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoAcumulada; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
 
       const porcentagemAproximacao = (errosQuestao / MAX_ERROS_QUESTAO) * 82;
       const monstroBox = document.getElementById('monstro-box');
@@ -820,6 +859,9 @@
     }
 
     function avancarQuestao() {
+      // Rolar para o topo suavemente mantendo a página intacta
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       if (indiceAtual < questoes.length - 1) {
         indiceAtual++;
         carregarQuestao(indiceAtual);
