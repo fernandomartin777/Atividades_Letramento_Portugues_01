@@ -13,17 +13,17 @@
     }
 
     html {
-      font-size: 18px;
+      font-size: 20px;
     }
 
     @media (max-width: 600px) {
       html {
-        font-size: 16px;
+        font-size: 17px;
       }
     }
 
     body {
-      background-color: #f0f4f8;
+      background-color: #fff8f0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,16 +36,16 @@
       width: 100%;
       max-width: 850px;
       background: #ffffff;
-      border: 2px solid #2980b9;
+      border: 2px solid #e67e22;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.15);
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.15);
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* BARRA DE PROGRESSO EM TONS DE AZUL */
+    /* BARRA DE PROGRESSO EM TONS DE LARANJA */
     .header-progresso {
       width: 100%;
       margin-bottom: 20px;
@@ -54,8 +54,8 @@
     .trilho-barra {
       width: 100%;
       height: 24px;
-      background-color: #ebf5fb;
-      border: 2px solid #3498db;
+      background-color: #fef5e7;
+      border: 2px solid #f39c12;
       border-radius: 12px;
       overflow: hidden;
       position: relative;
@@ -63,7 +63,7 @@
 
     .preenchimento-barra {
       height: 100%;
-      background-color: #2980b9;
+      background-color: #e67e22;
       width: 100%; /* Concluído */
       transition: width 0.4s ease-in-out;
     }
@@ -74,7 +74,7 @@
       font-weight: bold;
       font-size: 1.1rem;
       margin-top: 6px;
-      color: #1a5276;
+      color: #a04000;
     }
 
     /* TÍTULO DE CONGRATULAÇÕES */
@@ -82,24 +82,45 @@
       font-size: clamp(1.6rem, 4.5vw, 2.2rem);
       font-weight: bold;
       text-align: center;
-      color: #27ae60;
+      color: #d35400;
       margin: 15px 0 20px 0;
     }
 
-    /* IMAGEM DE VITÓRIA (MAIOR QUE O PADRÃO) */
+    /* IMAGEM DE VITÓRIA */
     .container-imagem-vitoria {
-      margin: 10px 0 25px 0;
+      margin: 10px 0 20px 0;
       text-align: center;
       width: 100%;
     }
 
     .imagem-vitoria {
       max-width: 100%;
-      max-height: 400px; /* Destaque maior */
+      max-height: 400px;
       width: auto;
       height: auto;
       border-radius: 10px;
-      border: 3px solid #27ae60;
+      border: 3px solid #e67e22;
+      object-fit: contain;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 36px;
+      background-color: #fef5e7;
+      border: 1.5px dashed #e67e22;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 26px;
+      height: 26px;
       object-fit: contain;
     }
 
@@ -116,7 +137,7 @@
       font-size: 1.3rem;
       font-weight: bold;
       color: #ffffff !important;
-      background-color: #27ae60;
+      background-color: #e67e22;
       border: none;
       padding: 14px 40px;
       border-radius: 8px;
@@ -128,7 +149,7 @@
     }
 
     .btn-fim:hover {
-      background-color: #1e8449;
+      background-color: #d35400;
     }
   </style>
 </head>
@@ -141,7 +162,7 @@
         <div id="barra-preenchimento" class="preenchimento-barra"></div>
       </div>
       <div class="info-pontos">
-        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">100</span>
+        PONTOS: <span id="pontos-atuais">0</span>
       </div>
     </div>
 
@@ -155,6 +176,9 @@
       <img src="victory.png" alt="Vitória" class="imagem-vitoria">
     </div>
 
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
+
     <!-- BOTÃO FIM -->
     <div class="area-botoes">
       <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fim">Fim</a>
@@ -163,13 +187,21 @@
 
   <script>
     window.onload = function() {
-      // Recupera os pontos totais salvos durante a sessão
-      const pontuacaoFinal = localStorage.getItem('pontosAluno') || localStorage.getItem('pontosTotais') || '0';
+      // Recupera a pontuação final armazenada
+      const pontuacaoFinal = parseInt(localStorage.getItem('pontosAluno') || localStorage.getItem('pontosTotal') || '0', 10);
       
       document.getElementById('pontos-atuais').innerText = pontuacaoFinal;
-      
-      // Caso precise ajustar o valor máximo dinamicamente (padrão 100 XP para 20 questões)
-      document.getElementById('pontos-maximos').innerText = "100";
+
+      // Renderiza a quantidade correspondente de prêmios
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoFinal; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
     };
   </script>
 
