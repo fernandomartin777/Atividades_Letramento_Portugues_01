@@ -750,12 +750,12 @@
       } else if (errosQuestao >= MAX_ERROS_QUESTAO) {
         finalizarQuestao(false);
       } else {
-        // Aplica o congelamento de 5 segundos se a partida ainda continua
+        // Aplica o congelamento de 3 segundos se a partida ainda continua
         iniciarTimerCongelamento();
       }
     }
 
-    // CONGELAMENTO DE 5 SEGUNDOS DO TECLADO E PISCAR SLOTS VAZIOS
+    // CONGELAMENTO DE 3 SEGUNDOS DO TECLADO E PISCAR SLOTS VAZIOS
     function iniciarTimerCongelamento() {
       emEsperaTimer = true;
       const teclado = document.getElementById('container-teclado');
@@ -771,7 +771,7 @@
         }
       });
 
-      let tempoRestante = 5;
+      let tempoRestante = 3; // Reduzido para 3 segundos
       timerContainer.innerHTML = `<span class="icone-relogio">⏱️</span> <span>${tempoRestante}</span>`;
 
       const intervalo = setInterval(() => {
@@ -798,8 +798,8 @@
         let pontosGanhos = Math.max(0, MAX_ERROS_QUESTAO - errosQuestao);
         pontuacaoAcumulada += pontosGanhos;
       } else {
-        // Punição de -2 pontos se o monstro alcançar o avatar
-        pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 2);
+        // Punição de -4 pontos se o monstro alcançar o avatar
+        pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 4);
 
         // Revela a solução inteira
         const slots = document.querySelectorAll('.slot-letra[data-espaco="false"]');
