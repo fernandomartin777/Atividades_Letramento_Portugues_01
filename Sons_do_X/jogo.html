@@ -111,7 +111,7 @@
       object-fit: contain;
     }
 
-    /* ÁREA DE TEXTOS / PARÁGRAFOS (FONTE AUMENTADA) */
+    /* ÁREA DE TEXTOS / PARÁGRAFOS */
     .painel-paragrafos {
       width: 100%;
       margin-bottom: 20px;
@@ -119,7 +119,7 @@
     }
 
     .painel-paragrafos p {
-      font-size: clamp(1.3rem, 3.8vw, 1.6rem); /* Fonte aumentada conforme solicitado */
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem);
       line-height: 1.6;
       margin: 0 0 12px 0;
     }
@@ -192,7 +192,7 @@
       object-fit: contain;
     }
 
-    /* QUADRADOS DE RESPOSTA (AGRUPADOS POR PALAVRA) */
+    /* QUADRADOS DE RESPOSTA */
     .container-quadrados {
       display: flex;
       flex-wrap: wrap;
@@ -203,7 +203,6 @@
       width: 100%;
     }
 
-    /* GARANTE QUE CADA PALAVRA FIQUE INSEPARÁVEL NA MESMA LINHA */
     .palavra-grupo {
       display: inline-flex;
       gap: 8px;
@@ -405,7 +404,7 @@
     let pontuacaoAcumulada = 0;
     let tentativasQuestao = 0;
     let passosMonstro = 0;
-    const maxPassos = 6; // Ajustado para 6 passos máximos até pegar o avatar
+    const maxPassos = 6;
 
     window.onload = function() {
       const avatarSalvo = localStorage.getItem('avatarData');
@@ -439,6 +438,7 @@
     function carregarQuestao(index) {
       tentativasQuestao = 0;
       passosMonstro = 0;
+      document.getElementById('btn-conferir').style.display = 'block';
       document.getElementById('btn-proximo').style.display = 'none';
 
       const q = questoes[index];
@@ -605,8 +605,9 @@
         localStorage.setItem('pontosAluno', pontuacaoAcumulada);
         localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
 
+        document.getElementById('btn-conferir').style.display = 'none';
+
         const btnProximo = document.getElementById('btn-proximo');
-        
         if (indiceAtual === questoes.length - 1) {
           btnProximo.innerText = "Terminar atividade";
         } else {
@@ -617,11 +618,13 @@
       } else {
         passosMonstro = Math.min(maxPassos, passosMonstro + 1);
 
-        // Punição de -2 pontos caso o monstro alcance o avatar
+        // Punição de -4 pontos e -4 prêmios caso o monstro alcance o avatar
         if (passosMonstro >= maxPassos) {
-          pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 2);
+          pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 4);
           localStorage.setItem('pontosAluno', pontuacaoAcumulada);
           localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+          document.getElementById('btn-conferir').style.display = 'none';
 
           const btnProximo = document.getElementById('btn-proximo');
           if (indiceAtual === questoes.length - 1) {
@@ -672,7 +675,6 @@
     }
 
     function avancarQuestao() {
-      // Rolar para o topo mantendo o nível de zoom
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (indiceAtual < questoes.length - 1) {
