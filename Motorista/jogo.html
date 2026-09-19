@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Você é o motorista</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #1c2813;
+    }
+
+    html {
+      font-size: 20px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 17px;
+      }
+    }
+
+    body {
+      background-color: #f4f6f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border: 2px solid #556b2f;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(85, 107, 47, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* CABEÇALHO: TÍTULO E AVATAR NO PARA-BRISA */
+    .header-motorista {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .titulo-principal {
+      font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+      font-weight: bold;
+      color: #3b4a20;
+      margin: 0;
+    }
+
+    /* QUADRO DO AVATAR COM EFEITO DE PARA-BRISA */
+    .moldura-parabrisa {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      border: 3px solid #3b4a20;
+      background-color: #2b331f;
+      overflow: hidden;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+    }
+
+    .moldura-parabrisa img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Efeito de reflexo de vidro por cima */
+    .moldura-parabrisa::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(0, 0, 0, 0.15) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* IMAGEM DO ÔNIBUS */
+    .container-onibus {
+      width: 100%;
+      max-width: 720px;
+      margin: 10px 0 20px 0;
+      text-align: center;
+    }
+
+    .img-onibus {
+      width: 100%;
+      max-width: 720px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+
+    /* MOLDURA 4:3 DA QUESTÃO COM ZOOM E PAN */
+    .moldura-viewport-43 {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border: 3px solid #556b2f;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      background-color: #e2e7d8;
+      cursor: grab;
+      touch-action: none; /* Previne scroll da página no touch */
+      user-select: none;
+    }
+
+    .moldura-viewport-43:active {
+      cursor: grabbing;
+    }
+
+    .imagem-zoomable {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      pointer-events: none; /* Garante que os eventos fiquem no container */
+    }
+
+    /* CONTROLE DE ZOOM */
+    .container-controle-zoom {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 12px 0 20px 0;
+    }
+
+    .container-controle-zoom label {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #3b4a20;
+    }
+
+    .slider-zoom {
+      width: 60%;
+      max-width: 400px;
+      accent-color: #556b2f;
+      cursor: pointer;
+    }
+
+    /* TEXTOS E PERGUNTAS */
+    .texto-instrucao {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 15px 0 10px 0;
+      color: #2b331f;
+    }
+
+    .subtexto-instrucao {
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 5px 0 15px 0;
+      color: #556b2f;
+    }
+
+    /* RESPOSTAS E INPUTS */
+    .container-inputs {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .input-texto {
+      width: 100%;
+      max-width: 500px;
+      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      padding: 10px 14px;
+      border: 2px solid #8f9e73;
+      border-radius: 8px;
+      outline: none;
+      background-color: #fafbf8;
+      text-align: center;
+    }
+
+    .input-texto:focus {
+      border-color: #556b2f;
+      background-color: #ffffff;
+    }
+
+    .input-correto {
+      background-color: #e2f0d9 !important;
+      border-color: #3b7a57 !important;
+      color: #1e4620;
+    }
+
+    .input-incorreto {
+      background-color: #fce4d6 !important;
+      border-color: #c65911 !important;
+      color: #833c0c;
+    }
+
+    .input-numero {
+      width: 160px;
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem);
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* BOTÕES EMPILHADOS VERTICALMENTE */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #556b2f;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    .btn-acao:hover:not(:disabled) {
+      background-color: #3b4a20;
+    }
+
+    .btn-acao:disabled {
+      background-color: #a3b18a !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-proximo {
+      background-color: #3b7a57;
+      display: none;
+    }
+
+    .btn-proximo:hover {
+      background-color: #28533b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- CABEÇALHO COM AVATAR -->
+    <div class="header-motorista">
+      <h1 class="titulo-principal">Você é o motorista.</h1>
+      <div class="moldura-parabrisa">
+        <img id="img-avatar" src="" alt="Avatar do Motorista">
+      </div>
+    </div>
+
+    <!-- IMAGEM DO ÔNIBUS (720px) -->
+    <div class="container-onibus">
+      <img src="onibus.jpg" alt="Ônibus" class="img-onibus">
+    </div>
+
+    <!-- MOLDURA 4:3 COM PAN/ZOOM -->
+    <div class="moldura-viewport-43" id="viewport-mapa">
+      <img id="img-mapa" class="imagem-zoomable" src="" alt="Mapa do percurso">
+    </div>
+
+    <!-- BARRA DE CONTROLE DE ZOOM -->
+    <div class="container-controle-zoom">
+      <label for="slider-zoom">Zoom:</label>
+      <input type="range" id="slider-zoom" class="slider-zoom" min="1" max="4" step="0.05" value="1">
+    </div>
+
+    <!-- TITULO DA VIAGEM -->
+    <div id="titulo-viagem" class="texto-instrucao">Viagem 1</div>
+    <div class="subtexto-instrucao">Por onde o ônibus vai passar?</div>
+
+    <!-- INPUTS DAS RESPOSTAS DOS LOCAIS -->
+    <div id="container-respostas-locais" class="container-inputs"></div>
+
+    <!-- PERGUNTA DOS MINUTOS -->
+    <div class="subtexto-instrucao">Quantos minutos leva essa viagem?</div>
+    <div class="container-inputs">
+      <input type="number" id="input-minutos" class="input-texto input-numero" placeholder="Minutos" min="0">
+    </div>
+
+    <!-- BOTÕES DE AÇÃO -->
+    <div class="area-botoes">
+      <button id="btn-conferir" class="btn-acao" onclick="conferirRespostas()">Conferir respostas</button>
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarViagem()">Próxima viagem</button>
+    </div>
+  </div>
+
+  <script>
+    const questoes = [
+      {
+        imagem: "direction01.png",
+        respostasLocais: [
+          "Vila Mariana",
+          "Humberto Antunes",
+          "Centro",
+          "Cinco Lagos"
+        ],
+        minutos: "27"
+      },
+      {
+        imagem: "direction02.png",
+        respostasLocais: [
+          "Cinco Lagos",
+          "Independência",
+          "Morsing"
+        ],
+        minutos: "27"
+      },
+      {
+        imagem: "direction03.png",
+        respostasLocais: [
+          "Morsing",
+          "Martins Costa",
+          "Água Fria",
+          "Centro"
+        ],
+        minutos: "26"
+      },
+      {
+        imagem: "direction04.png",
+        respostasLocais: [
+          "Centro",
+          "Santa Rita"
+        ],
+        minutos: "7"
+      },
+      {
+        imagem: "direction05.png",
+        respostasLocais: [
+          "Santa Rita",
+          "Oscar Rudge",
+          "Centro",
+          "Humberto Antunes",
+          "Vila Mariana"
+        ],
+        minutos: "30"
+      }
+    ];
+
+    let indiceAtual = 0;
+
+    // ESTADO DE PAN & ZOOM DA IMAGEM
+    let scale = 1;
+    let minScale = 1;
+    let maxScale = 4;
+    let posX = 0;
+    let posY = 0;
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    const viewport = document.getElementById('viewport-mapa');
+    const imgMapa = document.getElementById('img-mapa');
+    const sliderZoom = document.getElementById('slider-zoom');
+
+    window.onload = function() {
+      // Carrega Avatar salvo previamente se existir
+      const avatarSalvo = localStorage.getItem('avatarData');
+      if (avatarSalvo) {
+        document.getElementById('img-avatar').src = avatarSalvo;
+      }
+
+      carregarQuestao(indiceAtual);
+      configurarEventosPanZoom();
+    };
+
+    function carregarQuestao(index) {
+      const q = questoes[index];
+
+      // Atualizar textos e botões
+      document.getElementById('titulo-viagem').innerText = `Viagem ${index + 1}`;
+      
+      const btnConferir = document.getElementById('btn-conferir');
+      btnConferir.style.display = 'block';
+      btnConferir.disabled = false;
+
+      document.getElementById('btn-proximo').style.display = 'none';
+
+      // Limpar e criar inputs de respostas
+      const containerLocais = document.getElementById('container-respostas-locais');
+      containerLocais.innerHTML = '';
+      q.respostasLocais.forEach((_, idx) => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-texto input-local';
+        input.placeholder = `Parada ${idx + 1}`;
+        input.autocomplete = 'off';
+        input.autocorrect = 'off';
+        input.autocapitalize = 'none';
+        input.spellcheck = false;
+        containerLocais.appendChild(input);
+      });
+
+      // Limpar input de minutos
+      const inputMinutos = document.getElementById('input-minutos');
+      inputMinutos.value = '';
+      inputMinutos.classList.remove('input-correto', 'input-incorreto');
+
+      // Carregar imagem e redefinir Pan/Zoom ao carregar dimensão da imagem
+      imgMapa.src = q.imagem;
+      imgMapa.onload = function() {
+        resetarPanZoom();
+      };
+    }
+
+    /* SISTEMA DE PAN E ZOOM */
+    function resetarPanZoom() {
+      const vWidth = viewport.clientWidth;
+      const vHeight = viewport.clientHeight;
+      const iWidth = imgMapa.naturalWidth || vWidth;
+      const iHeight = imgMapa.naturalHeight || vHeight;
+
+      // Ajusta para caber na moldura
+      const scaleX = vWidth / iWidth;
+      const scaleY = vHeight / iHeight;
+      minScale = Math.min(scaleX, scaleY);
+      
+      scale = minScale;
+      sliderZoom.min = minScale;
+      sliderZoom.max = minScale * 3.5;
+      sliderZoom.value = minScale;
+
+      // Centraliza a imagem inicialmente
+      posX = (vWidth - iWidth * scale) / 2;
+      posY = (vHeight - iHeight * scale) / 2;
+
+      aplicarTransform();
+    }
+
+    function aplicarTransform() {
+      const vWidth = viewport.clientWidth;
+      const vHeight = viewport.clientHeight;
+      const iWidth = (imgMapa.naturalWidth || vWidth) * scale;
+      const iHeight = (imgMapa.naturalHeight || vHeight) * scale;
+
+      // Limite para não arrastar além das bordas se a imagem for maior que a moldura
+      if (iWidth > vWidth) {
+        posX = Math.min(0, Math.max(vWidth - iWidth, posX));
+      } else {
+        posX = (vWidth - iWidth) / 2;
+      }
+
+      if (iHeight > vHeight) {
+        posY = Math.min(0, Math.max(vHeight - iHeight, posY));
+      } else {
+        posY = (vHeight - iHeight) / 2;
+      }
+
+      imgMapa.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    }
+
+    function configurarEventosPanZoom() {
+      // Alteração via Barra Slider
+      sliderZoom.addEventListener('input', function() {
+        const oldScale = scale;
+        scale = parseFloat(this.value);
+
+        const vWidth = viewport.clientWidth;
+        const vHeight = viewport.clientHeight;
+        
+        // Ajusta posição mantendo o centro visual
+        posX -= (vWidth / 2 - posX) * (scale / oldScale - 1);
+        posY -= (vHeight / 2 - posY) * (scale / oldScale - 1);
+
+        aplicarTransform();
+      });
+
+      // Eventos de arrastar com Rato / Touch
+      viewport.addEventListener('pointerdown', function(e) {
+        isDragging = true;
+        startX = e.clientX - posX;
+        startY = e.clientY - posY;
+        viewport.setPointerCapture(e.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', function(e) {
+        if (!isDragging) return;
+        posX = e.clientX - startX;
+        posY = e.clientY - startY;
+        aplicarTransform();
+      });
+
+      viewport.addEventListener('pointerup', function(e) {
+        isDragging = false;
+        viewport.releasePointerCapture(e.pointerId);
+      });
+
+      viewport.addEventListener('pointercancel', function() {
+        isDragging = false;
+      });
+    }
+
+    /* VERIFICAÇÃO DAS RESPOSTAS */
+    function conferirRespostas() {
+      const q = questoes[indiceAtual];
+      const inputsLocais = document.querySelectorAll('.input-local');
+      const inputMinutos = document.getElementById('input-minutos');
+      let tudoCorreto = true;
+
+      // Verificação estrita dos locais (Respeitando maiúsculas, minúsculas, acentos e espaços)
+      inputsLocais.forEach((input, i) => {
+        const valorDigitado = input.value.trim();
+        const valorEsperado = q.respostasLocais[i];
+
+        if (valorDigitado === valorEsperado) {
+          input.classList.remove('input-incorreto');
+          input.classList.add('input-correto');
+        } else {
+          input.classList.remove('input-correto');
+          input.classList.add('input-incorreto');
+          tudoCorreto = false;
+        }
+      });
+
+      // Verificação dos minutos
+      if (inputMinutos.value.trim() === q.minutos) {
+        inputMinutos.classList.remove('input-incorreto');
+        inputMinutos.classList.add('input-correto');
+      } else {
+        inputMinutos.classList.remove('input-correto');
+        inputMinutos.classList.add('input-incorreto');
+        tudoCorreto = false;
+      }
+
+      // Se tudo estiver correto, oculta "Conferir" e exibe "Próxima viagem"
+      if (tudoCorreto) {
+        document.getElementById('btn-conferir').style.display = 'none';
+
+        const btnProximo = document.getElementById('btn-proximo');
+        if (indiceAtual === questoes.length - 1) {
+          btnProximo.innerText = "Terminar";
+        } else {
+          btnProximo.innerText = "Próxima viagem";
+        }
+        btnProximo.style.display = 'block';
+      }
+    }
+
+    function avancarViagem() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+      } else {
+        window.location.href = "end.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
