@@ -1,1 +1,1 @@
-Ordenar nomes de imagens que contem S.
+Ordene as letras das palavras.
