@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Combine as letras</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+      color: #ffffff;
+    }
+
+    #app-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER / TITLE */
+    header {
+      height: 48px;
+      min-height: 48px;
+      background: #2563eb;
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid #1e3a8a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    /* CONGRATULATION BANNER OVER TITLE */
+    #banner-congratulations {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 52px;
+      background: linear-gradient(90deg, #15803d, #22c55e);
+      color: #ffffff;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      animation: slideDown 0.4s ease-out forwards;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
+    }
+
+    .banner-text {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    /* GAME PLAY AREA */
+    #play-area {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: calc(100% - 48px);
+      overflow: hidden;
+    }
+
+    /* SEPARATION LINE BETWEEN TOP AND BOTTOM AREAS */
+    .divider-line {
+      position: absolute;
+      top: 50%;
+      left: 2%;
+      width: 96%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-top: 1px dashed rgba(96, 165, 250, 0.3);
+      pointer-events: none;
+    }
+
+    /* CARDS */
+    .card {
+      position: absolute;
+      width: clamp(38px, 4.5vw, 56px);
+      height: clamp(48px, 5.8vw, 68px);
+      background: #ffffff;
+      border: 2.5px solid #1e40af;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-weight: bold;
+      font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+      color: #000000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.1s ease, box-shadow 0.15s ease, background-color 0.3s ease, border-color 0.3s ease;
+      z-index: 5;
+    }
+
+    .card.dragging {
+      cursor: grabbing;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+      z-index: 50 !important;
+      transform: scale(1.08);
+    }
+
+    .card.paired-left {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right-width: 1px;
+    }
+
+    .card.paired-right {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left-width: 1px;
+    }
+
+    .card.correct {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #14532d !important;
+    }
+
+    /* SPLIT LINK CONNECTOR BUTTON */
+    .unpair-btn {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #ef4444;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 60;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .unpair-btn:hover {
+      background: #dc2626;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    /* CHECK BUTTON */
+    #check-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: 3px solid #60a5fa;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4), 0 0 15px rgba(37, 99, 235, 0.5);
+      cursor: pointer;
+      z-index: 80;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #check-btn:hover {
+      transform: scale(1.08);
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 20px rgba(37, 99, 235, 0.8);
+    }
+
+    #check-btn:active {
+      transform: scale(0.95);
+    }
+
+    #check-btn svg {
+      width: 34px;
+      height: 34px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <header>
+      <h1>Combine as letras</h1>
+    </header>
+
+    <div id="banner-congratulations">
+      <div class="banner-text">
+        <span>🎉 Parabéns! Você combinou todas as letras maiúsculas e minúsculas corretamente!</span>
+      </div>
+      <button class="close-btn" id="btn-close-banner" title="Continuar">X</button>
+    </div>
+
+    <main id="play-area">
+      <div class="divider-line"></div>
+    </main>
+
+    <button id="check-btn" title="Verificar combinações">
+      <svg viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const playArea = document.getElementById('play-area');
+    const checkBtn = document.getElementById('check-btn');
+    const banner = document.getElementById('banner-congratulations');
+    const closeBannerBtn = document.getElementById('btn-close-banner');
+
+    let cards = [];
+    let pairs = []; // { id, leftCard, rightCard, btnEl }
+    let pairIdCounter = 1;
+    let highestZIndex = 10;
+
+    // Pointer Dragging State
+    let isDragging = false;
+    let draggedEntity = null; // { type: 'card'|'pair', target: CardElement|PairObj, offsetX, offsetY, startPos }
+
+    // Helper for shuffling arrays
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initGame() {
+      playArea.querySelectorAll('.card, .unpair-btn').forEach(el => el.remove());
+      cards = [];
+      pairs = [];
+
+      const rect = playArea.getBoundingClientRect();
+      const areaWidth = rect.width;
+      const areaHeight = rect.height;
+
+      // Card Dimensions Estimate
+      const sampleCard = document.createElement('div');
+      sampleCard.className = 'card';
+      sampleCard.style.visibility = 'hidden';
+      playArea.appendChild(sampleCard);
+      const cardWidth = sampleCard.offsetWidth || 48;
+      const cardHeight = sampleCard.offsetHeight || 60;
+      playArea.removeChild(sampleCard);
+
+      const upperLetters = shuffle(ALPHABET);
+      const lowerLetters = shuffle(ALPHABET);
+
+      // Top Zone Grid Calculation (Uppercase)
+      const topZone = {
+        top: 10,
+        height: (areaHeight / 2) - 20,
+        left: 10,
+        width: areaWidth - 20
+      };
+
+      // Bottom Zone Grid Calculation (Lowercase)
+      const bottomZone = {
+        top: (areaHeight / 2) + 10,
+        height: (areaHeight / 2) - 20,
+        left: 10,
+        width: areaWidth - 20
+      };
+
+      function calculateGridPositions(zone, count) {
+        const cols = 7;
+        const rows = Math.ceil(count / cols);
+        const colWidth = zone.width / cols;
+        const rowHeight = zone.height / rows;
+        const positions = [];
+
+        for (let i = 0; i < count; i++) {
+          const r = Math.floor(i / cols);
+          const c = i % cols;
+          // Add random jittering within the cell
+          const maxJitterX = Math.max(0, colWidth - cardWidth - 4);
+          const maxJitterY = Math.max(0, rowHeight - cardHeight - 4);
+
+          const jitterX = Math.random() * maxJitterX;
+          const jitterY = Math.random() * maxJitterY;
+
+          const x = zone.left + (c * colWidth) + jitterX;
+          const y = zone.top + (r * rowHeight) + jitterY;
+
+          positions.push({ x, y });
+        }
+        return shuffle(positions);
+      }
+
+      const topPositions = calculateGridPositions(topZone, 26);
+      const bottomPositions = calculateGridPositions(bottomZone, 26);
+
+      // Create Uppercase Cards
+      upperLetters.forEach((char, idx) => {
+        const pos = topPositions[idx];
+        const card = createCardElement(char, 'upper', pos.x, pos.y);
+        cards.push(card);
+      });
+
+      // Create Lowercase Cards
+      lowerLetters.forEach((char, idx) => {
+        const pos = bottomPositions[idx];
+        const card = createCardElement(char.toLowerCase(), 'lower', pos.x, pos.y);
+        cards.push(card);
+      });
+    }
+
+    function createCardElement(char, type, x, y) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.textContent = char;
+      card.dataset.char = char;
+      card.dataset.type = type; // 'upper' or 'lower'
+      card.style.left = `${x}px`;
+      card.style.top = `${y}px`;
+      card.style.zIndex = highestZIndex++;
+
+      card.addEventListener('pointerdown', onPointerDown);
+      playArea.appendChild(card);
+      return card;
+    }
+
+    function onPointerDown(e) {
+      if (e.target.classList.contains('unpair-btn')) return;
+
+      e.preventDefault();
+      const card = e.currentTarget;
+      card.setPointerCapture(e.pointerId);
+
+      // Bring card or pair to front
+      highestZIndex += 2;
+      
+      const pair = getPairByCard(card);
+
+      if (pair) {
+        pair.leftCard.style.zIndex = highestZIndex;
+        pair.rightCard.style.zIndex = highestZIndex;
+        if (pair.btnEl) pair.btnEl.style.zIndex = highestZIndex + 1;
+
+        draggedEntity = {
+          type: 'pair',
+          pair: pair,
+          pointerId: e.pointerId,
+          startPointerX: e.clientX,
+          startPointerY: e.clientY,
+          startLeftX: parseFloat(pair.leftCard.style.left),
+          startLeftY: parseFloat(pair.leftCard.style.top),
+          startRightX: parseFloat(pair.rightCard.style.left),
+          startRightY: parseFloat(pair.rightCard.style.top)
+        };
+        pair.leftCard.classList.add('dragging');
+        pair.rightCard.classList.add('dragging');
+      } else {
+        card.style.zIndex = highestZIndex;
+        draggedEntity = {
+          type: 'card',
+          card: card,
+          pointerId: e.pointerId,
+          startPointerX: e.clientX,
+          startPointerY: e.clientY,
+          startX: parseFloat(card.style.left),
+          startY: parseFloat(card.style.top)
+        };
+        card.classList.add('dragging');
+      }
+
+      isDragging = true;
+
+      card.addEventListener('pointermove', onPointerMove);
+      card.addEventListener('pointerup', onPointerUp);
+      card.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging || !draggedEntity) return;
+
+      const deltaX = e.clientX - draggedEntity.startPointerX;
+      const deltaY = e.clientY - draggedEntity.startPointerY;
+
+      const areaRect = playArea.getBoundingClientRect();
+
+      if (draggedEntity.type === 'card') {
+        const card = draggedEntity.card;
+        let newX = draggedEntity.startX + deltaX;
+        let newY = draggedEntity.startY + deltaY;
+
+        // Keep inside bounds
+        newX = Math.max(0, Math.min(areaRect.width - card.offsetWidth, newX));
+        newY = Math.max(0, Math.min(areaRect.height - card.offsetHeight, newY));
+
+        card.style.left = `${newX}px`;
+        card.style.top = `${newY}px`;
+      } else if (draggedEntity.type === 'pair') {
+        const pair = draggedEntity.pair;
+        const leftCard = pair.leftCard;
+        const rightCard = pair.rightCard;
+
+        let newLeftX = draggedEntity.startLeftX + deltaX;
+        let newLeftY = draggedEntity.startLeftY + deltaY;
+        let newRightX = draggedEntity.startRightX + deltaX;
+        let newRightY = draggedEntity.startRightY + deltaY;
+
+        const pairWidth = leftCard.offsetWidth + rightCard.offsetWidth;
+
+        // Bound checking for pair
+        if (newLeftX < 0) {
+          newLeftX = 0;
+          newRightX = leftCard.offsetWidth;
+        } else if (newRightX + rightCard.offsetWidth > areaRect.width) {
+          newRightX = areaRect.width - rightCard.offsetWidth;
+          newLeftX = newRightX - leftCard.offsetWidth;
+        }
+
+        if (newLeftY < 0) {
+          newLeftY = 0;
+          newRightY = 0;
+        } else if (newLeftY + leftCard.offsetHeight > areaRect.height) {
+          newLeftY = areaRect.height - leftCard.offsetHeight;
+          newRightY = areaRect.height - rightCard.offsetHeight;
+        }
+
+        leftCard.style.left = `${newLeftX}px`;
+        leftCard.style.top = `${newLeftY}px`;
+        rightCard.style.left = `${newRightX}px`;
+        rightCard.style.top = `${newRightY}px`;
+
+        updatePairButtonPosition(pair);
+      }
+    }
+
+    function onPointerUp(e) {
+      if (!isDragging || !draggedEntity) return;
+
+      const card = e.currentTarget;
+      card.releasePointerCapture(e.pointerId);
+
+      card.removeEventListener('pointermove', onPointerMove);
+      card.removeEventListener('pointerup', onPointerUp);
+      card.removeEventListener('pointercancel', onPointerUp);
+
+      if (draggedEntity.type === 'card') {
+        draggedEntity.card.classList.remove('dragging');
+        checkSnapProximity(draggedEntity.card);
+      } else if (draggedEntity.type === 'pair') {
+        draggedEntity.pair.leftCard.classList.remove('dragging');
+        draggedEntity.pair.rightCard.classList.remove('dragging');
+      }
+
+      isDragging = false;
+      draggedEntity = null;
+    }
+
+    // SNAP LOGIC (GRUDE)
+    function checkSnapProximity(movedCard) {
+      if (getPairByCard(movedCard)) return; // Already paired
+
+      const movedRect = movedCard.getBoundingClientRect();
+      const movedType = movedCard.dataset.type;
+
+      // Find closest eligible opposite-type card that is free
+      let closestCard = null;
+      let minDistance = Infinity;
+      const SNAP_THRESHOLD = 45; // Pixel distance threshold for snapping
+
+      cards.forEach(otherCard => {
+        if (otherCard === movedCard) return;
+        if (otherCard.dataset.type === movedType) return; // Same type doesn't snap
+        if (getPairByCard(otherCard)) return; // Already paired
+
+        const otherRect = otherCard.getBoundingClientRect();
+
+        // Calculate distance between centers or edges
+        const dx = (movedRect.left + movedRect.width / 2) - (otherRect.left + otherRect.width / 2);
+        const dy = (movedRect.top + movedRect.height / 2) - (otherRect.top + otherRect.height / 2);
+        const distance = Math.hypot(dx, dy);
+
+        if (distance < SNAP_THRESHOLD + movedRect.width) {
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestCard = otherCard;
+          }
+        }
+      });
+
+      if (closestCard) {
+        // Snap them side-by-side! Uppercase on left, Lowercase on right
+        let upperCard, lowerCard;
+        if (movedType === 'upper') {
+          upperCard = movedCard;
+          lowerCard = closestCard;
+        } else {
+          upperCard = closestCard;
+          lowerCard = movedCard;
+        }
+
+        pairCards(upperCard, lowerCard);
+      }
+    }
+
+    function pairCards(upperCard, lowerCard) {
+      // Align side by side
+      const leftX = parseFloat(upperCard.style.left);
+      const topY = parseFloat(upperCard.style.top);
+
+      upperCard.classList.add('paired-left');
+      lowerCard.classList.add('paired-right');
+
+      // Place lowercase right next to uppercase
+      lowerCard.style.left = `${leftX + upperCard.offsetWidth}px`;
+      lowerCard.style.top = `${topY}px`;
+
+      // Create separation button between cards
+      const btn = document.createElement('button');
+      btn.className = 'unpair-btn';
+      btn.innerHTML = '✕';
+      btn.title = 'Separar cartas';
+
+      const pairObj = {
+        id: pairIdCounter++,
+        leftCard: upperCard,
+        rightCard: lowerCard,
+        btnEl: btn
+      };
+
+      btn.addEventListener('click', () => unpairCards(pairObj));
+      playArea.appendChild(btn);
+
+      pairs.push(pairObj);
+      updatePairButtonPosition(pairObj);
+    }
+
+    function updatePairButtonPosition(pair) {
+      if (!pair.btnEl) return;
+      const leftX = parseFloat(pair.leftCard.style.left);
+      const topY = parseFloat(pair.leftCard.style.top);
+      const cardW = pair.leftCard.offsetWidth;
+      const cardH = pair.leftCard.offsetHeight;
+
+      pair.btnEl.style.left = `${leftX + cardW}px`;
+      pair.btnEl.style.top = `${topY + (cardH / 2)}px`;
+    }
+
+    function unpairCards(pair) {
+      pair.leftCard.classList.remove('paired-left', 'correct');
+      pair.rightCard.classList.remove('paired-right', 'correct');
+
+      if (pair.btnEl) {
+        pair.btnEl.remove();
+      }
+
+      // Slightly offset one of them to avoid immediate re-snap
+      const currentX = parseFloat(pair.rightCard.style.left);
+      pair.rightCard.style.left = `${currentX + 15}px`;
+
+      pairs = pairs.filter(p => p.id !== pair.id);
+    }
+
+    function getPairByCard(card) {
+      return pairs.find(p => p.leftCard === card || p.rightCard === card);
+    }
+
+    // CHECK BUTTON ACTION
+    checkBtn.addEventListener('click', () => {
+      let correctPairsCount = 0;
+
+      // Copy array since unpairing mutates pairs array
+      const currentPairs = [...pairs];
+
+      currentPairs.forEach(pair => {
+        const upperChar = pair.leftCard.dataset.char;
+        const lowerChar = pair.rightCard.dataset.char;
+
+        if (upperChar.toLowerCase() === lowerChar.toLowerCase()) {
+          // Correct Match! Paint background light green
+          pair.leftCard.classList.add('correct');
+          pair.rightCard.classList.add('correct');
+          correctPairsCount++;
+        } else {
+          // Incorrect Match! Separate automatically
+          unpairCards(pair);
+        }
+      });
+
+      // Check if all 26 pairs are matched correctly
+      if (correctPairsCount === 26) {
+        banner.style.display = 'flex';
+      }
+    });
+
+    // BANNER CLOSE BUTTON (REDIRECT)
+    closeBannerBtn.addEventListener('click', () => {
+      window.location.href = 'https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01';
+    });
+
+    // Window Resize Handler
+    window.addEventListener('resize', () => {
+      // Keep cards inside viewport on resize
+      const areaRect = playArea.getBoundingClientRect();
+      cards.forEach(card => {
+        let x = parseFloat(card.style.left);
+        let y = parseFloat(card.style.top);
+        if (x + card.offsetWidth > areaRect.width) {
+          card.style.left = `${Math.max(0, areaRect.width - card.offsetWidth)}px`;
+        }
+        if (y + card.offsetHeight > areaRect.height) {
+          card.style.top = `${Math.max(0, areaRect.height - card.offsetHeight)}px`;
+        }
+      });
+      pairs.forEach(updatePairButtonPosition);
+    });
+
+    // Initialize Game on Load
+    window.onload = initGame;
+  </script>
+</body>
+</html>
