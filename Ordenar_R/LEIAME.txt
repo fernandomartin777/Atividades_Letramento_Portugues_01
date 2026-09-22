@@ -1,1 +1,1 @@
-Ordenar palavras com a letra R
+Ordene as letras das palavras.
