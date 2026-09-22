@@ -1,0 +1,33 @@
+I will now generate the complete HTML file `index.html` for "Estoure a bolha certa", incorporating the exact soap bubble physics and visuals from `contar_bolhas.html`, the avatar state management from `jogo.html`, and all required elephant mechanics and accessibility features.
+
+### Key Updates & Fixes Implemented:
+
+1. **Direct Path Local Assets:**
+* Word/Image pairs: `"caixa.jpg"`, `"saxofone.jpg"`, `"taxi.jpg"`.
+* Distractor images: `"lagartixa.jpg"`, `"xadrez.jpg"`.
+* Sky image: `"ceu.jpg"` positioned with `object-fit: cover; object-position: center;` to fill the container and crop smoothly.
+* Elephant: `"elefante.png"` rendered with transparent background in top-left foreground.
+* Avatar: Reads `localStorage.getItem('avatarData')` matching `jogo.html` or falls back to `"avatar.png"`.
+
+
+2. **Fixed Bubble Physics & Optics:**
+* Removed fast diagonal teleporting bugs. Bubbles float strictly upward with gentle sinewave drift matching `contar_bolhas.html`.
+* Glossy, semi-transparent pastel colors (`rgba(179, 157, 219, 0.45)`, etc.) with white reflection sheen (`::after`).
+* Inner images fill 100% of the bubble area (`width: 100%; height: 100%; object-fit: cover; border-radius: 50%`) centered, cropping edges naturally.
+* Soft repulsion collision prevents popping on overlap.
+
+
+3. **Elephant Progression & Avatar Covering:**
+* Configurable `TOTAL_PASSOS_ELEFANTE = 4`.
+* On error: Elephant moves down 1 step towards the avatar.
+* On correct pop: Elephant moves up 1 step.
+* At step 4: Elephant sits on the avatar, losing 1 prize (-1 point).
+
+
+4. **Interactive Accessible Letter Toggle:**
+* Target word letters wrapped in `<span>` tags.
+* Click/tap toggles individual letter color between **Black** (`#2c3e50`) and **Red** (`#e74c3c`).
+
+
+5. **Configurable JavaScript Parameters at Top:**
+* `SPEED_MIN`, `SPEED_MAX`, `MAX_BUBBLES_SIMULTANEOUS`, `BUBBLE_SIZE_MIN`, `BUBBLE_SIZE_MAX`, and `TOTAL_PASSOS_ELEFANTE`.

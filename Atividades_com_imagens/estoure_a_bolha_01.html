@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Estoure a bolha certa</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+      color: #2c3e50;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      overflow-x: hidden;
+    }
+
+    /* Container ampliado verticalmente */
+    .container-jogo {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: clamp(420px, 70vh, 680px);
+      border-radius: 20px;
+      border: 4px solid #ffffff;
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.25);
+      overflow: hidden;
+      background-color: #7dd3fc;
+    }
+
+    .img-ceu-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .camada-bolhas {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .bolha {
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      touch-action: manipulation;
+      will-change: transform;
+      box-shadow: inset -4px -4px 10px rgba(255, 255, 255, 0.5),
+                  inset 2px 2px 6px rgba(255, 255, 255, 0.6),
+                  0 4px 10px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(0.5px);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Reflexo com transparência ajustada para melhor visualização da figura interna */
+    .bolha::after {
+      content: '';
+      position: absolute;
+      top: 10%;
+      left: 12%;
+      width: 26%;
+      height: 26%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .bolha-figura {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .estouro-bolha {
+      animation: animEstouro 0.22s ease-out forwards !important;
+      pointer-events: none !important;
+    }
+
+    @keyframes animEstouro {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.6; filter: brightness(1.4); }
+      100% { transform: scale(1.7); opacity: 0; }
+    }
+
+    .explosao-fogo {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      margin-left: -40px;
+      margin-top: -40px;
+      pointer-events: none;
+      z-index: 40;
+      background: radial-gradient(circle, #ff1a1a 0%, #ff7700 45%, #ffdd00 70%, rgba(255,255,255,0) 100%);
+      border-radius: 50%;
+      animation: animFogo 0.45s ease-out forwards;
+      box-shadow: 0 0 25px #ff5500, 0 0 45px #ff0000;
+    }
+
+    @keyframes animFogo {
+      0% { transform: scale(0.2); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.95; }
+      100% { transform: scale(1.9); opacity: 0; }
+    }
+
+    .figura-caindo {
+      position: absolute;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      object-fit: cover;
+      pointer-events: none;
+      z-index: 35;
+      border: 3px solid #f1c40f;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      animation: animQueda 0.9s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+    }
+
+    @keyframes animQueda {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(350px) rotate(180deg); opacity: 0; }
+    }
+
+    /* Avatar ajustado mais próximo do rodapé do container */
+    #avatar-box {
+      position: absolute;
+      bottom: 25px;
+      left: 50px;
+      z-index: 20;
+      width: clamp(75px, 16vw, 110px);
+      height: clamp(75px, 16vw, 110px);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 3px solid #d4ac0d;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    #avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Elefante mais largo para cobrir o avatar inteiramente */
+    #elefante-box {
+      position: absolute;
+      left: 0px;
+      z-index: 25;
+      width: clamp(150px, 32vw, 220px);
+      pointer-events: none;
+      transition: top 0.4s cubic-bezier(0.34, 1.3, 0.64, 1);
+    }
+
+    #elefante-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+
+    .letra-interativa {
+      cursor: pointer;
+      display: inline-block;
+      transition: color 0.15s ease, transform 0.1s ease;
+      color: #2c3e50;
+      padding: 0 3px;
+    }
+
+    .letra-interativa:hover {
+      transform: scale(1.18);
+    }
+
+    .letra-vermelha {
+      color: #e74c3c !important;
+    }
+
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 40px;
+      background-color: rgba(255, 255, 255, 0.85);
+      border: 2px dashed #f1c40f;
+      border-radius: 12px;
+      padding: 4px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      80% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="w-full max-w-4xl mx-auto">
+
+  <!-- HEADER & PROGRESS BAR COMPACTADOS -->
+  <header class="w-full bg-white/90 backdrop-blur-md rounded-xl p-2 border-2 border-sky-300 shadow-sm mb-1">
+    <div class="flex items-center justify-between text-sky-900 font-bold text-xs sm:text-sm">
+      <div class="bg-sky-100 border border-sky-300 px-2.5 py-0.5 rounded-full">
+        QUESTÃO: <span id="questao-atual">1</span> / <span id="questao-total">3</span>
+      </div>
+
+      <div class="flex-1 max-w-xs mx-2 bg-sky-200 h-3.5 rounded-full overflow-hidden border border-sky-300">
+        <div id="barra-progresso" class="bg-sky-600 h-full w-0 transition-all duration-300"></div>
+      </div>
+
+      <div class="bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full text-amber-900">
+        🏆 PONTOS: <span id="pontos-atuais">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TITLE COMPACTADO -->
+  <h1 class="text-xl sm:text-2xl font-extrabold text-sky-900 text-center drop-shadow-sm mb-1">
+    Estoure a bolha certa.
+  </h1>
+
+  <!-- MAIN GAMEPLAY CONTAINER EXPANDIDO -->
+  <main id="container-jogo" class="container-jogo">
+    
+    <img src="ceu.jpg" alt="Céu" class="img-ceu-bg">
+
+    <div id="camada-bolhas" class="camada-bolhas"></div>
+
+    <div id="avatar-box">
+      <img id="img-avatar" src="avatar.png" alt="Avatar">
+    </div>
+
+    <div id="elefante-box" style="top: 0px;">
+      <img id="img-elefante" src="elefante.png" alt="Elefante">
+    </div>
+
+  </main>
+
+  <footer class="w-full flex flex-col items-center gap-1.5 mt-1.5">
+    
+    <div class="w-full bg-white/95 border-2 border-sky-400 rounded-xl p-2 text-center shadow-sm">
+      <div id="palavra-exibida" class="text-2xl sm:text-4xl font-bold tracking-wider flex justify-center items-center flex-wrap gap-1">
+      </div>
+    </div>
+
+    <div id="trilha-premios" class="trilha-premios-container">
+    </div>
+
+    <div id="painel-terminar" class="hidden mt-1">
+      <button onclick="finalizarAtividade()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-lg px-8 py-2 rounded-full shadow-md border-2 border-white transition-transform">
+        TERMINAR
+      </button>
+    </div>
+
+  </footer>
+
+  <script>
+    const CONFIG = {
+      SPEED_MIN: 0.5,
+      SPEED_MAX: 1.5,
+      MAX_BUBBLES_SIMULTANEOUS: 7,
+      BUBBLE_SIZE_MIN: 75,
+      BUBBLE_SIZE_MAX: 105,
+      TOTAL_PASSOS_ELEFANTE: 4,
+      SPAWN_INTERVAL_MS: 1200
+    };
+
+    const listaPalavras = [
+      { palavra: "DEDO", imagem: "dedo.png" },
+      { palavra: "TOMATE", imagem: "tomate.png" },
+      { palavra: "TATU", imagem: "tatu.jpg" },
+      { palavra: "DOCE", imagem: "doce.png" },
+      { palavra: "PEPINO", imagem: "pepino.png" },
+      { palavra: "BEIJO", imagem: "beijo.png" },
+      { palavra: "CAFÉ", imagem: "cafe.png" },
+      { palavra: "FACA", imagem: "faca.jpg" },
+      { palavra: "VACA", imagem: "vaca.jpg" },
+      { palavra: "CAVALO", imagem: "cavalo.png" }
+    ];
+
+    const figurasExtras = [
+      { palavra: "", imagem: "dinheiro.png" },
+      { palavra: "", imagem: "trem.png" },
+      { palavra: "", imagem: "caixa.jpg" },
+      { palavra: "", imagem: "garrafa.png" },
+      { palavra: "", imagem: "televisao.png" },
+      { palavra: "", imagem: "foca.png" },
+      { palavra: "", imagem: "vela.png" },
+      { palavra: "", imagem: "xadrez.jpg" }
+    ];
+
+    const CORES_BOLHAS = [
+      'rgba(179, 157, 219, 0.45)',
+      'rgba(149, 117, 205, 0.4)',
+      'rgba(129, 212, 250, 0.4)',
+      'rgba(244, 143, 177, 0.4)',
+      'rgba(165, 214, 167, 0.4)'
+    ];
+
+    const BORDAS_BOLHAS = [
+      'rgba(149, 117, 205, 0.8)',
+      'rgba(103, 58, 183, 0.7)',
+      'rgba(41, 182, 246, 0.7)',
+      'rgba(240, 98, 146, 0.7)',
+      'rgba(102, 187, 106, 0.7)'
+    ];
+
+    let indiceQuestao = 0;
+    let pontuacao = 0;
+    let passoElefante = 0; 
+    let bolhasAtivas = [];
+    let poolFiguras = [];
+    let ultimoSpawn = 0;
+
+    const containerJogo = document.getElementById('container-jogo');
+    const camadaBolhas = document.getElementById('camada-bolhas');
+    const palavraExibida = document.getElementById('palavra-exibida');
+    const pontosAtuais = document.getElementById('pontos-atuais');
+    const questaoAtual = document.getElementById('questao-atual');
+    const questaoTotal = document.getElementById('questao-total');
+    const barraProgresso = document.getElementById('barra-progresso');
+    const trilhaPremios = document.getElementById('trilha-premios');
+    const elefanteBox = document.getElementById('elefante-box');
+    const avatarBox = document.getElementById('avatar-box');
+    const imgAvatar = document.getElementById('img-avatar');
+    const painelTerminar = document.getElementById('painel-terminar');
+
+    function inicializarJogo() {
+      const avatarSalvo = localStorage.getItem('avatarData');
+      if (avatarSalvo) {
+        imgAvatar.src = avatarSalvo;
+      } else {
+        imgAvatar.src = "avatar.png";
+      }
+
+      questaoTotal.innerText = listaPalavras.length;
+      pontuacao = 0;
+      passoElefante = 0;
+      indiceQuestao = 0;
+
+      atualizarPontosETrilha();
+      atualizarPosicaoElefante();
+      carregarQuestao();
+      reabastecerPool();
+
+      ultimoSpawn = performance.now();
+      requestAnimationFrame(loopJogo);
+    }
+
+    function reabastecerPool() {
+      const combinadas = [...listaPalavras, ...figurasExtras];
+      for (let i = combinadas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [combinadas[i], combinadas[j]] = [combinadas[j], combinadas[i]];
+      }
+      poolFiguras = combinadas;
+    }
+
+    function obterProximaFigura() {
+      if (poolFiguras.length === 0) {
+        reabastecerPool();
+      }
+      return poolFiguras.pop();
+    }
+
+    function carregarQuestao() {
+      if (indiceQuestao >= listaPalavras.length) {
+        palavraExibida.innerHTML = `<span class="text-emerald-600 font-bold">PARABÉNS!</span>`;
+        painelTerminar.classList.remove('hidden');
+        return;
+      }
+
+      const qAtual = listaPalavras[indiceQuestao];
+      questaoAtual.innerText = indiceQuestao + 1;
+      barraProgresso.style.width = `${((indiceQuestao + 1) / listaPalavras.length) * 100}%`;
+
+      palavraExibida.innerHTML = '';
+      const textoPalavra = qAtual.palavra;
+
+      for (let i = 0; i < textoPalavra.length; i++) {
+        const spanLetra = document.createElement('span');
+        spanLetra.textContent = textoPalavra[i];
+        spanLetra.className = 'letra-interativa';
+        
+        spanLetra.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (this.classList.contains('letra-vermelha')) {
+            this.classList.remove('letra-vermelha');
+          } else {
+            this.classList.add('letra-vermelha');
+          }
+        });
+
+        palavraExibida.appendChild(spanLetra);
+      }
+    }
+
+    function criarBolha() {
+      if (bolhasAtivas.length >= CONFIG.MAX_BUBBLES_SIMULTANEOUS) return;
+      if (indiceQuestao >= listaPalavras.length) return;
+
+      const larguraCampo = containerJogo.clientWidth;
+      const alturaCampo = containerJogo.clientHeight;
+
+      const tamanho = Math.floor(Math.random() * (CONFIG.BUBBLE_SIZE_MAX - CONFIG.BUBBLE_SIZE_MIN + 1)) + CONFIG.BUBBLE_SIZE_MIN;
+      
+      const posX = Math.max(10, Math.random() * (larguraCampo - tamanho - 20));
+      const posY = alturaCampo + 10;
+
+      const figuraObj = obterProximaFigura();
+
+      const idxCor = Math.floor(Math.random() * CORES_BOLHAS.length);
+      const corFundo = CORES_BOLHAS[idxCor];
+      const corBorda = BORDAS_BOLHAS[idxCor];
+
+      const elBolha = document.createElement('div');
+      elBolha.className = 'bolha';
+      elBolha.style.width = `${tamanho}px`;
+      elBolha.style.height = `${tamanho}px`;
+      elBolha.style.backgroundColor = corFundo;
+      elBolha.style.border = `2px solid ${corBorda}`;
+
+      const elImg = document.createElement('img');
+      elImg.className = 'bolha-figura';
+      elImg.src = figuraObj.imagem;
+      elImg.alt = figuraObj.palavra || "Figura";
+
+      elBolha.appendChild(elImg);
+
+      const objetoBolha = {
+        element: elBolha,
+        figure: figuraObj,
+        x: posX,
+        y: posY,
+        radius: tamanho / 2,
+        speedY: (Math.random() * (CONFIG.SPEED_MAX - CONFIG.SPEED_MIN) + CONFIG.SPEED_MIN),
+        amplitude: Math.random() * 1.2 + 0.4,
+        frequency: Math.random() * 0.025 + 0.01,
+        phase: Math.random() * Math.PI * 2
+      };
+
+      const aoClicar = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        processarCliqueBolha(objetoBolha);
+      };
+
+      elBolha.addEventListener('mousedown', aoClicar);
+      elBolha.addEventListener('touchstart', aoClicar, { passive: false });
+
+      camadaBolhas.appendChild(elBolha);
+      bolhasAtivas.push(objetoBolha);
+    }
+
+    function processarCliqueBolha(bolha) {
+      if (indiceQuestao >= listaPalavras.length) return;
+
+      const qAlvo = listaPalavras[indiceQuestao];
+      const acertou = (bolha.figure.palavra === qAlvo.palavra) && (bolha.figure.imagem === qAlvo.imagem);
+
+      const rect = bolha.element.getBoundingClientRect();
+      const containerRect = containerJogo.getBoundingClientRect();
+      const clickX = rect.left - containerRect.left + rect.width / 2;
+      const clickY = rect.top - containerRect.top + rect.height / 2;
+
+      if (acertou) {
+        estourarBolhaAnimacao(bolha);
+        criarFiguraCaindo(bolha.figure.imagem, clickX, clickY);
+        pontuacao++;
+
+        if (passoElefante > 0) {
+          passoElefante--;
+        }
+
+        atualizarPontosETrilha();
+        atualizarPosicaoElefante();
+
+        indiceQuestao++;
+        setTimeout(() => {
+          carregarQuestao();
+        }, 350);
+
+      } else {
+        criarExplosaoFogo(clickX, clickY);
+        estourarBolhaAnimacao(bolha);
+
+        if (passoElefante < CONFIG.TOTAL_PASSOS_ELEFANTE) {
+          passoElefante++;
+
+          if (passoElefante === CONFIG.TOTAL_PASSOS_ELEFANTE) {
+            if (pontuacao > 0) {
+              pontuacao--;
+            }
+          }
+        }
+
+        atualizarPontosETrilha();
+        atualizarPosicaoElefante();
+      }
+    }
+
+    function estourarBolhaAnimacao(bolha) {
+      const index = bolhasAtivas.indexOf(bolha);
+      if (index !== -1) {
+        bolhasAtivas.splice(index, 1);
+      }
+
+      bolha.element.classList.add('estouro-bolha');
+      setTimeout(() => {
+        if (bolha.element.parentNode) {
+          bolha.element.parentNode.removeChild(bolha.element);
+        }
+      }, 220);
+    }
+
+    function criarFiguraCaindo(imgSrc, x, y) {
+      const img = document.createElement('img');
+      img.src = imgSrc;
+      img.className = 'figura-caindo';
+      img.style.left = `${x - 32}px`;
+      img.style.top = `${y - 32}px`;
+
+      containerJogo.appendChild(img);
+      setTimeout(() => {
+        if (img.parentNode) {
+          img.parentNode.removeChild(img);
+        }
+      }, 900);
+    }
+
+    function criarExplosaoFogo(x, y) {
+      const fogo = document.createElement('div');
+      fogo.className = 'explosao-fogo';
+      fogo.style.left = `${x}px`;
+      fogo.style.top = `${y}px`;
+
+      containerJogo.appendChild(fogo);
+      setTimeout(() => {
+        if (fogo.parentNode) {
+          fogo.parentNode.removeChild(fogo);
+        }
+      }, 450);
+    }
+
+    function atualizarFisica() {
+      const larguraCampo = containerJogo.clientWidth;
+      const alturaCampo = containerJogo.clientHeight;
+
+      for (let i = 0; i < bolhasAtivas.length; i++) {
+        for (let j = i + 1; j < bolhasAtivas.length; j++) {
+          const b1 = bolhasAtivas[i];
+          const b2 = bolhasAtivas[j];
+
+          const dx = (b2.x + b2.radius) - (b1.x + b1.radius);
+          const dy = (b2.y + b2.radius) - (b1.y + b1.radius);
+          const dist = Math.hypot(dx, dy);
+          const minDist = b1.radius + b2.radius;
+
+          if (dist < minDist && dist > 0) {
+            const overlap = (minDist - dist) * 0.025;
+            const nx = dx / dist;
+            b1.x -= nx * overlap;
+            b2.x += nx * overlap;
+          }
+        }
+      }
+
+      for (let i = bolhasAtivas.length - 1; i >= 0; i--) {
+        const b = bolhasAtivas[i];
+
+        b.y -= b.speedY;
+        b.x += Math.sin(b.y * b.frequency + b.phase) * b.amplitude;
+
+        b.element.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
+
+        if (b.y < -b.radius * 2 || b.x < -b.radius * 2 || b.x > larguraCampo + b.radius * 2) {
+          if (b.element.parentNode) {
+            b.element.parentNode.removeChild(b.element);
+          }
+          bolhasAtivas.splice(i, 1);
+        }
+      }
+    }
+
+    function loopJogo(timestamp) {
+      if (timestamp - ultimoSpawn > CONFIG.SPAWN_INTERVAL_MS) {
+        criarBolha();
+        ultimoSpawn = timestamp;
+      }
+
+      atualizarFisica();
+      requestAnimationFrame(loopJogo);
+    }
+
+    /*
+     * CÁLCULO DA POSIÇÃO DO ELEFANTE GARANTINDO QUE:
+     * 1. Nos passos 0..3 o elefante desce gradualmente E PERMANECE ESTRITAMENTE ACIMA DO AVATAR (sem cobri-lo).
+     * 2. No passo 4 (último) o elefante assenta sobre o avatar e o cobre.
+     * 3. O elefante JAMAIS ultrapassa a borda inferior do container (nunca sai da tela).
+     */
+    function atualizarPosicaoElefante() {
+      const avatarRect = avatarBox.getBoundingClientRect();
+      const containerRect = containerJogo.getBoundingClientRect();
+      const elefanteRect = elefanteBox.getBoundingClientRect();
+
+      const containerHeight = containerJogo.clientHeight;
+      const elephantHeight = elefanteRect.height || 140;
+
+      // Posição Y do topo do avatar relativa ao container
+      const avatarTopRelativo = avatarRect.top - containerRect.top;
+
+      // Passo 0: topo do container (0px)
+      const topInicio = 0;
+
+      // Nos passos intermediários (1, 2, 3), o elefante vai até FICAR LOGO ACIMA do avatar (sem cobrir)
+      const topMaxSemCobrir = Math.max(0, avatarTopRelativo - elephantHeight + 10);
+
+      // No passo 4 (final), o elefante desce para cobrir o avatar
+      const topSobreposto = avatarTopRelativo - (elephantHeight * 0.35);
+
+      // Limite absoluto para nunca sair da margem inferior do container
+      const maxPermitidoNoContainer = containerHeight - elephantHeight - 4;
+
+      let topCalculado = 0;
+
+      if (passoElefante < CONFIG.TOTAL_PASSOS_ELEFANTE) {
+        // Passos 0 a 3: interpolação do topo (0) até o topo sem cobrir
+        const fracao = passoElefante / (CONFIG.TOTAL_PASSOS_ELEFANTE - 1);
+        topCalculado = topInicio + (topMaxSemCobrir - topInicio) * fracao;
+      } else {
+        // Passo 4: sobreposição no avatar
+        topCalculado = topSobreposto;
+      }
+
+      // Trava de segurança para NUNCA sair do container
+      const topFinal = Math.min(topCalculado, maxPermitidoNoContainer);
+
+      elefanteBox.style.top = `${Math.max(0, topFinal)}px`;
+    }
+
+    function atualizarPontosETrilha() {
+      pontosAtuais.innerText = pontuacao;
+
+      trilhaPremios.innerHTML = '';
+      for (let i = 0; i < pontuacao; i++) {
+        const imgPremio = document.createElement('img');
+        imgPremio.src = 'prize.png';
+        imgPremio.alt = 'Prêmio';
+        imgPremio.className = 'img-premio';
+        trilhaPremios.appendChild(imgPremio);
+      }
+    }
+
+    function finalizarAtividade() {
+      window.location.href = 'end.html';
+    }
+
+    window.addEventListener('resize', atualizarPosicaoElefante);
+
+    window.onload = function() {
+      inicializarJogo();
+      setTimeout(atualizarPosicaoElefante, 100);
+    };
+  </script>
+</body>
+</html>
