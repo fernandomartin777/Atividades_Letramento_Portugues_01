@@ -295,13 +295,13 @@
 
   <script>
     const CONFIG = {
-      SPEED_MIN: 0.5,
-      SPEED_MAX: 1.5,
-      MAX_BUBBLES_SIMULTANEOUS: 7,
-      BUBBLE_SIZE_MIN: 75,
-      BUBBLE_SIZE_MAX: 105,
-      TOTAL_PASSOS_ELEFANTE: 4,
-      SPAWN_INTERVAL_MS: 1200
+      SPEED_MIN: 1.0,
+      SPEED_MAX: 1.0,
+      MAX_BUBBLES_SIMULTANEOUS: 10,
+      BUBBLE_SIZE_MIN: 100,
+      BUBBLE_SIZE_MAX: 120,
+      TOTAL_PASSOS_ELEFANTE: 2,
+      SPAWN_INTERVAL_MS: 1000
     };
 
     const listaPalavras = [
@@ -477,7 +477,7 @@
         y: posY,
         radius: tamanho / 2,
         speedY: (Math.random() * (CONFIG.SPEED_MAX - CONFIG.SPEED_MIN) + CONFIG.SPEED_MIN),
-        amplitude: Math.random() * 1.2 + 0.4,
+        amplitude: Math.random() * 3.5 + 2.0,
         frequency: Math.random() * 0.025 + 0.01,
         phase: Math.random() * Math.PI * 2
       };
@@ -614,9 +614,19 @@
         b.y -= b.speedY;
         b.x += Math.sin(b.y * b.frequency + b.phase) * b.amplitude;
 
+        // Limita a física nas bordas da tela
+        const larguraMax = larguraCampo - (b.radius * 2);
+        if (b.x < 0) {
+          b.x = 0;
+          b.phase = -b.phase;
+        } else if (b.x > larguraMax) {
+          b.x = larguraMax;
+          b.phase = -b.phase;
+        }
+
         b.element.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
 
-        if (b.y < -b.radius * 2 || b.x < -b.radius * 2 || b.x > larguraCampo + b.radius * 2) {
+        if (b.y < -b.radius * 2) {
           if (b.element.parentNode) {
             b.element.parentNode.removeChild(b.element);
           }
@@ -635,12 +645,6 @@
       requestAnimationFrame(loopJogo);
     }
 
-    /*
-     * CÁLCULO DA POSIÇÃO DO ELEFANTE GARANTINDO QUE:
-     * 1. Nos passos 0..3 o elefante desce gradualmente E PERMANECE ESTRITAMENTE ACIMA DO AVATAR (sem cobri-lo).
-     * 2. No passo 4 (último) o elefante assenta sobre o avatar e o cobre.
-     * 3. O elefante JAMAIS ultrapassa a borda inferior do container (nunca sai da tela).
-     */
     function atualizarPosicaoElefante() {
       const avatarRect = avatarBox.getBoundingClientRect();
       const containerRect = containerJogo.getBoundingClientRect();
@@ -649,33 +653,23 @@
       const containerHeight = containerJogo.clientHeight;
       const elephantHeight = elefanteRect.height || 140;
 
-      // Posição Y do topo do avatar relativa ao container
       const avatarTopRelativo = avatarRect.top - containerRect.top;
 
-      // Passo 0: topo do container (0px)
       const topInicio = 0;
-
-      // Nos passos intermediários (1, 2, 3), o elefante vai até FICAR LOGO ACIMA do avatar (sem cobrir)
       const topMaxSemCobrir = Math.max(0, avatarTopRelativo - elephantHeight + 10);
-
-      // No passo 4 (final), o elefante desce para cobrir o avatar
       const topSobreposto = avatarTopRelativo - (elephantHeight * 0.35);
 
-      // Limite absoluto para nunca sair da margem inferior do container
       const maxPermitidoNoContainer = containerHeight - elephantHeight - 4;
 
       let topCalculado = 0;
 
       if (passoElefante < CONFIG.TOTAL_PASSOS_ELEFANTE) {
-        // Passos 0 a 3: interpolação do topo (0) até o topo sem cobrir
         const fracao = passoElefante / (CONFIG.TOTAL_PASSOS_ELEFANTE - 1);
         topCalculado = topInicio + (topMaxSemCobrir - topInicio) * fracao;
       } else {
-        // Passo 4: sobreposição no avatar
         topCalculado = topSobreposto;
       }
 
-      // Trava de segurança para NUNCA sair do container
       const topFinal = Math.min(topCalculado, maxPermitidoNoContainer);
 
       elefanteBox.style.top = `${Math.max(0, topFinal)}px`;
@@ -683,6 +677,9 @@
 
     function atualizarPontosETrilha() {
       pontosAtuais.innerText = pontuacao;
+      
+      // Salva os pontos no localStorage para o end.html reconhecer
+      localStorage.setItem('pontosAluno', pontuacao);
 
       trilhaPremios.innerHTML = '';
       for (let i = 0; i < pontuacao; i++) {

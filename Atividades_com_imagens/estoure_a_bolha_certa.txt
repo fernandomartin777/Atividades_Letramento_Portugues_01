@@ -31,3 +31,8 @@ I will now generate the complete HTML file `index.html` for "Estoure a bolha cer
 
 5. **Configurable JavaScript Parameters at Top:**
 * `SPEED_MIN`, `SPEED_MAX`, `MAX_BUBBLES_SIMULTANEOUS`, `BUBBLE_SIZE_MIN`, `BUBBLE_SIZE_MAX`, and `TOTAL_PASSOS_ELEFANTE`.
+
+
+Correção do localStorage e salvamento de pontos (estoure_a_bolha_01.html): O end.html busca a chave 'pontosAluno' (ou 'pontosTotal'), mas o estoure_a_bolha_01.html mantinha a pontuação apenas na memória. Adicionamos a gravação em localStorage.setItem('pontosAluno', pontuacao) na função atualizarPontosETrilha().
+
+Ajuste na animação de Sway (Oscilação Lateral): Na criação da bolha em estoure_a_bolha_01.html, a amplitude da oscilação foi aumentada de Math.random() * 1.2 + 0.4 para Math.random() * 3.5 + 2.0, tornando o balanço lateral bem mais visível e largo.
