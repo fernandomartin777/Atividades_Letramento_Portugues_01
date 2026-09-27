@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo de Dicas</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #2c3e50;
+    }
+
+    html {
+      font-size: 20px; /* Aumentado para melhor visibilidade */
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 17px;
+      }
+    }
+
+    /* PALETA ÂMBAR & MOSTARDA SUAVE */
+    body {
+      background-color: #fdfbf7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #fffefb;
+      border: 2px solid #d4ac0d;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(212, 172, 13, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE ÂMBAR */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #fef9e7;
+      border: 2px solid #f1c40f;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #d4ac0d;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    /* PAINEL INFORMATIVO ABAIXO DA BARRA (QUESTÃO E PONTOS) */
+    .info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #7d6608;
+    }
+
+    .info-questao {
+      color: #7d6608;
+    }
+
+    .info-pontos {
+      color: #7d6608;
+    }
+
+    /* TÍTULO E PARÁGRAFOS */
+    .titulo-questao {
+      font-size: clamp(1.6rem, 4.5vw, 2rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0 15px 0;
+      color: #b7950b;
+    }
+
+    /* IMAGEM DA QUESTÃO */
+    .container-imagem {
+      margin: 10px 0 20px 0;
+      text-align: center;
+    }
+
+    .imagem-exibida {
+      max-width: 100%;
+      max-height: 300px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      border: 2px solid #f9e79f;
+      object-fit: contain;
+    }
+
+    /* ÁREA DE TEXTOS / PARÁGRAFOS DICAS (FONTE AUMENTADA) */
+    .painel-paragrafos {
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .painel-paragrafos p {
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem); /* Fonte aumentada conforme pedido */
+      line-height: 1.6;
+      margin: 0 0 12px 0;
+    }
+
+    /* TRILHO DO MONSTRO */
+    .pista-monstro-container {
+      width: 100%;
+      background-color: #fef9e7;
+      border: 2px solid #f9e79f;
+      border-radius: 12px;
+      height: 160px; /* Aumentado levemente para acomodar confortavelmente a altura dos elementos */
+      position: relative;
+      margin: 15px 0 10px 0;
+      overflow: hidden;
+    }
+
+    .entidade-pista {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: left 0.4s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #monstro-box {
+      left: 0%;
+      z-index: 2;
+      width: 150px;
+      height: 150px;
+    }
+
+    /* AVATAR SEM MOLDURA E COM ALTURA SEMELHANTE À DO MONSTRO */
+    #avatar-box {
+      right: 15px;
+      z-index: 1;
+      width: 150px;
+      height: 150px;
+    }
+
+    .entidade-pista img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 36px;
+      background-color: #fffdf5;
+      border: 1.5px dashed #f1c40f;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    /* SLOTS DE ENCAIXE DA PALAVRA/FRASE (AGRUPADOS POR PALAVRA) */
+    .container-quadrados {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 8px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    /* GARANTE QUE CADA PALAVRA FIQUE INSEPARÁVEL NA MESMA LINHA */
+    .palavra-grupo {
+      display: inline-flex;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .slot-letra {
+      width: clamp(42px, 8.5vw, 54px);
+      height: clamp(52px, 9.5vw, 64px);
+      border: 2px solid #b7950b;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fffdf5;
+      font-size: clamp(1.5rem, 4.5vw, 2rem);
+      font-weight: bold;
+    }
+
+    .slot-espaco {
+      background-color: #ebedef !important;
+      border: 2px solid #bdc3c7;
+      margin: 0 4px;
+    }
+
+    /* ANIMAÇÃO PISCAR PARA SLOTS VAZIOS DURANTE O TIMEOUT */
+    @keyframes piscarBrando {
+      0% { background-color: #fffdf5; }
+      50% { background-color: #f9e79f; }
+      100% { background-color: #fffdf5; }
+    }
+
+    .slot-letra.piscar-slot {
+      animation: piscarBrando 1.2s infinite ease-in-out;
+    }
+
+    /* TECLADO VIRTUAL DE A-Z */
+    .container-teclado {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 15px;
+      width: 100%;
+      padding: 12px;
+      background-color: #fefcf5;
+      border: 1px solid #f7dc6f;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .teclado-bloqueado {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .tecla-letra {
+      width: clamp(40px, 7.5vw, 50px);
+      height: clamp(48px, 8.5vw, 58px);
+      border: 2px solid #d4ac0d;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #2c3e50;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    /* DESTAQUE PARA AS VOGAIS */
+    .tecla-vogal {
+      background-color: #fbeee6;
+      border-color: #e59866;
+      color: #d35400;
+    }
+
+    .tecla-letra:active {
+      transform: scale(0.95);
+    }
+
+    .tecla-oculta {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* RELÓGIO DE CONTAGEM REGRESSIVA */
+    .container-timer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #d35400;
+      min-height: 36px;
+      margin-bottom: 15px;
+    }
+
+    .icone-relogio {
+      font-size: 1.3rem;
+    }
+
+    /* BOTÕES EMPILHADOS VERTICALMENTE */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #d35400;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-acao:hover {
+      background-color: #a04000;
+    }
+
+    .btn-proximo {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-header">
+        <div class="info-questao">
+          QUESTÃO: <span id="questao-atual">1</span> / <span id="questao-total">20</span>
+        </div>
+        <div class="info-pontos">
+          PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">120</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TÍTULO DA QUESTÃO -->
+    <div id="titulo-questao" class="titulo-questao">Título</div>
+
+    <!-- IMAGEM DA QUESTÃO (SEMPRE VISÍVEL) -->
+    <div class="container-imagem">
+      <img id="imagem-questao" class="imagem-exibida" src="imagem01.jpg" alt="Imagem da questão">
+    </div>
+
+    <!-- PARÁGRAFOS DEDICADOS (EXIBIÇÃO GRADUAL CONFORME ERROS) -->
+    <div id="painel-paragrafos" class="painel-paragrafos"></div>
+
+    <!-- TRILHO DO MONSTRO -->
+    <div class="pista-monstro-container" id="pista-monstro">
+      <div id="monstro-box" class="entidade-pista">
+        <img id="img-monstro" src="monster01.png" alt="Monstro">
+      </div>
+      <div id="avatar-box" class="entidade-pista">
+        <img id="img-avatar" src="" alt="Avatar">
+      </div>
+    </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
+
+    <!-- SLOTS DAS LETRAS DAS RESPOSTAS -->
+    <div id="container-quadrados" class="container-quadrados"></div>
+
+    <!-- TECLADO VIRTUAL DE A-Z -->
+    <div id="container-teclado" class="container-teclado"></div>
+
+    <!-- PAINEL DO TIMER DE ESPERA ANTI-SPAM -->
+    <div id="container-timer" class="container-timer"></div>
+
+    <!-- BOTÃO PARA AVANÇAR -->
+    <div class="area-botoes">
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarQuestao()">Próxima questão</button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÕES E BANCO DE QUESTÕES
+    // =========================================================================
+    const MAX_ERROS_QUESTAO = 6; // Quantidade de erros até o monstro alcançar o avatar
+
+    const questoes = [
+      {
+        resposta: "TOMATE",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Legume",
+          "Vermelho",
+          "Macio"
+        ]
+      },
+      {
+        resposta: "BATATA",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Legume",
+          "Casca marrom",
+          "Amarelo por dentro"
+        ]
+      },
+      {
+        resposta: "CHUCHU",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Legume",
+          "Verde",
+          ""
+        ]
+      },
+      {
+        resposta: "PEPINO",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Legume",
+          "Verde escuro por fora",
+          "Verde claro por dentro"
+        ]
+      },
+      {
+        resposta: "COUVE",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Verdura.",
+          "Verde escuro",
+          ""
+        ]
+      },
+      {
+        resposta: "ALFACE",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Verdura",
+          "Verde claro",
+          ""
+        ]
+      },
+      {
+        resposta: "MAÇÃ",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Fruta",
+          "Vermelha",
+          ""
+        ]
+      },
+      {
+        resposta: "LARANJA",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Fruta",
+          "Azeda ou doce",
+          ""
+        ]
+      },
+      {
+        resposta: "MAMÃO",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Fruta",
+          "Macia",
+          ""
+        ]
+      },
+      {
+        resposta: "LIMÃO",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Fruta",
+          "Azeda",
+          "Verde"
+        ]
+      },
+      {
+        resposta: "FEIJÃO",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Grãos",
+          "Escuros",
+          ""
+        ]
+      },
+      {
+        resposta: "FARINHA",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Pó",
+          "Branco",
+          ""
+        ]
+      },
+      {
+        resposta: "MACARRÃO",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Feito de massa",
+          "Comemos cozido",
+          ""
+        ]
+      },
+      {
+        resposta: "AZEITE",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Vem na garrafa.",
+          "Colocamos na comida.",
+          "É um óleo."
+        ]
+      },
+      {
+        resposta: "SABONETE",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Não é comida.",
+          "Higiene",
+          "Usamos nas mãos."
+        ]
+      },
+      {
+        resposta: "PAPEL HIGIÊNICO",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: [
+          "Não é comida.",
+          "Usamos no banheiro",
+          "Higiene"
+        ]
+      },
+      {
+        resposta: "CHOCOLATE",
+        titulo: "Fernando foi ao mercado. O que ele comprou?",
+        imagem: "mercado.jpg",
+        paragrafos: ["Doce", "Marrom", " "]
+      }
+    ];
+
+    // MAPA DE EQUIVALÊNCIAS DE LETRAS (ACENTOS, MAIÚSCULAS E CEDILHA)
+    const mapaEquivalencias = {
+      'A': ['A', 'a', 'Á', 'á', 'À', 'à', 'Â', 'â', 'Ã', 'ã'],
+      'B': ['B', 'b'],
+      'C': ['C', 'c', 'Ç', 'ç'],
+      'D': ['D', 'd'],
+      'E': ['E', 'e', 'É', 'é', 'Ê', 'ê'],
+      'F': ['F', 'f'],
+      'G': ['G', 'g'],
+      'H': ['H', 'h'],
+      'I': ['I', 'i', 'Í', 'í'],
+      'J': ['J', 'j'],
+      'K': ['K', 'k'],
+      'L': ['L', 'l'],
+      'M': ['M', 'm'],
+      'N': ['N', 'n'],
+      'O': ['O', 'o', 'Ó', 'ó', 'Ô', 'ô', 'Õ', 'õ'],
+      'P': ['P', 'p'],
+      'Q': ['Q', 'q'],
+      'R': ['R', 'r'],
+      'S': ['S', 's'],
+      'T': ['T', 't'],
+      'U': ['U', 'u', 'Ú', 'ú', 'Ü', 'ü'],
+      'V': ['V', 'v'],
+      'W': ['W', 'w'],
+      'X': ['X', 'x'],
+      'Y': ['Y', 'y'],
+      'Z': ['Z', 'z']
+    };
+
+    const VOGAIS = ['A', 'E', 'I', 'O', 'U'];
+
+    // =========================================================================
+    // VARIÁVEIS DE ESTADO
+    // =========================================================================
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    let errosQuestao = 0;
+    let slotsRevelados = 0;
+    let totalSlotsLetras = 0;
+    let emEsperaTimer = false;
+
+    window.onload = function() {
+      const avatarSalvo = localStorage.getItem('avatarData');
+      if (avatarSalvo) {
+        document.getElementById('img-avatar').src = avatarSalvo;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        let questaoInformada = parseInt(qParam, 10) - 1;
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
+      }
+
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || '0', 10);
+      }
+
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+      document.getElementById('pontos-maximos').innerText = questoes.length * MAX_ERROS_QUESTAO;
+      document.getElementById('questao-total').innerText = questoes.length;
+      carregarQuestao(indiceAtual);
+      atualizarInterface();
+    };
+
+    function carregarQuestao(index) {
+      errosQuestao = 0;
+      slotsRevelados = 0;
+      emEsperaTimer = false;
+      document.getElementById('btn-proximo').style.display = 'none';
+      document.getElementById('container-timer').innerHTML = '';
+
+      const q = questoes[index];
+
+      document.getElementById('titulo-questao').innerText = q.titulo;
+      document.getElementById('imagem-questao').src = q.imagem;
+
+      atualizarParagrafosDicas();
+      montarSlots(q.resposta);
+      montarTecladoVirtual();
+    }
+
+    // EXIBE APENAS OS PARÁGRAFOS CORRESPONDENTES AOS ERROS ACUMULADOS
+    function atualizarParagrafosDicas() {
+      const q = questoes[indiceAtual];
+      const painel = document.getElementById('painel-paragrafos');
+      painel.innerHTML = '';
+
+      if (q.paragrafos && q.paragrafos.length > 0) {
+        // Parágrafo 1: sempre visível
+        const p1 = document.createElement('p');
+        p1.innerText = q.paragrafos[0];
+        painel.appendChild(p1);
+
+        // Parágrafo 2: visível após 2 erros
+        if (errosQuestao >= 2 && q.paragrafos.length > 1) {
+          const p2 = document.createElement('p');
+          p2.innerText = q.paragrafos[1];
+          painel.appendChild(p2);
+        }
+
+        // Parágrafo 3: visível após 4 erros
+        if (errosQuestao >= 4 && q.paragrafos.length > 2) {
+          const p3 = document.createElement('p');
+          p3.innerText = q.paragrafos[2];
+          painel.appendChild(p3);
+        }
+      }
+    }
+
+    // CONSTRÓI OS QUADRADOS/SLOTS DA PALAVRA AGRUPANDO POR PALAVRAS REAIS
+    function montarSlots(resposta) {
+      const containerSlots = document.getElementById('container-quadrados');
+      containerSlots.innerHTML = '';
+      totalSlotsLetras = 0;
+
+      const palavras = resposta.split(' ');
+
+      palavras.forEach((palavra, indexPalavra) => {
+        const palavraGroup = document.createElement('span');
+        palavraGroup.className = 'palavra-grupo';
+
+        for (let i = 0; i < palavra.length; i++) {
+          const char = palavra[i];
+          const slot = document.createElement('div');
+          slot.className = 'slot-letra';
+          slot.dataset.espaco = "false";
+          slot.dataset.char = char;
+          slot.innerText = ''; // Oculto inicialmente
+          totalSlotsLetras++;
+          palavraGroup.appendChild(slot);
+        }
+
+        containerSlots.appendChild(palavraGroup);
+
+        // Insere o slot cinza de espaço entre as palavras
+        if (indexPalavra < palavras.length - 1) {
+          const slotEspaco = document.createElement('div');
+          slotEspaco.className = 'slot-letra slot-espaco';
+          slotEspaco.dataset.espaco = "true";
+          containerSlots.appendChild(slotEspaco);
+        }
+      });
+    }
+
+    // CONSTRÓI O TECLADO VIRTUAL A-Z
+    function montarTecladoVirtual() {
+      const containerTeclado = document.getElementById('container-teclado');
+      containerTeclado.innerHTML = '';
+      containerTeclado.classList.remove('teclado-bloqueado');
+
+      const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+      alfabeto.forEach(letra => {
+        const btn = document.createElement('button');
+        btn.className = 'tecla-letra';
+        if (VOGAIS.includes(letra)) {
+          btn.classList.add('tecla-vogal');
+        }
+        btn.innerText = letra;
+        btn.onclick = function() {
+          pressionarTecla(letra, btn);
+        };
+        containerTeclado.appendChild(btn);
+      });
+    }
+
+    // PROCESSA O CLIQUE NA TECLA
+    function pressionarTecla(letraTeclado, elementoBtn) {
+      if (emEsperaTimer) return;
+
+      // Desaparece com a tecla selecionada
+      elementoBtn.classList.add('tecla-oculta');
+
+      const q = questoes[indiceAtual];
+      const equivalentes = mapaEquivalencias[letraTeclado] || [letraTeclado];
+      const slots = document.querySelectorAll('.slot-letra[data-espaco="false"]');
+
+      let acertou = false;
+
+      slots.forEach(slot => {
+        const charSlot = slot.dataset.char;
+        if (slot.innerText === '' && equivalentes.includes(charSlot)) {
+          slot.innerText = charSlot;
+          acertou = true;
+          slotsRevelados++;
+        }
+      });
+
+      if (!acertou) {
+        errosQuestao++;
+        atualizarParagrafosDicas();
+      }
+
+      atualizarInterface();
+
+      // Checa se a questão acabou (ganhou ou perdeu)
+      if (slotsRevelados === totalSlotsLetras) {
+        finalizarQuestao(true);
+      } else if (errosQuestao >= MAX_ERROS_QUESTAO) {
+        finalizarQuestao(false);
+      } else {
+        // Aplica o congelamento de 3 segundos se a partida ainda continua
+        iniciarTimerCongelamento();
+      }
+    }
+
+    // CONGELAMENTO DE 3 SEGUNDOS DO TECLADO E PISCAR SLOTS VAZIOS
+    function iniciarTimerCongelamento() {
+      emEsperaTimer = true;
+      const teclado = document.getElementById('container-teclado');
+      const timerContainer = document.getElementById('container-timer');
+      const slotsVazios = document.querySelectorAll('.slot-letra[data-espaco="false"]');
+
+      teclado.classList.add('teclado-bloqueado');
+
+      // Aplica efeito de piscar nos slots vazios
+      slotsVazios.forEach(slot => {
+        if (slot.innerText === '') {
+          slot.classList.add('piscar-slot');
+        }
+      });
+
+      let tempoRestante = 3; // Reduzido para 3 segundos
+      timerContainer.innerHTML = `<span class="icone-relogio">⏱️</span> <span>${tempoRestante}</span>`;
+
+      const intervalo = setInterval(() => {
+        tempoRestante--;
+        if (tempoRestante > 0) {
+          timerContainer.innerHTML = `<span class="icone-relogio">⏱️</span> <span>${tempoRestante}</span>`;
+        } else {
+          clearInterval(intervalo);
+          timerContainer.innerHTML = '';
+          teclado.classList.remove('teclado-bloqueado');
+          slotsVazios.forEach(slot => slot.classList.remove('piscar-slot'));
+          emEsperaTimer = false;
+        }
+      }, 1000);
+    }
+
+    // FINALIZAÇÃO DA QUESTÃO
+    function finalizarQuestao(vitoria) {
+      emEsperaTimer = true;
+      const teclado = document.getElementById('container-teclado');
+      teclado.classList.add('teclado-bloqueado');
+
+      if (vitoria) {
+        let pontosGanhos = Math.max(0, MAX_ERROS_QUESTAO - errosQuestao);
+        pontuacaoAcumulada += pontosGanhos;
+      } else {
+        // Punição de -4 pontos se o monstro alcançar o avatar
+        pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 4);
+
+        // Revela a solução inteira
+        const slots = document.querySelectorAll('.slot-letra[data-espaco="false"]');
+        slots.forEach(slot => {
+          slot.innerText = slot.dataset.char;
+        });
+      }
+
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+      const btnProximo = document.getElementById('btn-proximo');
+      if (indiceAtual === questoes.length - 1) {
+        btnProximo.innerText = "Terminar atividade";
+      } else {
+        btnProximo.innerText = "Próxima questão";
+      }
+      btnProximo.style.display = 'block';
+
+      atualizarInterface();
+    }
+
+    function atualizarInterface() {
+      const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('questao-atual').innerText = indiceAtual + 1;
+      document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      // Atualizar Trilha de Prêmios (cópias da imagem prize.png)
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoAcumulada; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
+
+      const porcentagemAproximacao = (errosQuestao / MAX_ERROS_QUESTAO) * 82;
+      const monstroBox = document.getElementById('monstro-box');
+      const imgMonstro = document.getElementById('img-monstro');
+
+      monstroBox.style.left = `${porcentagemAproximacao}%`;
+
+      if ((errosQuestao / MAX_ERROS_QUESTAO) >= 0.5) {
+        imgMonstro.src = "monster02.png";
+      } else {
+        imgMonstro.src = "monster01.png";
+      }
+
+      if (errosQuestao >= MAX_ERROS_QUESTAO) {
+        monstroBox.style.zIndex = "3";
+      } else {
+        monstroBox.style.zIndex = "2";
+      }
+    }
+
+    function avancarQuestao() {
+      // Rolar para o topo suavemente mantendo a página intacta
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+        atualizarInterface();
+      } else {
+        window.location.href = "end.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
