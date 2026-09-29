@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atividade de Leitura e Copia de Frases</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #000000;
+    }
+
+    html {
+      font-size: 20px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 17px;
+      }
+    }
+
+    body {
+      background-color: #f4f0f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    /* CONTAINER PRINCIPAL (PALETA LILÁS) */
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border: 2px solid #8e44ad;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(142, 68, 173, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE LILÁS/ROXO */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #f2e6f9;
+      border: 2px solid #a569bd;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #8e44ad;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .info-pontos {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #5b2c6f;
+    }
+
+    /* CONTADOR DE QUESTÕES E TÍTULO */
+    .contador-questoes {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #8e44ad;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .titulo-questao {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 5px 0 15px 0;
+    }
+
+    /* CONTAINER DAS IMAGENS OCUPANDO 100% DA LARGURA */
+    .container-imagens {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .imagem-exibida {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      border-radius: 8px;
+      border: 2px solid #d2b4de;
+      object-fit: contain;
+    }
+
+    /* INSTRUÇÕES E TEXTOS */
+    .instrucao-texto {
+      width: 100%;
+      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      line-height: 1.5;
+      margin: 10px 0 15px 0;
+      text-align: left;
+    }
+
+    /* CAMPO DE INPUT FIXO / TEXTAREA COM QUEBRA AUTOMÁTICA E SEM AUTOCOMPLETE */
+    .campo-resposta-container {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .input-frase {
+      width: 100%;
+      height: 110px;
+      font-size: clamp(1.1rem, 3.2vw, 1.4rem);
+      font-family: Georgia, 'Times New Roman', serif;
+      padding: 12px;
+      border: 2px solid #8e44ad;
+      border-radius: 8px;
+      background-color: #faf5fc;
+      resize: none; /* Mantém a largura e altura fixas */
+      word-wrap: break-word; /* Força a quebra de linha sem cortar palavras no meio */
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .input-frase:focus {
+      border-color: #6c3483;
+      background-color: #ffffff;
+    }
+
+    .input-correto {
+      background-color: #d4efdf !important;
+      border-color: #27ae60 !important;
+    }
+
+    .input-incorreto {
+      background-color: #fadbd8 !important;
+      border-color: #e74c3c !important;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 38px;
+      background-color: #fcf8ff;
+      border: 1.5px dashed #8e44ad;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    /* TRILHO DO MONSTRO */
+    .pista-monstro-container {
+      width: 100%;
+      background-color: #f4ecf7;
+      border: 2px solid #d2b4de;
+      border-radius: 12px;
+      height: 140px;
+      position: relative;
+      margin: 30px 0 30px 0;
+      overflow: visible;
+    }
+
+    .entidade-pista {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: left 0.4s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #monstro-box {
+      left: 0%;
+      z-index: 2;
+      width: 150px;
+      height: 150px;
+    }
+
+    #avatar-box {
+      right: 0px;
+      z-index: 1;
+      width: 100px;
+      height: 200px;
+      border: none;
+      background: transparent;
+    }
+
+    .entidade-pista img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* BOTÕES EMPILHADOS */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #8e44ad;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    .btn-acao:hover:not(:disabled) {
+      background-color: #6c3483;
+    }
+
+    .btn-acao:disabled {
+      background-color: #bdc3c7 !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-proximo {
+      background-color: #27ae60;
+      display: none;
+    }
+
+    .btn-proximo:hover {
+      background-color: #1e8449;
+    }
+
+    .btn-terminar {
+      background-color: #2980b9;
+      display: none;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-terminar:hover {
+      background-color: #1f618d;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-pontos">
+        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">24</span>
+      </div>
+    </div>
+
+    <!-- CONTADOR E TÍTULO -->
+    <div id="contador-questoes" class="contador-questoes">Questão 1 de 8</div>
+    <div class="titulo-questao">VEJA A FIGURA E LEIA AS FRASES.</div>
+
+    <!-- FIGURAS DA QUESTÃO -->
+    <div class="container-imagens">
+      <img id="figura1" class="imagem-exibida" src="figura1.jpg" alt="Figura 1">
+      <img id="figura2" class="imagem-exibida" src="figura2.jpg" alt="Figura 2">
+    </div>
+
+    <!-- PARÁGRAFO DE INSTRUÇÃO -->
+    <div class="instrucao-texto">
+      Copie a frase que diz o que está acontecendo na figura.
+    </div>
+
+    <!-- CAMPO DE ENTRADA (TEXTAREA CAIXA FIXA / SEM AUTOCOMPLETE) -->
+    <div class="campo-resposta-container">
+      <textarea 
+        id="input-frase" 
+        class="input-frase" 
+        maxlength="1000" 
+        placeholder="Digite a frase aqui..." 
+        autocomplete="off" 
+        autocorrect="off" 
+        autocapitalize="off" 
+        spellcheck="false"></textarea>
+    </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
+
+    <!-- TRILHO DO MONSTRO -->
+    <div class="pista-monstro-container" id="pista-monstro">
+      <div id="monstro-box" class="entidade-pista">
+        <img id="img-monstro" src="monster01.png" alt="Monstro">
+      </div>
+      <div id="avatar-box" class="entidade-pista">
+        <img id="img-avatar" src="" alt="Avatar">
+      </div>
+    </div>
+
+    <!-- ÁREA DE BOTÕES -->
+    <div class="area-botoes">
+      <button id="btn-conferir" class="btn-acao" onclick="conferirResposta()">Conferir a resposta</button>
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarQuestao()">Próxima questão</button>
+      <a id="btn-terminar" class="btn-acao btn-terminar" href="end.html">Terminar Atividade</a>
+    </div>
+  </div>
+
+  <script>
+    // LISTA DE 8 QUESTÕES EXEMPLO COM SUAS RESPECTIVAS IMAGENS E FRASES CORRETAS
+    const questoes = [
+      {
+        figura1: "q1_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Júlia está comendo açaí."
+      },
+      {
+        figura1: "q2_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Caio foi andar de bicicleta."
+      },
+      {
+        figura1: "q3_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Lívia passou batom."
+      },
+      {
+        figura1: "q4_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Enzo comprou um jogo novo."
+      },
+      {
+        figura1: "q5_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Lara, Gabi e Bia vão à escola."
+      },
+      {
+        figura1: "q6_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Ian fez um gol."
+      },
+      {
+        figura1: "q7_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Vitória e Isabela estão dançando."
+      },
+      {
+        figura1: "q8_figura1.jpg",
+        figura2: "frases-3.png",
+        respostaCorreta: "Vítor e Hugo estão jogando bola."
+      }
+    ];
+
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    let tentativasQuestao = 0;
+    let passosMonstro = 0; // O monstro mantém sua posição entre as questões
+    const maxPassos = 6;
+
+    window.onload = function() {
+      // Carrega o Avatar salvo
+      const avatarSalvo = localStorage.getItem('avatarData');
+      if (avatarSalvo) {
+        document.getElementById('img-avatar').src = avatarSalvo;
+      }
+
+      // Parâmetros de URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        let questaoInformada = parseInt(qParam, 10) - 1;
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
+      }
+
+      // Sincronização de XP do Painel do Professor[cite: 6, 7]
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || localStorage.getItem('pontuacaoTotal') || '0', 10);
+      }
+
+      salvarPontuacaoGlobal(pontuacaoAcumulada);
+
+      // Pontuação máxima calculada (3 pontos por questão na 1ª tentativa)
+      document.getElementById('pontos-maximos').innerText = questoes.length * 3;
+
+      carregarQuestao(indiceAtual);
+      atualizarInterface();
+    };
+
+    function salvarPontuacaoGlobal(pontos) {
+      // Salva nas variáveis compatíveis com o Painel do Professor[cite: 6, 7]
+      localStorage.setItem('pontosAluno', pontos);
+      localStorage.setItem('pontuacaoTotal', pontos);
+      localStorage.setItem('pontosTotais', pontos);
+    }
+
+    function carregarQuestao(index) {
+      tentativasQuestao = 0;
+
+      const btnConferir = document.getElementById('btn-conferir');
+      btnConferir.style.display = 'block';
+      btnConferir.disabled = false;
+
+      document.getElementById('btn-proximo').style.display = 'none';
+      document.getElementById('btn-terminar').style.display = 'none';
+
+      const inputArea = document.getElementById('input-frase');
+      inputArea.value = '';
+      inputArea.disabled = false;
+      inputArea.classList.remove('input-correto', 'input-incorreto');
+
+      const q = questoes[index];
+
+      document.getElementById('contador-questoes').innerText = `Questão ${index + 1} de ${questoes.length}`;
+      document.getElementById('figura1').src = q.figura1;
+      document.getElementById('figura2').src = q.figura2;
+    }
+
+    function normalizarTexto(str) {
+      // Remove espaços extras e normaliza minúsculas para comparação suave
+      return str.trim().replace(/\s+/g, ' ');
+    }
+
+    function conferirResposta() {
+      const q = questoes[indiceAtual];
+      const inputArea = document.getElementById('input-frase');
+      const respostaDigitada = inputArea.value;
+
+      tentativasQuestao++;
+
+      const ehCorreto = normalizarTexto(respostaDigitada) === normalizarTexto(q.respostaCorreta);
+
+      if (ehCorreto) {
+        inputArea.classList.remove('input-incorreto');
+        inputArea.classList.add('input-correto');
+        inputArea.disabled = true;
+
+        // Regra de pontuação: 1ª tentativa = 3 pontos, 2ª = 2 pontos, 3ª+ = 1 ponto
+        let pontosGanhos = Math.max(1, 4 - tentativasQuestao);
+        pontuacaoAcumulada += pontosGanhos;
+        salvarPontuacaoGlobal(pontuacaoAcumulada);
+
+        // O monstro recua 1 passo a cada acerto
+        passosMonstro = Math.max(0, passosMonstro - 1);
+
+        document.getElementById('btn-conferir').disabled = true;
+
+        exibirBotaoAvanco();
+
+      } else {
+        inputArea.classList.remove('input-correto');
+        inputArea.classList.add('input-incorreto');
+
+        // O monstro anda 1 passo a cada erro
+        passosMonstro = Math.min(maxPassos, passosMonstro + 1);
+
+        // Punição: Se o monstro alcançar o avatar, perdem-se 2 pontos
+        if (passosMonstro >= maxPassos) {
+          pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 2);
+          salvarPontuacaoGlobal(pontuacaoAcumulada);
+
+          inputArea.disabled = true;
+          document.getElementById('btn-conferir').disabled = true;
+
+          exibirBotaoAvanco();
+        }
+      }
+
+      atualizarInterface();
+    }
+
+    function exibirBotaoAvanco() {
+      if (indiceAtual === questoes.length - 1) {
+        document.getElementById('btn-proximo').style.display = 'none';
+        document.getElementById('btn-terminar').style.display = 'inline-block';
+      } else {
+        document.getElementById('btn-proximo').style.display = 'inline-block';
+      }
+    }
+
+    function atualizarInterface() {
+      // Atualiza a barra de progresso
+      const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      // Atualiza a trilha de prêmios (gera imagens do prize.png)
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoAcumulada; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
+
+      // Atualiza a posição do monstro no trilho
+      const porcentagemAproximacao = (passosMonstro / maxPassos) * 82;
+      const monstroBox = document.getElementById('monstro-box');
+      const imgMonstro = document.getElementById('img-monstro');
+
+      monstroBox.style.left = `${porcentagemAproximacao}%`;
+
+      if ((passosMonstro / maxPassos) >= 0.5) {
+        imgMonstro.src = "monster02.png";
+      } else {
+        imgMonstro.src = "monster01.png";
+      }
+
+      if (passosMonstro >= maxPassos) {
+        monstroBox.style.zIndex = "3";
+      } else {
+        monstroBox.style.zIndex = "2";
+      }
+    }
+
+    function avancarQuestao() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+        atualizarInterface();
+      }
+    }
+  </script>
+
+</body>
+</html>
