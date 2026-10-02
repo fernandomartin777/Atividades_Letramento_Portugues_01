@@ -390,6 +390,7 @@
     let pontuacaoAcumulada = 0;
     let tentativasQuestao = 0;
     let passosMonstro = 0; // O monstro mantém sua posição entre as questões
+    let monstroAlcancou = false; // Trava para punição única ao alcançar
     const maxPassos = 6;
 
     window.onload = function() {
@@ -409,7 +410,7 @@
         indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
       }
 
-      // Sincronização de XP do Painel do Professor[cite: 6, 7]
+      // Sincronização de XP do Painel do Professor
       if (pParam !== null && !isNaN(pParam)) {
         pontuacaoAcumulada = parseInt(pParam, 10);
       } else {
@@ -426,7 +427,7 @@
     };
 
     function salvarPontuacaoGlobal(pontos) {
-      // Salva nas variáveis compatíveis com o Painel do Professor[cite: 6, 7]
+      // Salva nas variáveis compatíveis com o Painel do Professor
       localStorage.setItem('pontosAluno', pontos);
       localStorage.setItem('pontuacaoTotal', pontos);
       localStorage.setItem('pontosTotais', pontos);
@@ -480,6 +481,9 @@
 
         // O monstro recua 1 passo a cada acerto
         passosMonstro = Math.max(0, passosMonstro - 1);
+        if (passosMonstro < maxPassos) {
+          monstroAlcancou = false;
+        }
 
         document.getElementById('btn-conferir').disabled = true;
 
@@ -492,15 +496,11 @@
         // O monstro anda 1 passo a cada erro
         passosMonstro = Math.min(maxPassos, passosMonstro + 1);
 
-        // Punição: Se o monstro alcançar o avatar, perdem-se 2 pontos
-        if (passosMonstro >= maxPassos) {
+        // Punição: Se o monstro alcançar o avatar, perdem-se 2 pontos (apenas 1 vez)
+        if (passosMonstro >= maxPassos && !monstroAlcancou) {
+          monstroAlcancou = true;
           pontuacaoAcumulada = Math.max(0, pontuacaoAcumulada - 2);
           salvarPontuacaoGlobal(pontuacaoAcumulada);
-
-          inputArea.disabled = true;
-          document.getElementById('btn-conferir').disabled = true;
-
-          exibirBotaoAvanco();
         }
       }
 
