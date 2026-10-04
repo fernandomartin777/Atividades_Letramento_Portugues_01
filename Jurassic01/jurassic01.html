@@ -362,6 +362,16 @@
       display: none;
     }
 
+    /* ELEMENTO INDEPENDENTE DE QUEDA DO AVATAR */
+    #avatar-caindo {
+      position: fixed;
+      height: 250px;
+      z-index: 310;
+      display: none;
+      pointer-events: none;
+      object-fit: contain;
+    }
+
     /* TELA FINAL DE ANIMAÇÕES */
     .camada-final {
       position: fixed;
@@ -471,6 +481,9 @@
       <img id="voador-ptero" src="pterosaur5.png" alt="Pterossauro Voando">
       <img id="voador-avatar" src="Fernando.png" alt="Avatar Carregado">
     </div>
+
+    <!-- Elemento para queda independente do avatar -->
+    <img id="avatar-caindo" src="Fernando.png" alt="Avatar Caindo">
   </div>
 
   <!-- CONTAINER DA ATIVIDADE -->
@@ -537,7 +550,7 @@
           "Gustavo vai jogar futebol no campo do bairro.",
           "Escreva o que ele vai pegar para o treino."
         ],
-        imagens: ["bola.jpg", "chuteira.jpg"],
+        imagens: ["../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/faca.png","../Atividades_com_imagens/bola.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/linha.png", "../Atividades_com_imagens/mochila.png", "../Atividades_com_imagens/carregador.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", "../Atividades_com_imagens/garfo.png", ],
         respostas: ["bola", "chuteira"]
       },
       {
@@ -637,6 +650,7 @@
         avatarSrc = salvo;
         document.getElementById('img-avatar').src = avatarSrc;
         document.getElementById('voador-avatar').src = avatarSrc;
+        document.getElementById('avatar-caindo').src = avatarSrc;
         document.getElementById('avatar-vitoria').src = avatarSrc;
         document.getElementById('avatar-derrota').src = avatarSrc;
       }
@@ -812,6 +826,8 @@
         } else {
           btnProximo.innerText = "Próxima questão";
         }
+        
+        // Exibe o botão de próximo/terminar (caso não seja ativada a animação especial da última questão)
         btnProximo.style.display = 'block';
 
         executarAnimacaoAcerto();
@@ -858,7 +874,15 @@
 
     function executarAnimacaoAcerto() {
       if (avatarCapturado) {
-        animacaoPassagemVoador();
+        const ehUltimaQuestao = (indiceAtual === questoes.length - 1);
+        
+        if (ehUltimaQuestao) {
+          // Oculta o botão de terminar até terminar a animação de queda
+          document.getElementById('btn-proximo').style.display = 'none';
+          animacaoPassagemComQueda();
+        } else {
+          animacaoPassagemVoador();
+        }
       }
     }
 
@@ -952,6 +976,68 @@
           }
         }, 24);
       }
+    }
+
+    /* NOVA ANIMAÇÃO: PTEROSSAURO SOLTA O AVATAR NA METADE DO PERCURSO */
+    function animacaoPassagemComQueda() {
+      const voador = document.getElementById('voador-container');
+      const voadorAvatar = document.getElementById('voador-avatar');
+      const avatarCaindo = document.getElementById('avatar-caindo');
+      const imgAvatarBase = document.getElementById('img-avatar');
+
+      const pteroTop = window.innerHeight * 0.2;
+      voadorAvatar.style.display = 'block';
+      voador.style.display = 'block';
+      voador.style.top = pteroTop + 'px';
+      voador.style.transform = 'scaleX(1)';
+
+      let pos = -450;
+      const meioDaTela = (window.innerWidth / 2) - 300; // Ponto médio onde solta o avatar
+      let soltouAvatar = false;
+
+      const idVoo = setInterval(() => {
+        pos += 18;
+        voador.style.left = pos + 'px';
+
+        // Solta o avatar no meio da tela
+        if (!soltouAvatar && pos >= meioDaTela) {
+          soltouAvatar = true;
+          voadorAvatar.style.display = 'none';
+
+          // Prepara o avatar independente de queda
+          let fallTop = pteroTop + 250; 
+          let fallLeft = pos + 300; 
+
+          avatarCaindo.style.top = fallTop + 'px';
+          avatarCaindo.style.left = fallLeft + 'px';
+          avatarCaindo.style.display = 'block';
+
+          let velocidadeQueda = 2;
+          const gravidade = 1.2;
+
+          const idQueda = setInterval(() => {
+            velocidadeQueda += gravidade;
+            fallTop += velocidadeQueda;
+            avatarCaindo.style.top = fallTop + 'px';
+
+            if (fallTop > window.innerHeight + 250) {
+              clearInterval(idQueda);
+              avatarCaindo.style.display = 'none';
+
+              // O avatar cai no chão, voltando ao seu lugar original
+              avatarCapturado = false;
+
+              // Mostra o botão para terminar a atividade
+              document.getElementById('btn-proximo').style.display = 'block';
+            }
+          }, 24);
+        }
+
+        if (pos > window.innerWidth + 450) {
+          clearInterval(idVoo);
+          voador.style.display = 'none';
+        }
+      }, 24);
     }
 
     function proximaQuestao() {
