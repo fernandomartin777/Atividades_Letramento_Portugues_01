@@ -460,6 +460,24 @@
       z-index: 2;
       object-fit: contain;
     }
+/* PLACAR DE PONTUAÇÃO NA TELA FINAL */
+.placar-final {
+  position: absolute;
+  top: 20px;
+  left: 200px;
+  transform: translateX(-50%);
+  background-color: rgba(30, 70, 32, 0.9); /* Verde escuro semi-transparente */
+  color: #ffffff;
+  padding: 10px 25px;
+  border-radius: 12px;
+  border: 2px solid #ffffff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  z-index: 300; /* Fica acima da tela final (z-index: 200) e imagens */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  pointer-events: none;
+}    
   </style>
 </head>
 <body>
@@ -526,6 +544,11 @@
 
   <!-- CAMADA FINAL -->
   <div class="camada-final" id="camada-final">
+  <!-- PLACAR DE PONTUAÇÃO ADICIONADO AQUI -->
+  <div class="placar-final" id="placar-final">
+    Pontos: <span id="txt-pontos-final">0</span> / <span id="txt-max-pontos-final">0</span>
+  </div>
+
     <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fim" id="btn-fim">Fim</a>
 
     <!-- VITÓRIA (>= 50% DOS PONTOS) -->
@@ -1069,6 +1092,10 @@
 
       const pontuacaoMaxima = questoes.length * 3;
       const metadePontos = pontuacaoMaxima / 2;
+
+      // ATUALIZAÇÃO DOS PONTOS NA TELA FINAL 
+      document.getElementById('txt-pontos-final').innerText = pontosAtuais;
+      document.getElementById('txt-max-pontos-final').innerText = pontuacaoMaxima;
 
       if (pontosAtuais >= metadePontos) {
         document.getElementById('container-vitoria').style.display = 'flex';
