@@ -542,98 +542,125 @@
   </div>
 
   <script>
-    // BANCO DE DADOS - 10 QUESTÕES
+// BANCO DE DADOS - QUESTÕES
     const questoes = [
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Gustavo vai jogar futebol no campo do bairro.",
-          "Escreva o que ele vai pegar para o treino."
+          "Onde você coloca água para beber?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["bola", "chuteira"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["copo"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Mariana preparou uma mesa bonita para o lanche da tarde.",
-          "Descubra quais itens ela colocou sobre a mesa."
+          "Um fazendeiro tem muitos sacos pesados.",
+          "Onde ele vai colocar? Quem vai puxar?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["suco", "bolo"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["carroça", "cavalo"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Lucas organizou sua mochila antes de ir para a escola.",
-          "Escreva os objetos que ele guardou na mochila."
+          "A gata da Isadora teve filhotes.",
+          "Onde ela vai colocá-los?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["caderno", "lápis"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["caixa"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Sofia adorava observar os animais no parque da cidade.",
-          "Identifique o que ela avistou perto do lago."
+          "Uma ave está voando e querendo caçar um bichinho peludo que está no gramado.",
+          "Que animais são esses?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["pássaro", "árvore"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["águia", "coelho"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "O vovô fez uma receita deliciosa para o almoço de domingo.",
-          "Escreva o nome dos ingredientes principais utilizados."
+          "Fernando gosta de comer uma coisa que nasce em troncos secos. O que é?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["tomate", "cebola"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["cogumelo"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "As crianças reuniram-se na praça para brincar juntas.",
-          "Descubra quais brinquedos elas levaram."
+          "No pátio do CIEP tem uma árvore que dá frutas.",
+          "Qual é o nome da fruta que nasce nela?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["boneca", "carrinho"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["goiaba"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Felipe passou o dia ensolarado na beira do mar.",
-          "Veja o que ele usou para se proteger e brincar."
+          "Todo dia de manhã cedo o ________ canta na fazenda."
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["chapéu", "balde"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["galo"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Ana sempre cuida muito bem da sua saúde e higiene.",
-          "Escreva quais produtos ela usa no banheiro."
+          "O que temos para colocar dentro do pão na hora do lanche?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["sabonete", "toalha"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["queijo"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Seu João colheu alimentos fresquinhos na horta.",
-          "Escreva o nome dos vegetais colhidos hoje."
+          "Comprei uma fruta doce e macia que parece um tomate. O que é?"
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["cenoura", "alface"]
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["caqui"]
       },
       {
         titulo: "Qual figura é a resposta certa?",
         paragrafos: [
-          "Beatriz ama cuidar dos seus pequenos animais de estimação.",
-          "Escreva quais são os bichinhos de Beatriz."
+          "Vou fazer aula de música para aprender a tocar ______________."
         ],
-        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png", ],
-        respostas: ["gato", "cachorro"]
-      }
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["guitarra"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Estão mandando um ___________ para o espaço."
+        ],
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["foguete"]
+      },     
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Em cima do livro tem um quebra-cabeça colorido. O que é?"
+        ],
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["cubo"]
+      },     
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Vi um pássaro grande e preto na árvore.",
+          "Qual é o nome desse pássaro?"
+        ],
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["jacu"]
+      },     
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "O que as pessoas acendem na Festa Junina?"
+        ],
+        imagens: ["../Atividades_com_imagens/carroca.png", "../Atividades_com_imagens/caqui.png","../Atividades_com_imagens/copo-vazio.png", "../Atividades_com_imagens/caixa-com-pano.png", "../Atividades_com_imagens/coelho.png", "../Atividades_com_imagens/cubo.png", "../Atividades_com_imagens/jacu.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/cogumelo.png", "../Atividades_com_imagens/guitarra.png", "../Atividades_com_imagens/goiaba.png", "../Atividades_com_imagens/galo.png", "../Atividades_com_imagens/queijo.png", "../Atividades_com_imagens/cavalo.png", "../Atividades_com_imagens/fogueira.png" ],
+        respostas: ["fogueira"]
+      }     
     ];
 
     let indiceAtual = 0;
@@ -758,7 +785,6 @@
             input.readOnly = true;
             input.classList.add('quadrado-espaco');
           } else {
-            input.maxLength = 1;
             input.dataset.esperado = char;
           }
 
@@ -774,9 +800,42 @@
       const inputs = Array.from(document.querySelectorAll('.quadrado-letra:not(.quadrado-espaco)'));
 
       inputs.forEach((input, index) => {
+        let isComposing = false;
+
+        input.addEventListener('compositionstart', function() {
+          isComposing = true;
+        });
+
+        input.addEventListener('compositionend', function() {
+          isComposing = false;
+          if (this.value.length > 1) {
+            this.value = this.value.slice(-1);
+          }
+          this.classList.remove('quadrado-correto', 'quadrado-incorreto');
+          
+          if (this.value.length === 1 && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('beforeinput', function(e) {
+          if (e.data === ' ') {
+            e.preventDefault();
+          }
+        });
+
         input.addEventListener('input', function() {
-          input.classList.remove('quadrado-correto', 'quadrado-incorreto');
-          if (input.value.length === 1 && index < inputs.length - 1) {
+          if (isComposing) return;
+
+          this.value = this.value.replace(/\s/g, '');
+
+          if (this.value.length > 1) {
+            this.value = this.value.slice(-1);
+          }
+
+          this.classList.remove('quadrado-correto', 'quadrado-incorreto');
+
+          if (this.value.length === 1 && index < inputs.length - 1) {
             inputs[index + 1].focus();
           }
         });
