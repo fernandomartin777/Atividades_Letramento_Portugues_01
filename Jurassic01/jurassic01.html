@@ -10,7 +10,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: Georgia, 'Times New Roman', Times, serif;
     }
 
     :root {
@@ -137,7 +137,7 @@
     }
 
     .paragrafoclass {
-      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      font-size: clamp(1.5rem, 4.5vw, 2.1rem);
       line-height: 1.8;
       text-indent: 2em;
       margin-bottom: 12px;
@@ -671,7 +671,6 @@
     let avatarSrc = "Fernando.png";
 
     window.onload = function() {
-      // 1. Carrega o Avatar salvo
       const salvo = localStorage.getItem('avatarData');
       if (salvo) {
         avatarSrc = salvo;
@@ -682,22 +681,18 @@
         document.getElementById('avatar-derrota').src = avatarSrc;
       }
 
-      // 2. Captura os parâmetros enviados pela URL (?q=...&p=...)
       const urlParams = new URLSearchParams(window.location.search);
       const questaoParam = parseInt(urlParams.get('q'), 10);
       const pontosParam = parseInt(urlParams.get('p'), 10);
 
-      // Define a questão de início
       if (!isNaN(questaoParam) && questaoParam >= 1 && questaoParam <= questoes.length) {
         indiceAtual = questaoParam - 1;
       }
 
-      // Define os pontos iniciais
       if (!isNaN(pontosParam) && pontosParam >= 0) {
         pontosAtuais = pontosParam;
       }
 
-      // Atualiza interface
       document.getElementById('txt-pontos').innerText = pontosAtuais;
       document.getElementById('txt-max-pontos').innerText = questoes.length * 3;
       
@@ -886,7 +881,6 @@
           btnProximo.innerText = "Próxima questão";
         }
         
-        // Exibe o botão de próximo/terminar (caso não seja ativada a animação especial da última questão)
         btnProximo.style.display = 'block';
 
         executarAnimacaoAcerto();
@@ -913,7 +907,6 @@
       document.getElementById('barra-progresso').style.width = `${perc}%`;
     }
 
-    /* LÓGICA DE ANIMAÇÕES */
     function executarAnimacaoErro() {
       const ptero = document.getElementById('img-pterosaur');
 
@@ -936,7 +929,6 @@
         const ehUltimaQuestao = (indiceAtual === questoes.length - 1);
         
         if (ehUltimaQuestao) {
-          // Oculta o botão de terminar até terminar a animação de queda
           document.getElementById('btn-proximo').style.display = 'none';
           animacaoPassagemComQueda();
         } else {
@@ -964,7 +956,6 @@
       const steps = 40;
       let step = 0;
 
-      // Desacelerado em 15% (20ms -> 24ms)
       const id = setInterval(() => {
         step++;
         currentTop += (targetTop - (-10)) / steps;
@@ -989,7 +980,6 @@
       const voador = document.getElementById('voador-container');
       let currentLeft = startLeft;
 
-      // Desacelerado em 15% (20ms -> 24ms)
       const id = setInterval(() => {
         currentLeft += 20;
         voador.style.left = currentLeft + 'px';
@@ -1011,7 +1001,6 @@
 
       const entraPelaEsquerda = Math.random() > 0.5;
 
-      // Desacelerado em 15% (20ms -> 24ms)
       if (entraPelaEsquerda) {
         voador.style.transform = 'scaleX(1)';
         let pos = -450;
@@ -1037,12 +1026,10 @@
       }
     }
 
-    /* NOVA ANIMAÇÃO: PTEROSSAURO SOLTA O AVATAR NA METADE DO PERCURSO */
     function animacaoPassagemComQueda() {
       const voador = document.getElementById('voador-container');
       const voadorAvatar = document.getElementById('voador-avatar');
       const avatarCaindo = document.getElementById('avatar-caindo');
-      const imgAvatarBase = document.getElementById('img-avatar');
 
       const pteroTop = window.innerHeight * 0.2;
       voadorAvatar.style.display = 'block';
@@ -1051,19 +1038,17 @@
       voador.style.transform = 'scaleX(1)';
 
       let pos = -450;
-      const meioDaTela = (window.innerWidth / 2) - 300; // Ponto médio onde solta o avatar
+      const meioDaTela = (window.innerWidth / 2) - 300;
       let soltouAvatar = false;
 
       const idVoo = setInterval(() => {
         pos += 18;
         voador.style.left = pos + 'px';
 
-        // Solta o avatar no meio da tela
         if (!soltouAvatar && pos >= meioDaTela) {
           soltouAvatar = true;
           voadorAvatar.style.display = 'none';
 
-          // Prepara o avatar independente de queda
           let fallTop = pteroTop + 250; 
           let fallLeft = pos + 300; 
 
@@ -1082,11 +1067,7 @@
             if (fallTop > window.innerHeight + 250) {
               clearInterval(idQueda);
               avatarCaindo.style.display = 'none';
-
-              // O avatar cai no chão, voltando ao seu lugar original
               avatarCapturado = false;
-
-              // Mostra o botão para terminar a atividade
               document.getElementById('btn-proximo').style.display = 'block';
             }
           }, 24);
