@@ -278,11 +278,12 @@
       z-index: 100;
     }
 
-    /*     .cenario-topo-esquerdo {
+    /* LADO ESQUERDO SUPERIOR (PTEROSSAURO E ROCHA) */
+    .cenario-topo-esquerdo {
       position: absolute;
       top: 0;
       left: 0;
-      width: min(40vw, 400px);
+      width: min(35vw, 400px);
       height: min(40vh, 450px);
     }
 
@@ -290,7 +291,7 @@
       position: absolute;
       top: 5px;
       left: 0px;
-      height: min(30vh, 380px);
+      height: min(32vh, 380px);
       max-width: 100%;
       z-index: 2;
       object-fit: contain;
@@ -298,12 +299,10 @@
 
     #img-rock {
       position: absolute;
-      /* Ajustado proporcionalmente em relação à altura do Pterossauro (30vh) */
-      top: min(18vh, 220px); 
-      left: 0px;
-      height: min(22vh, 280px); /* Mudado para height em vh para acompanhar o pterossauro */
-      width: auto;             /* Mantém a proporção da imagem sem distorcer */
-      max-width: 90vw;
+      top: min(20vh, 230px);
+      left: 0px; /* Mantém encostado no canto esquerdo */
+      width: min(28vw, 75%); /* Acompanha o encolhimento do container e da tela */
+      max-width: 300px;
       z-index: 1;
       object-fit: contain;
     }
@@ -313,14 +312,14 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: min(35vw, 350px);
+      width: min(30vw, 320px);
       height: min(35vh, 350px);
     }
 
     #img-avatar {
       position: absolute;
       bottom: min(2vh, 20px);
-      right: min(12vh, 100px); /* Ajustado para vh para acompanhar o encolhimento na horizontal */
+      right: min(9vw, 100px);
       height: min(26vh, 300px);
       z-index: 2;
       object-fit: contain;
@@ -329,10 +328,9 @@
     #img-ground {
       position: absolute;
       bottom: 0;
-      right: 0;
-      height: min(18vh, 200px); /* Mudado para height em vh para acompanhar o avatar */
-      width: auto;             /* Mantém a proporção da imagem sem distorcer */
-      max-width: 90vw;
+      right: 0; /* Mantém encostado no canto direito */
+      width: min(30vw, 100%); /* Redimensiona junto com a largura do container/avatar */
+      max-width: 320px;
       z-index: 1;
       object-fit: contain;
     }
@@ -377,18 +375,19 @@
       object-fit: contain;
     }
 
-    /* REGRAS ESPECÍFICAS PARA TELAS MENORES (CELULARES) */
+    /* REGRAS ESPECÍFICAS PARA TELAS MENORES (CELULARES E TABLETS) */
     @media (max-width: 768px) {
       .cenario-topo-esquerdo {
         width: 180px;
         height: 200px;
       }
       #img-pterosaur {
-        height: 120px;
+        height: 140px;
       }
       #img-rock {
-        top: 65px;
-        height: 90px;
+        top: 80px;
+        width: 120px;
+        left: 0;
       }
 
       .cenario-base-direito {
@@ -396,12 +395,13 @@
         height: 160px;
       }
       #img-avatar {
-        height: 110px;
-        right: 35px;
-        bottom: 5px;
+        height: 120px;
+        right: 40px;
+        bottom: 10px;
       }
       #img-ground {
-        height: 70px;
+        width: 140px;
+        right: 0;
       }
 
       #voador-container {
@@ -409,15 +409,15 @@
         height: 300px;
       }
       #voador-ptero {
-        height: 160px;
+        height: 180px;
       }
       #voador-avatar {
-        height: 100px;
-        top: 95px;
-        left: 120px;
+        height: 120px;
+        top: 110px;
+        left: 140px;
       }
       #avatar-caindo {
-        height: 100px;
+        height: 120px;
       }
     }
 
