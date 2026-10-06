@@ -278,12 +278,11 @@
       z-index: 100;
     }
 
-    /* LADO ESQUERDO SUPERIOR (PTEROSSAURO E ROCHA) */
-    .cenario-topo-esquerdo {
+    /*     .cenario-topo-esquerdo {
       position: absolute;
       top: 0;
       left: 0;
-      width: min(35vw, 400px);
+      width: min(40vw, 400px);
       height: min(40vh, 450px);
     }
 
@@ -291,7 +290,7 @@
       position: absolute;
       top: 5px;
       left: 0px;
-      height: min(32vh, 380px);
+      height: min(30vh, 380px);
       max-width: 100%;
       z-index: 2;
       object-fit: contain;
@@ -299,9 +298,12 @@
 
     #img-rock {
       position: absolute;
-      top: min(20vh, 230px);
+      /* Ajustado proporcionalmente em relação à altura do Pterossauro (30vh) */
+      top: min(18vh, 220px); 
       left: 0px;
-      width: min(28vw, 300px);
+      height: min(22vh, 280px); /* Mudado para height em vh para acompanhar o pterossauro */
+      width: auto;             /* Mantém a proporção da imagem sem distorcer */
+      max-width: 90vw;
       z-index: 1;
       object-fit: contain;
     }
@@ -311,14 +313,14 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: min(30vw, 320px);
+      width: min(35vw, 350px);
       height: min(35vh, 350px);
     }
 
     #img-avatar {
       position: absolute;
       bottom: min(2vh, 20px);
-      right: min(9vw, 100px);
+      right: min(12vh, 100px); /* Ajustado para vh para acompanhar o encolhimento na horizontal */
       height: min(26vh, 300px);
       z-index: 2;
       object-fit: contain;
@@ -328,7 +330,9 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: min(30vw, 320px);
+      height: min(18vh, 200px); /* Mudado para height em vh para acompanhar o avatar */
+      width: auto;             /* Mantém a proporção da imagem sem distorcer */
+      max-width: 90vw;
       z-index: 1;
       object-fit: contain;
     }
@@ -373,18 +377,18 @@
       object-fit: contain;
     }
 
-    /* REGRAS ESPECÍFICAS PARA TELAS MENORES (CELULARES E TABLETS NA VERTICAL/HORIZONTAL) */
+    /* REGRAS ESPECÍFICAS PARA TELAS MENORES (CELULARES) */
     @media (max-width: 768px) {
       .cenario-topo-esquerdo {
         width: 180px;
         height: 200px;
       }
       #img-pterosaur {
-        height: 140px;
+        height: 120px;
       }
       #img-rock {
-        top: 80px;
-        width: 130px;
+        top: 65px;
+        height: 90px;
       }
 
       .cenario-base-direito {
@@ -392,12 +396,12 @@
         height: 160px;
       }
       #img-avatar {
-        height: 120px;
-        right: 40px;
-        bottom: 10px;
+        height: 110px;
+        right: 35px;
+        bottom: 5px;
       }
       #img-ground {
-        width: 150px;
+        height: 70px;
       }
 
       #voador-container {
@@ -405,15 +409,15 @@
         height: 300px;
       }
       #voador-ptero {
-        height: 180px;
+        height: 160px;
       }
       #voador-avatar {
-        height: 120px;
-        top: 110px;
-        left: 140px;
+        height: 100px;
+        top: 95px;
+        left: 120px;
       }
       #avatar-caindo {
-        height: 120px;
+        height: 100px;
       }
     }
 
