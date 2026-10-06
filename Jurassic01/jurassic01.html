@@ -278,47 +278,48 @@
       z-index: 100;
     }
 
-    /* AJUSTE DAS COORDENADAS DO PTEROSSAURO E DA ROCHA */
+    /* LADO ESQUERDO SUPERIOR (PTEROSSAURO E ROCHA) */
     .cenario-topo-esquerdo {
       position: absolute;
       top: 0;
       left: 0;
-      width: 400px;
-      height: 450px;
+      width: min(35vw, 400px);
+      height: min(40vh, 450px);
     }
 
     #img-pterosaur {
       position: absolute;
       top: 5px;
       left: 0px;
-      height: 380px;
+      height: min(32vh, 380px);
+      max-width: 100%;
       z-index: 2;
       object-fit: contain;
     }
 
     #img-rock {
       position: absolute;
-      top: 230px;
+      top: min(20vh, 230px);
       left: 0px;
-      width: 300px;
+      width: min(28vw, 300px);
       z-index: 1;
       object-fit: contain;
     }
 
-    /* LADO DIREITO INFERIOR */
+    /* LADO DIREITO INFERIOR (AVATAR E CHÃO) */
     .cenario-base-direito {
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 320px;
-      height: 350px;
+      width: min(30vw, 320px);
+      height: min(35vh, 350px);
     }
 
     #img-avatar {
       position: absolute;
-      bottom: 20px;
-      right: 100px;
-      height: 300px;
+      bottom: min(2vh, 20px);
+      right: min(9vw, 100px);
+      height: min(26vh, 300px);
       z-index: 2;
       object-fit: contain;
     }
@@ -327,7 +328,7 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 320px;
+      width: min(30vw, 320px);
       z-index: 1;
       object-fit: contain;
     }
@@ -337,8 +338,8 @@
       position: absolute;
       top: -10px;
       left: 10px;
-      width: 600px;
-      height: 600px;
+      width: min(50vw, 600px);
+      height: min(50vw, 600px);
       z-index: 300;
       display: none;
       pointer-events: none;
@@ -347,16 +348,16 @@
     #voador-ptero {
       position: absolute;
       width: 100%;
-      height: 380px;
+      height: min(35vh, 380px);
       object-fit: contain;
       z-index: 1;
     }
 
     #voador-avatar {
       position: absolute;
-      height: 250px;
-      top: 250px;
-      left: 300px;
+      height: min(22vh, 250px);
+      top: min(22vh, 250px);
+      left: min(25vw, 300px);
       z-index: 2;
       object-fit: contain;
       display: none;
@@ -365,11 +366,55 @@
     /* ELEMENTO INDEPENDENTE DE QUEDA DO AVATAR */
     #avatar-caindo {
       position: fixed;
-      height: 250px;
+      height: min(22vh, 250px);
       z-index: 310;
       display: none;
       pointer-events: none;
       object-fit: contain;
+    }
+
+    /* REGRAS ESPECÍFICAS PARA TELAS MENORES (CELULARES E TABLETS NA VERTICAL/HORIZONTAL) */
+    @media (max-width: 768px) {
+      .cenario-topo-esquerdo {
+        width: 180px;
+        height: 200px;
+      }
+      #img-pterosaur {
+        height: 140px;
+      }
+      #img-rock {
+        top: 80px;
+        width: 130px;
+      }
+
+      .cenario-base-direito {
+        width: 150px;
+        height: 160px;
+      }
+      #img-avatar {
+        height: 120px;
+        right: 40px;
+        bottom: 10px;
+      }
+      #img-ground {
+        width: 150px;
+      }
+
+      #voador-container {
+        width: 300px;
+        height: 300px;
+      }
+      #voador-ptero {
+        height: 180px;
+      }
+      #voador-avatar {
+        height: 120px;
+        top: 110px;
+        left: 140px;
+      }
+      #avatar-caindo {
+        height: 120px;
+      }
     }
 
     /* TELA FINAL DE ANIMAÇÕES */
