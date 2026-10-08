@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo educativo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Container com largura e espaçamentos ampliados */
+    .container-inicio {
+      background: #ffffff;
+      padding: 50px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      border: 3px solid #2c3e50;
+    }
+
+    /* Fontes maiores e mais visíveis */
+    h1 {
+      font-size: 32px;
+      color: #2c3e50;
+      margin: 0 0 25px 0;
+    }
+
+    p {
+      font-size: 20px;
+      color: #34495e;
+      line-height: 1.6;
+      margin: 0 0 25px 0;
+    }
+
+    /* Estilos do Seletor e Pré-visualização do Avatar */
+    .area-avatar {
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn-procurar {
+      padding: 14px 28px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .btn-procurar:hover {
+      background-color: #2980b9;
+    }
+
+    /* Botão em tom de azul escuro para o autor */
+    .btn-autor {
+      padding: 14px 28px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #1f4e79;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .btn-autor:hover {
+      background-color: #153654;
+    }
+
+    .avatar-preview {
+      width: 150px;
+      height: 150px;
+      border: 3px solid #34495e;
+      border-radius: 8px;
+      object-fit: contain;
+      display: none;
+      background-color: #fff;
+      margin-top: 10px;
+    }
+
+    /* Container para alinhar os dois botões de iniciar */
+    .area-botoes-iniciar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn-iniciar {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #27ae60;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .btn-iniciar:hover:not(:disabled) {
+      background-color: #219150;
+    }
+
+    .btn-iniciar:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* NOVO BOTÃO SIMPLIFICADO: Verde mais escuro e tom apagado */
+    .btn-iniciar-simplificado {
+      background-color: #1e5b32;
+      opacity: 0.65;
+    }
+
+    .btn-iniciar-simplificado:hover:not(:disabled) {
+      background-color: #154123;
+      opacity: 1;
+    }
+
+    .btn-iniciar-simplificado:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-inicio">
+    <h1>Jogo educativo</h1>
+    
+    <p>Este jogo foi projetado para funcionar com uma imagem de uma pessoa em pé com fundo transparente em formatos como png.</p>
+    <p>Você pode pedir para sites de inteligência artificial transformarem uma foto sua em imagem com fundo transparente.</p>
+    <p><b>Escolha uma imagem sua para iniciar a atividade.</b></p>
+    <p><b>Ou use a imagem do autor desta atividade para ver como funciona.</b></p>
+
+    <!-- Área de Escolha e Exibição do Avatar -->
+    <div class="area-avatar">
+      <input type="file" id="input-avatar" accept="image/*" style="display: none;" onchange="carregarAvatar(event)">
+      
+      <button class="btn-procurar" onclick="document.getElementById('input-avatar').click()">Procurar imagem</button>
+      
+      <!-- Botão com tom de azul mais escuro -->
+      <button class="btn-autor" onclick="usarImagemAutor()">Usar a imagem do autor</button>
+      
+      <img id="avatar-preview" class="avatar-preview" alt="Pré-visualização do Avatar">
+    </div>
+
+    <!-- Área dos Botões Iniciar -->
+    <div class="area-botoes-iniciar">
+      <!-- Botão Iniciar Atividade Original -->
+      <button id="btn-iniciar" class="btn-iniciar" onclick="iniciarAtividade()" disabled>Iniciar atividade</button>
+
+      <!-- Novo Botão Iniciar Atividade Simplificada -->
+      <button id="btn-iniciar-simplificado" class="btn-iniciar btn-iniciar-simplificado" onclick="iniciarAtividadeSimplificada()" disabled>Iniciar atividade simplificada</button>
+    </div>
+  </div>
+
+  <script>
+    function carregarAvatar(event) {
+      const arquivo = event.target.files[0];
+      if (arquivo) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Image = e.target.result;
+          
+          // Armazena a imagem no LocalStorage para ser usada pelas páginas do jogo
+          localStorage.setItem('avatarData', base64Image);
+          
+          // Exibe a pré-visualização da imagem na tela
+          const imgPreview = document.getElementById('avatar-preview');
+          imgPreview.src = base64Image;
+          imgPreview.style.display = 'block';
+
+          // Habilita os botões para iniciar
+          document.getElementById('btn-iniciar').disabled = false;
+          document.getElementById('btn-iniciar-simplificado').disabled = false;
+        };
+        reader.readAsDataURL(arquivo);
+      }
+    }
+
+    // Função para usar a imagem do autor localizada na pasta pai
+    function usarImagemAutor() {
+      const caminhoAutor = "../Fernando/Fernando_Martin.png";
+      
+      // Salva o caminho da imagem do autor no LocalStorage
+      localStorage.setItem('avatarData', caminhoAutor);
+      
+      // Exibe a pré-visualização da imagem
+      const imgPreview = document.getElementById('avatar-preview');
+      imgPreview.src = caminhoAutor;
+      imgPreview.style.display = 'block';
+
+      // Habilita os botões para iniciar
+      document.getElementById('btn-iniciar').disabled = false;
+      document.getElementById('btn-iniciar-simplificado').disabled = false;
+    }
+
+    function iniciarAtividade() {
+      // Zera a pontuação no LocalStorage
+      localStorage.setItem("pontosAluno", 0);
+      localStorage.setItem("pontuacaoTotal", 0);
+
+      // Redireciona para a primeira página da atividade
+      window.location.href = "jurassic02.html";
+    }
+
+    function iniciarAtividadeSimplificada() {
+      // Zera a pontuação no LocalStorage
+      localStorage.setItem("pontosAluno", 0);
+      localStorage.setItem("pontuacaoTotal", 0);
+
+      // Redireciona para a versão simplificada da atividade
+      window.location.href = "jurassic02.html";
+    }
+  </script>
+
+</body>
+</html>

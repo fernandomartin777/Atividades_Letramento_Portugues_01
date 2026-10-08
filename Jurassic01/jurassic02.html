@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atividade Interativa - Letramento</title>
+  <style>
+    /* RESET & CORES DA FLORESTA */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+    :root {
+      --verde-escuro: #1e4620;
+      --verde-floresta: #2d6a4f;
+      --verde-folha: #52b788;
+      --verde-claro: #d8f3dc;
+      --fundo: #f0f7f4;
+      --texto: #1b4332;
+    }
+
+    body {
+      background-color: var(--fundo);
+      color: var(--texto);
+      min-height: 100vh;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* CONTAINER PRINCIPAL */
+    .app-container {
+      width: 100%;
+      max-width: 1000px;
+      background: #ffffff;
+      border: 3px solid var(--verde-floresta);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(45, 106, 79, 0.15);
+      z-index: 1;
+      margin-bottom: 80px;
+    }
+
+    /* CABEÇALHO E PROGRESSO */
+    .header-info {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .linha-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--verde-escuro);
+      margin-bottom: 8px;
+    }
+
+    .trilho-progresso {
+      width: 100%;
+      height: 22px;
+      background-color: var(--verde-claro);
+      border: 2px solid var(--verde-floresta);
+      border-radius: 11px;
+      overflow: hidden;
+    }
+
+    .barra-progresso {
+      height: 100%;
+      background-color: var(--verde-folha);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* TÍTULO MAIOR E CENTRALIZADO */
+    .titulo-principal {
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      color: var(--verde-escuro);
+      text-align: center;
+      font-weight: 800;
+      margin: 15px 0 20px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* PRATELEIRA DE IMAGENS (4 PRATELEIRAS x 4 CAIXAS) */
+    .estante-container {
+      width: 100%;
+      background: #e8f5e9;
+      border: 2px solid var(--verde-folha);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .prateleira {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: #c8e6c9;
+      padding: 8px;
+      border-radius: 8px;
+      border-bottom: 4px solid var(--verde-floresta);
+    }
+
+    .caixa-imagem {
+      aspect-ratio: 1;
+      background: #ffffff;
+      border: 2px solid var(--verde-folha);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .caixa-imagem img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* PARÁGRAFOS DEDICADOS E INTERATIVOS */
+    .painel-texto {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .paragrafoclass {
+      font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+      line-height: 1.8;
+      text-indent: 2em;
+      margin-bottom: 12px;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .char-clickable {
+      cursor: pointer;
+      color: #000000;
+      transition: color 0.1s;
+    }
+
+    .char-clickable.highlighted {
+      color: #e74c3c !important;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios {
+      width: 100%;
+      min-height: 42px;
+      background-color: var(--verde-claro);
+      border: 2px dashed var(--verde-folha);
+      border-radius: 10px;
+      padding: 6px 12px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .img-premio {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    /* QUADRADOS DE RESPOSTA */
+    .area-respostas {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    .linha-palavra {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .quadrado-letra {
+      width: clamp(36px, 7vw, 46px);
+      height: clamp(44px, 8vw, 54px);
+      border: 2px solid var(--verde-floresta);
+      border-radius: 8px;
+      text-align: center;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      font-weight: bold;
+      background: #ffffff;
+      outline: none;
+    }
+
+    .quadrado-espaco {
+      background-color: #a0a0a0 !important;
+      border-color: #707070 !important;
+      cursor: default;
+    }
+
+    .quadrado-correto {
+      background-color: #d4edda !important;
+      border-color: #28a745 !important;
+      color: #155724;
+    }
+
+    .quadrado-incorreto {
+      background-color: #f8d7da !important;
+      border-color: #dc3545 !important;
+      color: #721c24;
+    }
+
+    /* BOTÕES */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: var(--verde-floresta);
+      border: none;
+      padding: 14px 32px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 350px;
+      transition: transform 0.1s, background-color 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-acao:hover:not(:disabled) {
+      background-color: var(--verde-escuro);
+      transform: translateY(-2px);
+    }
+
+    .btn-acao:disabled {
+      background-color: #a5d6a7;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-proximo {
+      background-color: #27ae60;
+      display: none;
+    }
+
+    .btn-proximo:hover {
+      background-color: #1e8449;
+    }
+
+    /* PERSONAGENS SOBREPOSTOS FIXOS (OVERLAY) */
+    .overlay-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* LADO ESQUERDO SUPERIOR (PTEROSSAURO E ROCHA) */
+    .cenario-topo-esquerdo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: min(35vw, 400px);
+      height: min(40vh, 450px);
+    }
+
+    #img-pterosaur {
+      position: absolute;
+      top: 5px;
+      left: 0px;
+      height: min(32vh, 380px);
+      max-width: 100%;
+      z-index: 2;
+      object-fit: contain;
+    }
+
+    #img-rock {
+      position: absolute;
+      top: min(20vh, 230px);
+      left: 0px; /* Mantém encostado no canto esquerdo */
+      width: min(28vw, 75%); /* Acompanha o encolhimento do container e da tela */
+      max-width: 300px;
+      z-index: 1;
+      object-fit: contain;
+    }
+
+    /* LADO DIREITO INFERIOR (AVATAR E CHÃO) */
+    .cenario-base-direito {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: min(30vw, 320px);
+      height: min(35vh, 350px);
+    }
+
+    #img-avatar {
+      position: absolute;
+      bottom: min(2vh, 20px);
+      right: min(9vw, 100px);
+      height: min(26vh, 300px);
+      z-index: 2;
+      object-fit: contain;
+    }
+
+    #img-ground {
+      position: absolute;
+      bottom: 0;
+      right: 0; /* Mantém encostado no canto direito */
+      width: min(30vw, 100%); /* Redimensiona junto com a largura do container/avatar */
+      max-width: 320px;
+      z-index: 1;
+      object-fit: contain;
+    }
+
+    /* ELEMENTO VOADOR DINÂMICO (PTEROSSAURO + AVATAR) */
+    #voador-container {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      width: min(50vw, 600px);
+      height: min(50vw, 600px);
+      z-index: 300;
+      display: none;
+      pointer-events: none;
+    }
+
+    #voador-ptero {
+      position: absolute;
+      width: 100%;
+      height: min(35vh, 380px);
+      object-fit: contain;
+      z-index: 1;
+    }
+
+    #voador-avatar {
+      position: absolute;
+      height: min(22vh, 250px);
+      top: min(22vh, 250px);
+      left: min(25vw, 300px);
+      z-index: 2;
+      object-fit: contain;
+      display: none;
+    }
+
+    /* ELEMENTO INDEPENDENTE DE QUEDA DO AVATAR */
+    #avatar-caindo {
+      position: fixed;
+      height: min(22vh, 250px);
+      z-index: 310;
+      display: none;
+      pointer-events: none;
+      object-fit: contain;
+    }
+
+    /* REGRAS ESPECÍFICAS PARA TELAS MENORES (CELULARES E TABLETS) */
+    @media (max-width: 768px) {
+      .cenario-topo-esquerdo {
+        width: 180px;
+        height: 200px;
+      }
+      #img-pterosaur {
+        height: 140px;
+      }
+      #img-rock {
+        top: 80px;
+        width: 120px;
+        left: 0;
+      }
+
+      .cenario-base-direito {
+        width: 150px;
+        height: 160px;
+      }
+      #img-avatar {
+        height: 120px;
+        right: 40px;
+        bottom: 10px;
+      }
+      #img-ground {
+        width: 140px;
+        right: 0;
+      }
+
+      #voador-container {
+        width: 300px;
+        height: 300px;
+      }
+      #voador-ptero {
+        height: 180px;
+      }
+      #voador-avatar {
+        height: 120px;
+        top: 110px;
+        left: 140px;
+      }
+      #avatar-caindo {
+        height: 120px;
+      }
+    }
+
+    /* TELA FINAL DE ANIMAÇÕES */
+    .camada-final {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-fim {
+      position: absolute;
+      top: 20px;
+      padding: 12px 30px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+      background-color: var(--verde-floresta);
+      border: 3px solid #fff;
+      border-radius: 12px;
+      cursor: pointer;
+      z-index: 250;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      text-decoration: none;
+    }
+
+    /* CONTAINER FINAL DE VITÓRIA (PTEROSAUR-AWAY) */
+    #container-vitoria {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    #img-away {
+      width: 100vw;
+      height: 100vh;
+      object-fit: fill;
+    }
+
+    /* AVATAR NA VITÓRIA */
+    #avatar-vitoria {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 600px; /* AJUSTE O TAMANHO DO AVATAR AQUI */
+      z-index: 2;
+      object-fit: contain;
+    }
+
+    /* CONTAINER FINAL DE DERROTA (PTEROSAUR-NEST) */
+    #container-derrota {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #img-nest {
+      width: 100vw;
+      height: 100vh;
+      object-fit: fill;
+    }
+
+    /* AVATAR NA DERROTA */
+    #avatar-derrota {
+      position: absolute;
+      top: 47%;
+      left: 52%;
+      transform: translate(-50%, -50%);
+      height: 450px; /* AJUSTE O TAMANHO DO AVATAR AQUI */
+      z-index: 2;
+      object-fit: contain;
+    }
+/* PLACAR DE PONTUAÇÃO NA TELA FINAL */
+.placar-final {
+  position: absolute;
+  top: 20px;
+  left: 200px;
+  transform: translateX(-50%);
+  background-color: rgba(30, 70, 32, 0.9); /* Verde escuro semi-transparente */
+  color: #ffffff;
+  padding: 10px 25px;
+  border-radius: 12px;
+  border: 2px solid #ffffff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  z-index: 300; /* Fica acima da tela final (z-index: 200) e imagens */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  pointer-events: none;
+}    
+  </style>
+</head>
+<body>
+
+  <!-- ELEMENTOS SOBREPOSTOS EM PRIMEIRO PLANO -->
+  <div class="overlay-fixed">
+    <div class="cenario-topo-esquerdo">
+      <img id="img-pterosaur" src="pterosaur1.png" alt="Pterossauro">
+      <img id="img-rock" src="rock.png" alt="Rocha">
+    </div>
+
+    <div class="cenario-base-direito" id="box-avatar-base">
+      <img id="img-avatar" src="Fernando.png" alt="Avatar">
+      <img id="img-ground" src="ground.png" alt="Chão">
+    </div>
+
+    <!-- Pterossauro em voo unificado -->
+    <div id="voador-container">
+      <img id="voador-ptero" src="pterosaur5.png" alt="Pterossauro Voando">
+      <img id="voador-avatar" src="Fernando.png" alt="Avatar Carregado">
+    </div>
+
+    <!-- Elemento para queda independente do avatar -->
+    <img id="avatar-caindo" src="Fernando.png" alt="Avatar Caindo">
+  </div>
+
+  <!-- CONTAINER DA ATIVIDADE -->
+  <div class="app-container" id="main-app">
+    <div class="header-info">
+      <div class="linha-stats">
+        <span id="txt-contador">Questão 1 / 10</span>
+        <span>Pontos: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">30</span></span>
+      </div>
+      <div class="trilho-progresso">
+        <div id="barra-progresso" class="barra-progresso"></div>
+      </div>
+    </div>
+
+    <h1 class="titulo-principal" id="txt-titulo">Atividade de Português</h1>
+
+    <!-- PRATELEIRA PERMANENTE (4x4 CAIXAS) -->
+    <div class="estante-container">
+      <div class="prateleira" id="prat-0"></div>
+      <div class="prateleira" id="prat-1"></div>
+      <div class="prateleira" id="prat-2"></div>
+      <div class="prateleira" id="prat-3"></div>
+    </div>
+
+    <!-- PARÁGRAFOS INTERATIVOS DA QUESTÃO -->
+    <div class="painel-texto" id="painel-paragrafos"></div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div class="trilha-premios" id="trilha-premios"></div>
+
+    <!-- QUADRADOS DE RESPOSTA -->
+    <div class="area-respostas" id="area-respostas"></div>
+
+    <!-- BOTÕES EMPILHADOS -->
+    <div class="area-botoes">
+      <button id="btn-conferir" class="btn-acao" onclick="conferirResposta()">Conferir resposta</button>
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="proximaQuestao()">Próxima questão</button>
+    </div>
+  </div>
+
+  <!-- CAMADA FINAL -->
+  <div class="camada-final" id="camada-final">
+  <!-- PLACAR DE PONTUAÇÃO ADICIONADO AQUI -->
+  <div class="placar-final" id="placar-final">
+    Pontos: <span id="txt-pontos-final">0</span> / <span id="txt-max-pontos-final">0</span>
+  </div>
+
+    <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fim" id="btn-fim">Fim</a>
+
+    <!-- VITÓRIA (>= 50% DOS PONTOS) -->
+    <div id="container-vitoria">
+      <img id="img-away" src="pterosaur-away.jpg" alt="Pterossauro Voando Longe">
+      <img id="avatar-vitoria" src="Fernando.png" alt="Avatar Vitória">
+    </div>
+
+    <!-- DERROTA (< 50% DOS PONTOS) -->
+    <div id="container-derrota">
+      <img id="img-nest" src="pterosaur-nest.jpg" alt="Ninho do Pterossauro">
+      <img id="avatar-derrota" src="Fernando.png" alt="Avatar no Ninho">
+    </div>
+  </div>
+
+  <script>
+// BANCO DE DADOS - QUESTÕES
+    const questoes = [
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Ele mia."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["gato"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Cuidado para não cair."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["buraco"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Pode queimar."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["fogo"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Corta."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["faca"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Verde e tem sementes."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["quiabo"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Fruta grande."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["jaca"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Está com as roupas."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["gaveta"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Vai para o espaço."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["foguete"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Está no copo."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["suco"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Sobe na árvore."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["macaco"]
+      },
+      {
+        titulo: "Qual figura é a resposta certa?",
+        paragrafos: [
+          "Voa alto."
+        ],
+        imagens: ["../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/gato.png","../Atividades_com_imagens/faca.png", "../Atividades_com_imagens/quiabo.png", "../Atividades_com_imagens/macaco.png", "../Atividades_com_imagens/fogo.png", "../Atividades_com_imagens/jaca.png", "../Atividades_com_imagens/foguete.png", "../Atividades_com_imagens/aguia.png", "../Atividades_com_imagens/suco.png", "../Atividades_com_imagens/cozinha.png", "../Atividades_com_imagens/gaveta.png", "../Atividades_com_imagens/buraco.png", "../Atividades_com_imagens/galinha.png", "../Atividades_com_imagens/garrafa.png", "../Atividades_com_imagens/guarana.png" ],
+        respostas: ["águia"]
+      }     
+    ];
+
+    let indiceAtual = 0;
+    let pontosAtuais = 0;
+    let totalErrosAcumulados = 0;
+    let tentativasQuestao = 0;
+    let avatarCapturado = false;
+    let avatarSrc = "Fernando.png";
+
+    window.onload = function() {
+      const salvo = localStorage.getItem('avatarData');
+      if (salvo) {
+        avatarSrc = salvo;
+        document.getElementById('img-avatar').src = avatarSrc;
+        document.getElementById('voador-avatar').src = avatarSrc;
+        document.getElementById('avatar-caindo').src = avatarSrc;
+        document.getElementById('avatar-vitoria').src = avatarSrc;
+        document.getElementById('avatar-derrota').src = avatarSrc;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const questaoParam = parseInt(urlParams.get('q'), 10);
+      const pontosParam = parseInt(urlParams.get('p'), 10);
+
+      if (!isNaN(questaoParam) && questaoParam >= 1 && questaoParam <= questoes.length) {
+        indiceAtual = questaoParam - 1;
+      }
+
+      if (!isNaN(pontosParam) && pontosParam >= 0) {
+        pontosAtuais = pontosParam;
+      }
+
+      document.getElementById('txt-pontos').innerText = pontosAtuais;
+      document.getElementById('txt-max-pontos').innerText = questoes.length * 3;
+      
+      atualizarTrilhaPremios();
+      carregarQuestao(indiceAtual);
+    };
+
+    function carregarQuestao(idx) {
+      tentativasQuestao = 0;
+      
+      document.getElementById('btn-conferir').disabled = false;
+      document.getElementById('btn-conferir').style.display = 'block';
+      document.getElementById('btn-proximo').style.display = 'none';
+
+      const q = questoes[idx];
+      document.getElementById('txt-contador').innerText = `Questão ${idx + 1} / ${questoes.length}`;
+      document.getElementById('txt-titulo').innerText = q.titulo;
+
+      renderizarPrateleiras(q.imagens);
+      renderizarParagrafos(q.paragrafos);
+      renderizarQuadradosRespostas(q.respostas);
+      atualizarBarraProgresso();
+    }
+
+    function renderizarPrateleiras(imagensQuestao) {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`prat-${i}`).innerHTML = '';
+      }
+
+      for (let i = 0; i < 16; i++) {
+        const pratIdx = Math.floor(i / 4);
+        const caixa = document.createElement('div');
+        caixa.className = 'caixa-imagem';
+
+        if (i < imagensQuestao.length) {
+          const img = document.createElement('img');
+          img.src = imagensQuestao[i];
+          img.alt = `Imagem ${i+1}`;
+          caixa.appendChild(img);
+        }
+
+        document.getElementById(`prat-${pratIdx}`).appendChild(caixa);
+      }
+    }
+
+    function renderizarParagrafos(paragrafos) {
+      const painel = document.getElementById('painel-paragrafos');
+      painel.innerHTML = '';
+
+      paragrafos.forEach(pTexto => {
+        const p = document.createElement('p');
+        p.className = 'paragrafoclass';
+
+        for (let char of pTexto) {
+          const span = document.createElement('span');
+          span.innerText = char;
+          if (char !== ' ') {
+            span.className = 'char-clickable';
+            span.onclick = function() {
+              this.classList.toggle('highlighted');
+            };
+          }
+          p.appendChild(span);
+        }
+        painel.appendChild(p);
+      });
+    }
+
+    function renderizarQuadradosRespostas(respostas) {
+      const area = document.getElementById('area-respostas');
+      area.innerHTML = '';
+
+      respostas.forEach((resposta) => {
+        const linha = document.createElement('div');
+        linha.className = 'linha-palavra';
+
+        for (let i = 0; i < resposta.length; i++) {
+          const char = resposta[i];
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'quadrado-letra';
+
+          if (char === ' ') {
+            input.value = ' ';
+            input.readOnly = true;
+            input.classList.add('quadrado-espaco');
+          } else {
+            input.dataset.esperado = char;
+          }
+
+          linha.appendChild(input);
+        }
+        area.appendChild(linha);
+      });
+
+      configurarNavegacaoInputs();
+    }
+
+    function configurarNavegacaoInputs() {
+      const inputs = Array.from(document.querySelectorAll('.quadrado-letra:not(.quadrado-espaco)'));
+
+      inputs.forEach((input, index) => {
+        let isComposing = false;
+
+        input.addEventListener('compositionstart', function() {
+          isComposing = true;
+        });
+
+        input.addEventListener('compositionend', function() {
+          isComposing = false;
+          if (this.value.length > 1) {
+            this.value = this.value.slice(-1);
+          }
+          this.classList.remove('quadrado-correto', 'quadrado-incorreto');
+          
+          if (this.value.length === 1 && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('beforeinput', function(e) {
+          if (e.data === ' ') {
+            e.preventDefault();
+          }
+        });
+
+        input.addEventListener('input', function() {
+          if (isComposing) return;
+
+          this.value = this.value.replace(/\s/g, '');
+
+          if (this.value.length > 1) {
+            this.value = this.value.slice(-1);
+          }
+
+          this.classList.remove('quadrado-correto', 'quadrado-incorreto');
+
+          if (this.value.length === 1 && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && input.value === '' && index > 0) {
+            inputs[index - 1].focus();
+          }
+        });
+      });
+    }
+
+    function conferirResposta() {
+      tentativasQuestao++;
+      const inputs = document.querySelectorAll('.quadrado-letra:not(.quadrado-espaco)');
+      let tudoCorreto = true;
+
+      inputs.forEach(input => {
+        const digitado = input.value;
+        const esperado = input.dataset.esperado;
+
+        if (digitado.toLowerCase() === esperado.toLowerCase()) {
+          input.classList.remove('quadrado-incorreto');
+          input.classList.add('quadrado-correto');
+        } else {
+          input.classList.remove('quadrado-correto');
+          input.classList.add('quadrado-incorreto');
+          tudoCorreto = false;
+        }
+      });
+
+      if (tudoCorreto) {
+        let pontosGanhos = 0;
+        if (tentativasQuestao === 1) pontosGanhos = 3;
+        else if (tentativasQuestao === 2) pontosGanhos = 2;
+        else if (tentativasQuestao === 3) pontosGanhos = 1;
+
+        pontosAtuais += pontosGanhos;
+        document.getElementById('txt-pontos').innerText = pontosAtuais;
+        atualizarTrilhaPremios();
+
+        document.getElementById('btn-conferir').disabled = true;
+        const btnProximo = document.getElementById('btn-proximo');
+
+        if (indiceAtual === questoes.length - 1) {
+          btnProximo.innerText = "Terminar atividade";
+        } else {
+          btnProximo.innerText = "Próxima questão";
+        }
+        
+        btnProximo.style.display = 'block';
+
+        executarAnimacaoAcerto();
+
+      } else {
+        totalErrosAcumulados++;
+        executarAnimacaoErro();
+      }
+    }
+
+    function atualizarTrilhaPremios() {
+      const trilha = document.getElementById('trilha-premios');
+      trilha.innerHTML = '';
+      for (let i = 0; i < pontosAtuais; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        trilha.appendChild(img);
+      }
+    }
+
+    function atualizarBarraProgresso() {
+      const perc = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-progresso').style.width = `${perc}%`;
+    }
+
+    function executarAnimacaoErro() {
+      const ptero = document.getElementById('img-pterosaur');
+
+      if (totalErrosAcumulados === 1) {
+        ptero.src = "pterosaur2.png";
+      } else if (totalErrosAcumulados === 2) {
+        ptero.src = "pterosaur3.png";
+      } else if (totalErrosAcumulados === 3) {
+        ptero.src = "pterosaur4.png";
+      } else if (totalErrosAcumulados === 4) {
+        ptero.src = "pterosaur5.png";
+        animacaoVooCaptura();
+      } else if (totalErrosAcumulados > 4) {
+        animacaoPassagemVoador();
+      }
+    }
+
+    function executarAnimacaoAcerto() {
+      if (avatarCapturado) {
+        const ehUltimaQuestao = (indiceAtual === questoes.length - 1);
+        
+        if (ehUltimaQuestao) {
+          document.getElementById('btn-proximo').style.display = 'none';
+          animacaoPassagemComQueda();
+        } else {
+          animacaoPassagemVoador();
+        }
+      }
+    }
+
+    function animacaoVooCaptura() {
+      avatarCapturado = true;
+      const pteroRocha = document.getElementById('img-pterosaur');
+      const voador = document.getElementById('voador-container');
+      const voadorAvatar = document.getElementById('voador-avatar');
+      const imgAvatar = document.getElementById('img-avatar');
+
+      pteroRocha.style.visibility = 'hidden';
+      voador.style.display = 'block';
+
+      let currentTop = -10;
+      let currentLeft = 10;
+
+      const targetTop = window.innerHeight - 380;
+      const targetLeft = window.innerWidth - 380;
+
+      const steps = 40;
+      let step = 0;
+
+      const id = setInterval(() => {
+        step++;
+        currentTop += (targetTop - (-10)) / steps;
+        currentLeft += (targetLeft - 10) / steps;
+
+        voador.style.top = currentTop + 'px';
+        voador.style.left = currentLeft + 'px';
+
+        if (step === Math.floor(steps * 0.75)) {
+          imgAvatar.style.display = 'none';
+          voadorAvatar.style.display = 'block';
+        }
+
+        if (step >= steps) {
+          clearInterval(id);
+          animacaoSaidaCaptura(currentTop, currentLeft);
+        }
+      }, 24);
+    }
+
+    function animacaoSaidaCaptura(startTop, startLeft) {
+      const voador = document.getElementById('voador-container');
+      let currentLeft = startLeft;
+
+      const id = setInterval(() => {
+        currentLeft += 20;
+        voador.style.left = currentLeft + 'px';
+
+        if (currentLeft > window.innerWidth + 400) {
+          clearInterval(id);
+          voador.style.display = 'none';
+        }
+      }, 24);
+    }
+
+    function animacaoPassagemVoador() {
+      const voador = document.getElementById('voador-container');
+      const voadorAvatar = document.getElementById('voador-avatar');
+
+      voadorAvatar.style.display = 'block';
+      voador.style.display = 'block';
+      voador.style.top = (window.innerHeight * 0.2) + 'px';
+
+      const entraPelaEsquerda = Math.random() > 0.5;
+
+      if (entraPelaEsquerda) {
+        voador.style.transform = 'scaleX(1)';
+        let pos = -450;
+        const id = setInterval(() => {
+          pos += 18;
+          voador.style.left = pos + 'px';
+          if (pos > window.innerWidth + 450) {
+            clearInterval(id);
+            voador.style.display = 'none';
+          }
+        }, 24);
+      } else {
+        voador.style.transform = 'scaleX(-1)';
+        let pos = window.innerWidth + 450;
+        const id = setInterval(() => {
+          pos -= 18;
+          voador.style.left = pos + 'px';
+          if (pos < -450) {
+            clearInterval(id);
+            voador.style.display = 'none';
+          }
+        }, 24);
+      }
+    }
+
+    function animacaoPassagemComQueda() {
+      const voador = document.getElementById('voador-container');
+      const voadorAvatar = document.getElementById('voador-avatar');
+      const avatarCaindo = document.getElementById('avatar-caindo');
+
+      const pteroTop = window.innerHeight * 0.2;
+      voadorAvatar.style.display = 'block';
+      voador.style.display = 'block';
+      voador.style.top = pteroTop + 'px';
+      voador.style.transform = 'scaleX(1)';
+
+      let pos = -450;
+      const meioDaTela = (window.innerWidth / 2) - 300;
+      let soltouAvatar = false;
+
+      const idVoo = setInterval(() => {
+        pos += 18;
+        voador.style.left = pos + 'px';
+
+        if (!soltouAvatar && pos >= meioDaTela) {
+          soltouAvatar = true;
+          voadorAvatar.style.display = 'none';
+
+          let fallTop = pteroTop + 250; 
+          let fallLeft = pos + 300; 
+
+          avatarCaindo.style.top = fallTop + 'px';
+          avatarCaindo.style.left = fallLeft + 'px';
+          avatarCaindo.style.display = 'block';
+
+          let velocidadeQueda = 2;
+          const gravidade = 1.2;
+
+          const idQueda = setInterval(() => {
+            velocidadeQueda += gravidade;
+            fallTop += velocidadeQueda;
+            avatarCaindo.style.top = fallTop + 'px';
+
+            if (fallTop > window.innerHeight + 250) {
+              clearInterval(idQueda);
+              avatarCaindo.style.display = 'none';
+              avatarCapturado = false;
+              document.getElementById('btn-proximo').style.display = 'block';
+            }
+          }, 24);
+        }
+
+        if (pos > window.innerWidth + 450) {
+          clearInterval(idVoo);
+          voador.style.display = 'none';
+        }
+      }, 24);
+    }
+
+    function proximaQuestao() {
+      window.scrollTo(0, 0);
+
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+      } else {
+        executarAnimacaoFinal();
+      }
+    }
+
+    function executarAnimacaoFinal() {
+      document.querySelector('.overlay-fixed').style.display = 'none';
+      const camadaFinal = document.getElementById('camada-final');
+      camadaFinal.style.display = 'flex';
+
+      const pontuacaoMaxima = questoes.length * 3;
+      const metadePontos = pontuacaoMaxima / 2;
+      
+      // ATUALIZAÇÃO DOS PONTOS NA TELA FINAL 
+      document.getElementById('txt-pontos-final').innerText = pontosAtuais;
+      document.getElementById('txt-max-pontos-final').innerText = pontuacaoMaxima;
+
+      if (pontosAtuais >= metadePontos) {
+        document.getElementById('container-vitoria').style.display = 'flex';
+      } else {
+        document.getElementById('container-derrota').style.display = 'flex';
+      }
+    }
+  </script>
+</body>
+</html>
