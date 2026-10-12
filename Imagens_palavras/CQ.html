@@ -350,7 +350,7 @@
 
     <h1 class="titulo-principal">Coloque as figuras no lugar certo</h1>
 
-    <!-- CAIXA DE 16 ESPAÇOS (4x4) COM RÓTULOS E BOTÃO DE CHECADO -->
+    <!-- CAIXA DE 16 ESPAÇOS (4x4) COM RÓTULOS -->
     <div style="position: relative; width: 100%;">
       <div class="estante-container" id="grid-espacos">
         <!-- Preenchido via JavaScript -->
@@ -406,7 +406,7 @@
     let tentativasSlots = Array(16).fill(0);
     let slotsTravados = Array(16).fill(false);
 
-    // Cada goteira gerada guardará sua própria coordenada horizontal (posX fixa) e seu timer
+    // Armazena as goteiras ativas guardando a posição em porcentagem (0 a 1)
     let goteirasAtivas = [];
 
     window.onload = function() {
@@ -524,7 +524,6 @@
 
       const itemCorreto = listaItens[idx];
       if (caminho !== itemCorreto.caminho) {
-        // Erro silencioso: cria uma goteira independente com posição X fixa
         adicionarNovaGoteira();
       }
 
@@ -597,10 +596,13 @@
       }
     }
 
-    // CRIAÇÃO DA GOTA COM POSIÇÃO X FIXA E RITMO TEMPORAL PRÓPRIO
-    function criarGotaNaPosicao(posX) {
+    // CRIAÇÃO DA GOTA USANDO PORCENTAGEM (POSIÇÃO PROPORCIONAL AO REDIMENSIONAR)
+    function criarGotaNaPorcentagem(porcentagemX) {
       const gota = document.createElement('div');
       gota.className = 'gota-agua';
+      
+      // Converte a porcentagem salva para a largura atual da tela
+      const posX = porcentagemX * (window.innerWidth - 40);
       gota.style.left = `${posX}px`;
 
       gota.innerHTML = `
@@ -628,18 +630,18 @@
     function adicionarNovaGoteira() {
       if (goteirasAtivas.length >= 12) return; // Limite máximo de 12 goteiras
 
-      // Sorteia a coordenada horizontal fixa (posX) para esta goteira específica
-      const posX = Math.random() * (window.innerWidth - 40);
+      // Sorteia a posição horizontal em proporção (0 a 1)
+      const porcentagemX = Math.random();
 
-      // Dispara imediatamente a primeira queda nesta coordenada
-      criarGotaNaPosicao(posX);
+      // Dispara imediatamente a primeira queda nesta proporção
+      criarGotaNaPorcentagem(porcentagemX);
 
       // Define o ritmo temporal: primeiras 5 goteiras a cada 2s, da 6ª em diante a cada 1s
       const indiceGoteira = goteirasAtivas.length;
       const frequencia = (indiceGoteira >= 5) ? 1000 : 2000;
 
       const intervaloId = setInterval(() => {
-        criarGotaNaPosicao(posX); // Continua pingando exatamente na mesma coordenada horizontal
+        criarGotaNaPorcentagem(porcentagemX); // Recria a gota usando a mesma proporção ao pingar
       }, frequencia);
 
       goteirasAtivas.push(intervaloId);
