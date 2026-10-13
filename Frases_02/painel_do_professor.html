@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Professor - Controle de XP e Retomada</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            text-align: center;
+            max-width: 550px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        h2 { color: #2c3e50; margin-bottom: 5px; }
+
+        .placar {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #e8f8f5;
+            border-radius: 6px;
+        }
+
+        .secao {
+            background: #ffffff;
+            border: 1px solid #dcdde1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .campo-input {
+            font-size: 16pt;
+            font-family: Georgia, serif;
+            width: 100px;
+            text-align: center;
+            padding: 5px;
+            margin: 5px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+
+        label {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .container-avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .preview-avatar {
+            width: 90px;
+            height: 90px;
+            border: 3px solid #2980b9;
+            border-radius: 8px;
+            object-fit: contain;
+            background-color: #ffffff;
+            display: none;
+        }
+
+        .btn-arquivo {
+            font-size: 12pt;
+            padding: 8px 12px;
+            background-color: #34495e;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-arquivo:hover {
+            background-color: #2c3e50;
+        }
+
+        button {
+            font-size: 14pt;
+            font-family: Georgia, serif;
+            padding: 10px 20px;
+            margin: 8px 4px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-zerar { background-color: #e74c3c; }
+        .btn-atribuir { background-color: #27ae60; width: 90%; margin-top: 10px; }
+        .btn-zerar:hover { background-color: #c0392b; }
+        .btn-atribuir:hover { background-color: #1e8449; }
+    </style>
+</head>
+<body>
+
+    <h2>Painel do Professor</h2>
+    <p style="margin-top:0; color:#7f8c8d;">Controle de XP e Retomada de Atividade</p>
+    
+    <div class="placar">
+        Pontuação Atual: <span id="lblPontos">0</span> XP
+    </div>
+
+    <!-- ZERAR NAVEGADOR -->
+    <div class="secao">
+        <button class="btn-zerar" onclick="zerarPontuacao()">Zerar Histórico do Navegador</button>
+    </div>
+
+    <!-- CONTINUAR DE UMA QUESTÃO ESPECÍFICA -->
+    <div class="secao">
+        <h3 style="margin-top:0; color:#2c3e50;">Retomada do Aluno</h3>
+        
+        <div style="margin-bottom: 15px;">
+            <label>1. Escolher Imagem de Avatar:</label>
+            <div class="container-avatar-upload">
+                <input type="file" id="inputAvatar" accept="image/*" style="display: none;" onchange="carregarImagemAvatar(event)">
+                <button type="button" class="btn-arquivo" onclick="document.getElementById('inputAvatar').click()">Navegar nos arquivos...</button>
+                <img id="imgPreview" class="preview-avatar" alt="Pré-visualização do Avatar">
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around; margin-bottom: 10px;">
+            <div>
+                <label for="inputQuestao">2. Questão:</label><br>
+                <input type="number" id="inputQuestao" class="campo-input" value="1" min="1" max="20">
+            </div>
+
+            <div>
+                <label for="inputPontos">3. Pontos (XP):</label><br>
+                <input type="number" id="inputPontos" class="campo-input" value="0" min="0">
+            </div>
+        </div>
+
+        <button class="btn-atribuir" onclick="aplicarEIniciar()">Salvar e Abrir no Jogo</button>
+    </div>
+
+    <script>
+        let avatarDataURL = "";
+        const chavesPontos = ["pontosAluno", "pontosTotais", "pontuacaoTotal"];
+
+        window.onload = function() {
+            atualizarExibicao();
+            carregarAvatarAtual();
+        };
+
+        function carregarAvatarAtual() {
+            const salvo = localStorage.getItem('avatarData');
+            if (salvo) {
+                avatarDataURL = salvo;
+                const img = document.getElementById('imgPreview');
+                img.src = salvo;
+                img.style.display = 'block';
+            }
+        }
+
+        function carregarImagemAvatar(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                avatarDataURL = e.target.result;
+                const img = document.getElementById('imgPreview');
+                img.src = avatarDataURL;
+                img.style.display = 'block';
+            };
+            leitor.readAsDataURL(arquivo);
+        }
+
+        function obterPontosAtuais() {
+            for (let chave of chavesPontos) {
+                const valor = localStorage.getItem(chave);
+                if (valor !== null) return parseInt(valor, 10);
+            }
+            return 0;
+        }
+
+        function salvarPontosEmTodasChaves(valor) {
+            chavesPontos.forEach(chave => localStorage.setItem(chave, valor));
+        }
+
+        function atualizarExibicao() {
+            document.getElementById("lblPontos").innerText = obterPontosAtuais();
+        }
+
+        function zerarPontuacao() {
+            salvarPontosEmTodasChaves(0);
+            localStorage.removeItem('avatarData');
+            avatarDataURL = "";
+            document.getElementById('imgPreview').style.display = 'none';
+            atualizarExibicao();
+            alert("✅ Pontuação e Avatar zerados no navegador!");
+        }
+
+        function aplicarEIniciar() {
+            const questao = document.getElementById("inputQuestao").value || "1";
+            const pontos = document.getElementById("inputPontos").value || "0";
+
+            salvarPontosEmTodasChaves(parseInt(pontos, 10));
+
+            if (avatarDataURL) {
+                localStorage.setItem('avatarData', avatarDataURL);
+            }
+
+            window.location.href = `jogo.html?q=${questao}&p=${pontos}`;
+        }
+    </script>
+
+</body>
+</html>
