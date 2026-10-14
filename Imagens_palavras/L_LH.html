@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coloque as figuras no lugar certo</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+    body {
+      background-color: #f7f3ed;
+      color: #2c221e;
+      min-height: 100vh;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* CONTAINER PRINCIPAL (TEMA TONS DE MADEIRA) */
+    .app-container {
+      width: 100%;
+      max-width: 1000px;
+      background: #ffffff;
+      border: 3px solid #8b5a2b;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(139, 90, 43, 0.2);
+      z-index: 10;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    /* CABEÇALHO E PROGRESSO */
+    .header-info {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .linha-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #5c3a21;
+      margin-bottom: 8px;
+    }
+
+    .trilho-progresso {
+      width: 100%;
+      height: 22px;
+      background-color: #f5ebe0;
+      border: 2px solid #a67c52;
+      border-radius: 11px;
+      overflow: hidden;
+    }
+
+    .barra-progresso {
+      height: 100%;
+      background-color: #b8860b;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* TÍTULO MAIOR E CENTRALIZADO */
+    .titulo-principal {
+      font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+      color: #5c3a21;
+      text-align: center;
+      font-weight: 800;
+      margin: 15px 0 20px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* CAIXA DE 16 ESPAÇOS (4 LINHAS POR 4 COLUNAS) APROVEITANDO O TAMANHO DA TELA */
+    .estante-container {
+      width: 100%;
+      background: #faebd7;
+      border: 3px solid #8b5a2b;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 25px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .estante-container {
+        gap: 8px;
+        padding: 10px;
+      }
+    }
+
+    .slot-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #fdfaf6;
+      border: 2px solid #d2b48c;
+      border-radius: 8px;
+      padding: 8px;
+      transition: all 0.2s;
+    }
+
+    .slot-container.selecionado {
+      border-color: #e67e22;
+      background-color: #fef5e7;
+      box-shadow: 0 0 8px rgba(230, 126, 34, 0.4);
+    }
+
+    .slot-encaixe {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #ffffff;
+      border: 2px dashed #a67c52;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slot-encaixe img {
+      width: 90%;
+      height: 90%;
+      object-fit: contain;
+      cursor: pointer;
+    }
+
+    /* RÓTULO COM TAMANHO DOBRADO E BEM VISÍVEL */
+    .rotulo-slot {
+      margin-top: 8px;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: bold;
+      text-align: center;
+      color: #2c221e;
+      user-select: none;
+      word-break: break-word;
+    }
+
+    .letra-clicavel {
+      cursor: pointer;
+      transition: color 0.1s;
+    }
+
+    .letra-clicavel.vermelha {
+      color: #e74c3c !important;
+    }
+
+    /* BOTÃO REDONDO COM SÍMBOLO DE CHECADO NO CANTO INFERIOR DIREITO DA CAIXA */
+    .btn-validar-redondo {
+      position: absolute;
+      bottom: -22px;
+      right: 15px;
+      width: 54px;
+      height: 54px;
+      background-color: #27ae60;
+      color: #ffffff;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      z-index: 20;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .btn-validar-redondo:hover {
+      background-color: #219653;
+      transform: scale(1.08);
+    }
+
+    /* ÁREA DE IMAGENS DISPONÍVEIS ABAIXO DA CAIXA */
+    .banco-imagens-container {
+      width: 100%;
+      background: #f5ebe0;
+      border: 2px dashed #a67c52;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 35px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .item-banco {
+      width: clamp(90px, 20vw, 140px);
+      height: clamp(90px, 20vw, 140px);
+      background: #ffffff;
+      border: 2px solid #8b5a2b;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .item-banco:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .item-banco img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios {
+      width: 100%;
+      min-height: 42px;
+      background-color: #f5ebe0;
+      border: 2px dashed #8b5a2b;
+      border-radius: 10px;
+      padding: 6px 12px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .img-premio {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    /* SISTEMA DE GOTEIRAS COM 85% DE OPACIDADE E 15% DE TRANSPARÊNCIA */
+    .gota-agua {
+      position: fixed;
+      top: -50px;
+      width: 26px;
+      height: 38px;
+      pointer-events: none;
+      z-index: 99999;
+      opacity: 0.85; /* 85% de opacidade / 15% de transparência */
+      animation: cairGota 2s linear forwards;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+    }
+
+    @keyframes cairGota {
+      0% {
+        transform: translateY(0) scaleY(1);
+      }
+      50% {
+        transform: translateY(calc(50vh)) scaleY(1.2);
+      }
+      100% {
+        transform: translateY(calc(100vh + 60px)) scaleY(1);
+      }
+    }
+
+    /* TELA FINAL / OVERLAY DE PARABÉNS */
+    .camada-final {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 100000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .modal-fim {
+      background: #ffffff;
+      border: 4px solid #8b5a2b;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .modal-fim h2 {
+      font-size: 2rem;
+      color: #5c3a21;
+    }
+
+    .modal-fim p {
+      font-size: 1.3rem;
+      color: #2c221e;
+    }
+
+    .btn-fim {
+      padding: 14px 35px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #fff;
+      background-color: #27ae60;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .btn-fim:hover {
+      background-color: #219653;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONTAINER DA ATIVIDADE -->
+  <div class="app-container" id="main-app">
+    <div class="header-info">
+      <div class="linha-stats">
+        <span id="txt-contador">Atividade Prática</span>
+        <span>Pontos: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">48</span></span>
+      </div>
+      <div class="trilho-progresso">
+        <div id="barra-progresso" class="barra-progresso"></div>
+      </div>
+    </div>
+
+    <h1 class="titulo-principal">Coloque as figuras no lugar certo</h1>
+
+    <!-- CAIXA DE 16 ESPAÇOS (4x4) COM RÓTULOS -->
+    <div style="position: relative; width: 100%;">
+      <div class="estante-container" id="grid-espacos">
+        <!-- Preenchido via JavaScript -->
+      </div>
+      <!-- BOTÃO REDONDO COM SÍMBOLO DE CHECADO -->
+      <button class="btn-validar-redondo" onclick="validarEncaixes()" title="Conferir Encaixes">✓</button>
+    </div>
+
+    <!-- BANCO DE IMAGENS DISPONÍVEIS ABAIXO -->
+    <div class="banco-imagens-container" id="banco-imagens">
+      <!-- Preenchido aleatoriamente via JavaScript -->
+    </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div class="trilha-premios" id="trilha-premios"></div>
+  </div>
+
+  <!-- TELA FINAL / OVERLAY -->
+  <div class="camada-final" id="camada-final">
+    <div class="modal-fim">
+      <h2>Parabéns!</h2>
+      <p>Você completou a atividade com sucesso!</p>
+      <p>Pontos alcançados: <span id="pontos-alcancados-final">0</span> / <span id="pontos-maximos-final">48</span></p>
+      <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fim">Fim</a>
+    </div>
+  </div>
+
+  <script>
+    // LISTA DOS 16 ESPAÇOS E SUAS RESPECTIVAS IMAGENS E RÓTULOS
+    const listaItens = [
+      { caminho: "../Atividades_com_imagens/lata.png", nome: "lata" },
+      { caminho: "../Atividades_com_imagens/panela.png", nome: "panela" },
+      { caminho: "../Atividades_com_imagens/lapis.png", nome: "lápis" },
+      { caminho: "../Atividades_com_imagens/elefante.png", nome: "elefante" },
+      { caminho: "../Atividades_com_imagens/leao.png", nome: "leão" },
+      { caminho: "../Atividades_com_imagens/livros.png", nome: "livros" },
+      { caminho: "../Atividades_com_imagens/linha.png", nome: "linha" },
+      { caminho: "../Atividades_com_imagens/tijolo.png", nome: "tijolo" },
+      { caminho: "../Atividades_com_imagens/cavalo.png", nome: "cavalo" },
+      { caminho: "../Atividades_com_imagens/lua.png", nome: "lua" },
+      { caminho: "../Atividades_com_imagens/luvas.png", nome: "luvas" },
+      { caminho: "../Atividades_com_imagens/olho.png", nome: "olho" },
+      { caminho: "../Atividades_com_imagens/folha.png", nome: "folha" },
+      { caminho: "../Atividades_com_imagens/milho.png", nome: "milho" },
+      { caminho: "../Atividades_com_imagens/telhas.png", nome: "telhas" },
+      { caminho: "../Atividades_com_imagens/galho.png", nome: "galho" }
+    ];
+
+    let pontosAtuais = 0;
+    let slotSelecionadoIdx = null;
+    let bancoImagens = [];
+    let estadoSlots = Array(16).fill(null);
+    let tentativasSlots = Array(16).fill(0);
+    let slotsTravados = Array(16).fill(false);
+
+    // Armazena as goteiras ativas guardando a posição em porcentagem (0 a 1)
+    let goteirasAtivas = [];
+
+    window.onload = function() {
+      const pParam = new URLSearchParams(window.location.search).get('p');
+      if (pParam !== null && !isNaN(pParam)) {
+        pontosAtuais = parseInt(pParam, 10);
+      } else {
+        pontosAtuais = parseInt(localStorage.getItem('pontosAluno') || '0', 10);
+      }
+
+      document.getElementById('txt-max-pontos').innerText = listaItens.length * 3;
+      atualizarInterface();
+      iniciarAtividade();
+    };
+
+    function iniciarAtividade() {
+      bancoImagens = [...listaItens].map(item => item.caminho);
+      bancoImagens.sort(() => Math.random() - 0.5);
+
+      renderizarGrade();
+      renderizarBanco();
+    }
+
+    function renderizarGrade() {
+      const grid = document.getElementById('grid-espacos');
+      grid.innerHTML = '';
+
+      listaItens.forEach((item, idx) => {
+        const slotContainer = document.createElement('div');
+        slotContainer.className = 'slot-container';
+        if (slotSelecionadoIdx === idx) {
+          slotContainer.classList.add('selecionado');
+        }
+
+        const slotEncaixe = document.createElement('div');
+        slotEncaixe.className = 'slot-encaixe';
+        slotEncaixe.onclick = () => selecionarSlot(idx);
+
+        if (estadoSlots[idx]) {
+          const img = document.createElement('img');
+          img.src = estadoSlots[idx];
+          img.alt = item.nome;
+          img.onclick = (e) => {
+            e.stopPropagation();
+            desencaixarFigura(idx);
+          };
+          slotEncaixe.appendChild(img);
+        }
+
+        const rotulo = document.createElement('div');
+        rotulo.className = 'rotulo-slot';
+        
+        for (let letra of item.nome) {
+          const span = document.createElement('span');
+          span.className = 'letra-clicavel';
+          span.innerText = letra;
+          span.onclick = (e) => {
+            e.stopPropagation();
+            span.classList.toggle('vermelha');
+          };
+          rotulo.appendChild(span);
+        }
+
+        slotContainer.appendChild(slotEncaixe);
+        slotContainer.appendChild(rotulo);
+        grid.appendChild(slotContainer);
+      });
+    }
+
+    function renderizarBanco() {
+      const banco = document.getElementById('banco-imagens');
+      banco.innerHTML = '';
+
+      bancoImagens.forEach((caminho) => {
+        const itemBanco = document.createElement('div');
+        itemBanco.className = 'item-banco';
+        itemBanco.onclick = () => selecionarFiguraBanco(caminho);
+
+        const img = document.createElement('img');
+        img.src = caminho;
+        img.alt = "Figura";
+        itemBanco.appendChild(img);
+
+        banco.appendChild(itemBanco);
+      });
+    }
+
+    function selecionarSlot(idx) {
+      if (slotsTravados[idx]) return;
+      
+      if (estadoSlots[idx]) {
+        desencaixarFigura(idx);
+        return;
+      }
+
+      slotSelecionadoIdx = idx;
+      renderizarGrade();
+    }
+
+    function selecionarFiguraBanco(caminho) {
+      if (slotSelecionadoIdx !== null && !estadoSlots[slotSelecionadoIdx]) {
+        encaixarFiguraNoSlot(slotSelecionadoIdx, caminho);
+        slotSelecionadoIdx = null;
+      } else {
+        const primeiroVazio = estadoSlots.findIndex((val, i) => val === null && !slotsTravados[i]);
+        if (primeiroVazio !== -1) {
+          encaixarFiguraNoSlot(primeiroVazio, caminho);
+        }
+      }
+    }
+
+    function encaixarFiguraNoSlot(idx, caminho) {
+      estadoSlots[idx] = caminho;
+      bancoImagens = bancoImagens.filter(c => c !== caminho);
+
+      const itemCorreto = listaItens[idx];
+      if (caminho !== itemCorreto.caminho) {
+        adicionarNovaGoteira();
+      }
+
+      renderizarGrade();
+      renderizarBanco();
+    }
+
+    function desencaixarFigura(idx) {
+      if (slotsTravados[idx]) return;
+
+      const caminho = estadoSlots[idx];
+      if (caminho) {
+        estadoSlots[idx] = null;
+        bancoImagens.push(caminho);
+        slotSelecionadoIdx = idx;
+        renderizarGrade();
+        renderizarBanco();
+      }
+    }
+
+    function validarEncaixes() {
+      listaItens.forEach((item, idx) => {
+        if (slotsTravados[idx]) return;
+
+        const figuraAtual = estadoSlots[idx];
+        if (!figuraAtual) return;
+
+        tentativasSlots[idx]++;
+
+        if (figuraAtual === item.caminho) {
+          slotsTravados[idx] = true;
+          
+          let pontosGanhos = 0;
+          let tent = tentativasSlots[idx];
+          if (tent === 1) pontosGanhos = 3;
+          else if (tent === 2) pontosGanhos = 2;
+          else if (tent === 3) pontosGanhos = 1;
+
+          pontosAtuais += pontosGanhos;
+          atualizarInterface();
+        } else {
+          estadoSlots[idx] = null;
+          bancoImagens.push(figuraAtual);
+          adicionarNovaGoteira();
+        }
+      });
+
+      renderizarGrade();
+      renderizarBanco();
+
+      if (slotsTravados.every(val => val === true)) {
+        mostrarTelaFinal();
+      }
+    }
+
+    function atualizarInterface() {
+      document.getElementById('txt-pontos').innerText = pontosAtuais;
+      localStorage.setItem('pontosAluno', pontosAtuais);
+
+      const perc = (slotsTravados.filter(Boolean).length / listaItens.length) * 100;
+      document.getElementById('barra-progresso').style.width = `${perc}%`;
+
+      const trilha = document.getElementById('trilha-premios');
+      trilha.innerHTML = '';
+      for (let i = 0; i < pontosAtuais; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        trilha.appendChild(img);
+      }
+    }
+
+    // CRIAÇÃO DA GOTA USANDO PORCENTAGEM (POSIÇÃO PROPORCIONAL AO REDIMENSIONAR)
+    function criarGotaNaPorcentagem(porcentagemX) {
+      const gota = document.createElement('div');
+      gota.className = 'gota-agua';
+      
+      // Converte a porcentagem salva para a largura atual da tela
+      const posX = porcentagemX * (window.innerWidth - 40);
+      gota.style.left = `${posX}px`;
+
+      gota.innerHTML = `
+        <svg viewBox="0 0 100 140" width="100%" height="100%">
+          <defs>
+            <linearGradient id="gradGotaForte" x1="30%" y1="0%" x2="70%" y2="100%">
+              <stop offset="0%" stop-color="#85c1e9" stop-opacity="1" />
+              <stop offset="40%" stop-color="#3498db" stop-opacity="1" />
+              <stop offset="100%" stop-color="#1b4f72" stop-opacity="1" />
+            </linearGradient>
+          </defs>
+          <path d="M50 0 C50 0 95 65 95 95 C95 120 75 140 50 140 C25 140 5 120 5 95 C5 65 50 0 50 0 Z" 
+                fill="url(#gradGotaForte)" 
+                stroke="#1b4f72" 
+                stroke-width="1.5" 
+                stroke-opacity="1" />
+          <ellipse cx="35" cy="85" rx="7" ry="16" fill="#ffffff" fill-opacity="0.85" transform="rotate(-25 35 85)" />
+        </svg>
+      `;
+
+      document.body.appendChild(gota);
+      setTimeout(() => gota.remove(), 2000);
+    }
+
+    function adicionarNovaGoteira() {
+      if (goteirasAtivas.length >= 12) return; // Limite máximo de 12 goteiras
+
+      // Sorteia a posição horizontal em proporção (0 a 1)
+      const porcentagemX = Math.random();
+
+      // Dispara imediatamente a primeira queda nesta proporção
+      criarGotaNaPorcentagem(porcentagemX);
+
+      // Define o ritmo temporal: primeiras 5 goteiras a cada 2s, da 6ª em diante a cada 1s
+      const indiceGoteira = goteirasAtivas.length;
+      const frequencia = (indiceGoteira >= 5) ? 1000 : 2000;
+
+      const intervaloId = setInterval(() => {
+        criarGotaNaPorcentagem(porcentagemX); // Recria a gota usando a mesma proporção ao pingar
+      }, frequencia);
+
+      goteirasAtivas.push(intervaloId);
+    }
+
+    function mostrarTelaFinal() {
+      goteirasAtivas.forEach(id => clearInterval(id));
+      goteirasAtivas = [];
+
+      document.getElementById('pontos-alcancados-final').innerText = pontosAtuais;
+      document.getElementById('pontos-maximos-final').innerText = listaItens.length * 3;
+      document.getElementById('camada-final').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
