@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo Educativo - Início</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    body {
+      background-color: #f7f3ed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container-inicio {
+      background: #ffffff;
+      padding: 50px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(139, 90, 43, 0.2);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      border: 3px solid #8b5a2b;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      color: #5c3a21;
+      margin: 0 0 20px 0;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #2c221e;
+      line-height: 1.6;
+      margin: 0 0 35px 0;
+    }
+
+    .btn-iniciar {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #27ae60;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .btn-iniciar:hover {
+      background-color: #219653;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-inicio">
+    <h1>Coloque as figuras no lugar certo</h1>
+    <p>Clique no botão abaixo para iniciar a atividade e testar seus conhecimentos.</p>
+
+    <!-- Botão de Iniciar Atividade Ativo -->
+    <button class="btn-iniciar" onclick="iniciarAtividade()">Iniciar atividade</button>
+  </div>
+
+  <script>
+    function iniciarAtividade() {
+      // Zera a pontuação no LocalStorage
+      localStorage.setItem("pontosAluno", 0);
+      localStorage.setItem("pontuacaoTotal", 0);
+
+      // Redireciona para a atividade principal
+      window.location.href = "JG.html";
+    }
+  </script>
+
+</body>
+</html>
