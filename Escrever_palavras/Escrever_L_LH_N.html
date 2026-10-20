@@ -168,7 +168,6 @@
     /* CORREÇÃO PARA TELAS VERTICAIS / ESTREITAS */
     @media (max-width: 768px), (orientation: portrait) {
       #dog-box {
-        /* Ajuste este valor se precisar calibrar milimetricamente no celular */
         --max-posicao: 65%; 
       }
     }
@@ -509,7 +508,7 @@
 
     function carregarQuestao(index) {
       tentativasQuestao = 0;
-      passosDog = 0;
+      // Removida a linha que resetava o passosDog para 0, permitindo que a posição persista
 
       const btnConferir = document.getElementById('btn-conferir');
       btnConferir.style.display = 'block';
@@ -682,6 +681,9 @@
         localStorage.setItem('pontosAluno', pontuacaoAcumulada);
         localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
 
+        // O cachorro recua apenas um passo para trás ao acertar
+        passosDog = Math.max(0, passosDog - 1);
+
         document.getElementById('btn-conferir').disabled = true;
 
         const btnProximo = document.getElementById('btn-proximo');
@@ -721,10 +723,9 @@
         containerPremios.appendChild(img);
       }
 
-      // Define o limite dinâmico: 82% para telas horizontais e 65% (exemplo) para celulares verticais
       let limiteMovimento = 82;
       if (window.innerWidth <= 768 || window.innerHeight > window.innerWidth) {
-        limiteMovimento = 65; // Reduz o percurso no celular para o cachorro parar certinho no avatar
+        limiteMovimento = 65; 
       }
 
       const porcentagemAproximacao = (passosDog / maxPassos) * limiteMovimento;
