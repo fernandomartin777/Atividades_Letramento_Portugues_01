@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atividade de Leitura e Interpretação de Frases</title>
+  <!-- Importação da biblioteca Typo.js para checagem ortográfica offline -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typo.js/1.2.1/typo.min.js"></script>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #000000;
+    }
+
+    html {
+      font-size: 20px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 17px;
+      }
+    }
+
+    body {
+      background-color: #f4f0f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* CONTAINER PRINCIPAL (PALETA LILÁS) */
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border: 2px solid #8e44ad;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(142, 68, 173, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE LILÁS/ROXO */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #f2e6f9;
+      border: 2px solid #a569bd;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #8e44ad;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .info-pontos {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #5b2c6f;
+    }
+
+    /* CONTADOR DE QUESTÕES E TÍTULO */
+    .contador-questoes {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #8e44ad;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .titulo-questao {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 5px 0 15px 0;
+    }
+
+    /* CONTAINER DAS IMAGENS OCUPANDO 100% DA LARGURA */
+    .container-imagens {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .imagem-exibida {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      border-radius: 8px;
+      border: 2px solid #d2b4de;
+      object-fit: contain;
+    }
+
+    /* INSTRUÇÕES E TEXTOS */
+    .instrucao-texto {
+      width: 100%;
+      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      line-height: 1.5;
+      margin: 10px 0 15px 0;
+      text-align: left;
+    }
+
+    /* CAIXA DE MENSAGEM DE FEEDBACK PEDAGÓGICO */
+    .feedback-msg {
+      width: 100%;
+      background-color: #fdf2e9;
+      border: 1px solid #f39c12;
+      color: #784212;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      display: none;
+    }
+
+    /* CAMPO DE INPUT FIXO / TEXTAREA */
+    .campo-resposta-container {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .input-frase {
+      width: 100%;
+      height: 110px;
+      font-size: clamp(1.1rem, 3.2vw, 1.4rem);
+      font-family: Georgia, 'Times New Roman', serif;
+      padding: 12px;
+      border: 2px solid #8e44ad;
+      border-radius: 8px;
+      background-color: #faf5fc;
+      resize: none;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .input-frase:focus {
+      border-color: #6c3483;
+      background-color: #ffffff;
+    }
+
+    .input-correto {
+      background-color: #d4efdf !important;
+      border-color: #27ae60 !important;
+    }
+
+    .input-incorreto {
+      background-color: #fadbd8 !important;
+      border-color: #e74c3c !important;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 38px;
+      background-color: #fcf8ff;
+      border: 1.5px dashed #8e44ad;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    /* ÁREA DE BOTÕES */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #8e44ad;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    .btn-acao:hover:not(:disabled) {
+      background-color: #6c3483;
+    }
+
+    .btn-acao:disabled {
+      background-color: #bdc3c7 !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-proximo {
+      background-color: #27ae60;
+      display: none;
+    }
+
+    .btn-proximo:hover {
+      background-color: #1e8449;
+    }
+
+    .btn-terminar {
+      background-color: #2980b9;
+      display: none;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-terminar:hover {
+      background-color: #1f618d;
+    }
+
+    /* SISTEMA DE MOSCAS */
+    .mosca-inseto {
+      position: fixed;
+      width: clamp(40px, 8vw, 48px);
+      height: clamp(40px, 8vw, 48px);
+      background-image: url('mosca.png');
+      background-size: 200% 200%;
+      z-index: 9999;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.15s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-pontos">
+        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">24</span>
+      </div>
+    </div>
+
+    <!-- CONTADOR E TÍTULO -->
+    <div id="contador-questoes" class="contador-questoes">Questão 1 de 9</div>
+    <div class="titulo-questao">VEJA A FIGURA E LEIA AS FRASES.</div>
+
+    <!-- FIGURAS DA QUESTÃO -->
+    <div class="container-imagens">
+      <img id="figura1" class="imagem-exibida" src="" alt="Figura 1">
+    </div>
+
+    <!-- PARÁGRAFO DE INSTRUÇÃO INDIVIDUAL -->
+    <div id="instrucao-texto" class="instrucao-texto"></div>
+
+    <!-- CAIXA DE FEEDBACK DIDÁTICO -->
+    <div id="feedback-msg" class="feedback-msg"></div>
+
+    <!-- CAMPO DE ENTRADA COM SPELLCHECK NATIVO ATIVADO -->
+    <div class="campo-resposta-container">
+      <textarea 
+        id="input-frase" 
+        class="input-frase" 
+        maxlength="1000" 
+        placeholder="Digite sua resposta aqui..." 
+        autocomplete="off" 
+        autocorrect="off" 
+        autocapitalize="off" 
+        spellcheck="true"></textarea>
+    </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
+
+    <!-- ÁREA DE BOTÕES -->
+    <div class="area-botoes">
+      <button id="btn-conferir" class="btn-acao" onclick="conferirResposta()">Conferir a resposta</button>
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarQuestao()">Próxima questão</button>
+      <a id="btn-terminar" class="btn-acao btn-terminar" href="end.html">Terminar Atividade</a>
+    </div>
+  </div>
+
+  <script>
+    // VARIÁVEL GLOBAL PARA O DICIONÁRIO HUNSPELL
+    let hunspellDict = null;
+
+    // CARREGANDO OS ARQUIVOS DO DIRETÓRIO CENTRALIZADO ../Dic AO ABRIR A PÁGINA
+    window.onload = async function() {
+      try {
+        const [affRes, dicRes] = await Promise.all([
+          fetch('../Dic/pt_BR.aff'),
+          fetch('../Dic/pt_BR.dic')
+        ]);
+        
+        if (affRes.ok && dicRes.ok) {
+          const affData = await affRes.text();
+          const dicData = await dicRes.text();
+          hunspellDict = new Typo("pt_BR", affData, dicData);
+        } else {
+          console.warn("Não foi possível carregar os arquivos do dicionário em ../Dic.");
+        }
+      } catch (e) {
+        console.warn("Erro ao buscar o dicionário Hunspell em ../Dic:", e);
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        let questaoInformada = parseInt(qParam, 10) - 1;
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
+      }
+
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || localStorage.getItem('pontuacaoTotal') || '0', 10);
+      }
+
+      salvarPontuacaoGlobal(pontuacaoAcumulada);
+      document.getElementById('pontos-maximos').innerText = questoes.length * 3;
+
+      carregarQuestao(indiceAtual);
+      atualizarInterface();
+      
+      setInterval(atualizarMoscasNaTela, 50);
+    };
+
+    /* 
+      SISTEMA HÍBRIDO DE QUESTÕES:
+      - tipo: "exato" -> Exige correspondência exata, maiúsculas corretas e acentos (para nomes, horários, etc).
+      - tipo: "keyword" -> Permite resposta aberta com grupos de palavras-chave (suporta lógica OR em arrays de arrays).
+    */
+    const questoes = [
+      {
+        figura1: "mensagens.png",
+        instrucao: "Quem é a dona do celular?",
+        tipo: "exato",
+        respostaExata: "Lara"
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "Com quem ela está conversando?",
+        tipo: "exato",
+        respostaExata: "Júlia"
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "A que horas Júlia decidiu sair do jogo?",
+        tipo: "exato",
+        respostaExata: "22:10"
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "Por que Júlia decidiu sair do aplicativo e ir dormir?",
+        tipo: "keyword",
+        palavrasChaveOr: [
+          ["ficando", "tarde"],
+          ["estava", "tarde"],
+          ["era", "tarde"],
+          ["ficou", "tarde"]
+        ]
+      },      
+      {
+        figura1: "mensagens.png",
+        instrucao: "Qual foi a mentira que Lara pediu à Júlia para contar para a professora?",
+        tipo: "keyword",
+        palavrasChaveOr: [
+          ["tarde", "ônibus","quebrou"],
+          ["tarde", "ônibus","quebrado"],
+          ["atrasada", "ônibus","quebrou"],
+          ["atrasada", "ônibus","quebrado"]
+        ]
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "Por que Júlia disse que a mentira não iria dar certo?",
+        tipo: "keyword",
+        palavrasChaveOr: [
+          ["mesmo", "ônibus"],
+          ["juntas", "ônibus"]
+        ]
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "Lara desistiu de mentir para a professora",
+        tipo: "keyword",
+        palavrasChaveOr: [
+          ["não"]
+        ]
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "Em que momento do dia Lara percebeu que havia perdido a hora?",
+        tipo: "exato",
+        respostaExata: "7:08"
+      },
+      {
+        figura1: "mensagens.png",
+        instrucao: "A que horas foi enviada a última mensagem da conversa?",
+        tipo: "exato",
+        respostaExata: "7:13"
+      }
+    ];
+
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    let tentativasQuestao = 0;
+
+    let listaMoscas = [];
+    const MAX_MOSCAS = 8;
+
+    function salvarPontuacaoGlobal(pontos) {
+      localStorage.setItem('pontosAluno', pontos);
+      localStorage.setItem('pontuacaoTotal', pontos);
+      localStorage.setItem('pontosTotais', pontos);
+    }
+
+    function carregarQuestao(index) {
+      tentativasQuestao = 0;
+
+      const btnConferir = document.getElementById('btn-conferir');
+      btnConferir.style.display = 'block';
+      btnConferir.disabled = false;
+
+      document.getElementById('btn-proximo').style.display = 'none';
+      document.getElementById('btn-terminar').style.display = 'none';
+
+      const inputArea = document.getElementById('input-frase');
+      inputArea.value = '';
+      inputArea.disabled = false;
+      inputArea.classList.remove('input-correto', 'input-incorreto');
+
+      ocultarFeedback();
+
+      const q = questoes[index];
+
+      document.getElementById('contador-questoes').innerText = `Questão ${index + 1} de ${questoes.length}`;
+      document.getElementById('figura1').src = q.figura1;
+      document.getElementById('instrucao-texto').innerText = q.instrucao;
+    }
+
+    function mostrarFeedback(msg) {
+      const fb = document.getElementById('feedback-msg');
+      fb.innerText = msg;
+      fb.style.display = 'block';
+    }
+
+    function ocultarFeedback() {
+      const fb = document.getElementById('feedback-msg');
+      fb.innerText = '';
+      fb.style.display = 'none';
+    }
+
+    function normalizarTexto(str) {
+      return str.trim().replace(/\s+/g, ' ');
+    }
+
+    function conferirResposta() {
+      const q = questoes[indiceAtual];
+      const inputArea = document.getElementById('input-frase');
+      const textoDigitado = inputArea.value;
+      const textoLimpo = normalizarTexto(textoDigitado);
+
+      tentativasQuestao++;
+
+      if (textoLimpo.length === 0) {
+        mostrarFeedback("Digite uma resposta antes de conferir!");
+        return;
+      }
+
+      // 1. CHECAGEM DE FORMA GERAL (Maiúscula inicial apenas se começar com letra)
+      const primeiraLetra = textoLimpo.charAt(0);
+      const ehNumero = /^[0-9]/.test(primeiraLetra);
+
+      if (!ehNumero) {
+        if (primeiraLetra !== primeiraLetra.toUpperCase() || primeiraLetra === primeiraLetra.toLowerCase()) {
+          inputArea.classList.add('input-incorreto');
+          mostrarFeedback("Atenção à forma: Toda resposta em texto precisa começar com letra maiúscula!");
+          if (listaMoscas.length < MAX_MOSCAS) criarNovaMosca();
+          return;
+        }
+      }
+
+      // 2. VALIDAÇÃO ESPECÍFICA CONFORME O TIPO DA QUESTÃO
+      if (q.tipo === "exato") {
+        // Exige resposta idêntica (considerando maiúsculas, minúsculas e acentos exatos)
+        if (textoLimpo !== q.respostaExata) {
+          inputArea.classList.add('input-incorreto');
+          mostrarFeedback(`Atenção: A resposta exata precisa ser escrita exatamente como no texto/padrão (verifique maiúsculas e acentos como em "${q.respostaExata}").`);
+          if (listaMoscas.length < MAX_MOSCAS) criarNovaMosca();
+          return;
+        }
+      } 
+      else if (q.tipo === "keyword") {
+        // Validação por Keyword Matching com lógica OR (várias combinações aceitáveis)
+        const textoMinusculo = textoLimpo.toLowerCase();
+        let atendeuAlgumGrupo = false;
+
+        for (let grupo of q.palavrasChaveOr) {
+          // Cada grupo exige que todas as palavras daquele sub-array estejam presentes na frase
+          const grupoAtendido = grupo.every(kw => textoMinusculo.includes(kw));
+          if (grupoAtendido) {
+            atendeuAlgumGrupo = true;
+            break;
+          }
+        }
+
+        if (!atendeuAlgumGrupo) {
+          inputArea.classList.add('input-incorreto');
+          mostrarFeedback("Você compreendeu a ideia central? Sua resposta precisa contemplar melhor os detalhes do texto.");
+          if (listaMoscas.length < MAX_MOSCAS) criarNovaMosca();
+          atualizarInterface();
+          return;
+        }
+      }
+
+      // 3. VALIDAÇÃO ORTOGRÁFICA (Via Dicionário Hunspell de ../Dic)
+      const palavras = textoLimpo.split(/\s+/);
+      let temErroOrtografico = false;
+
+      for (let palavra of palavras) {
+        const palavraLimpa = palavra.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "");
+        if (palavraLimpa.length > 0 && isNaN(palavraLimpa)) {
+          if (hunspellDict) {
+            if (!hunspellDict.check(palavraLimpa) && !hunspellDict.check(palavraLimpa.toLowerCase())) {
+              temErroOrtografico = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (temErroOrtografico) {
+        inputArea.classList.add('input-incorreto');
+        mostrarFeedback("O computador detectou uma palavra incorreta ou com troca de letras. Verifique o sublinhado vermelho e ajuste antes de enviar!");
+        if (listaMoscas.length < MAX_MOSCAS) criarNovaMosca();
+        atualizarInterface();
+        return;
+      }
+
+      // SE PASSOU EM TUDO: RESPOSTA APROVADA!
+      inputArea.classList.remove('input-incorreto');
+      inputArea.classList.add('input-correto');
+      inputArea.disabled = true;
+      ocultarFeedback();
+
+      let pontosGanhos = Math.max(1, 4 - tentativasQuestao);
+      pontuacaoAcumulada += pontosGanhos;
+      salvarPontuacaoGlobal(pontuacaoAcumulada);
+
+      document.getElementById('btn-conferir').disabled = true;
+
+      fazerMoscasMorrerem(2);
+      exibirBotaoAvanco();
+      atualizarInterface();
+    }
+
+    // ==========================================
+    // SISTEMA E LÓGICA DAS MOSCAS
+    // ==========================================
+    function criarNovaMosca() {
+      const el = document.createElement('div');
+      el.className = 'mosca-inseto';
+      
+      const x = Math.random() * (window.innerWidth - 60);
+      const y = Math.random() * (window.innerHeight - 60);
+
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+
+      el.addEventListener('pointerenter', espantarMosca);
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        espantarMosca.call(el);
+      });
+
+      document.body.appendChild(el);
+
+      const moscaObj = {
+        elemento: el,
+        x: x,
+        y: y,
+        vx: 0,
+        vy: 0,
+        estado: 'parada',
+        tempoEstado: 0,
+        rotacao: Math.random() * 360
+      };
+
+      definirNovoComportamentoMosca(moscaObj);
+      listaMoscas.push(moscaObj);
+    }
+
+    function definirNovoComportamentoMosca(m) {
+      const tipos = ['parada', 'andando', 'voando'];
+      m.estado = tipos[Math.floor(Math.random() * tipos.length)];
+      m.tempoEstado = Math.floor(Math.random() * 80) + 40;
+
+      if (m.estado === 'parada') {
+        m.vx = 0;
+        m.vy = 0;
+      } else if (m.estado === 'andando') {
+        const ang = Math.random() * Math.PI * 2;
+        const vel = 0.8;
+        m.vx = Math.cos(ang) * vel;
+        m.vy = Math.sin(ang) * vel;
+        m.rotacao = (ang * 180 / Math.PI) + 90;
+      } else if (m.estado === 'voando') {
+        const ang = Math.random() * Math.PI * 2;
+        const vel = 10.0;
+        m.vx = Math.cos(ang) * vel;
+        m.vy = Math.sin(ang) * vel;
+      }
+    }
+
+    function atualizarMoscasNaTela() {
+      for (let i = listaMoscas.length - 1; i >= 0; i--) {
+        let m = listaMoscas[i];
+
+        if (m.estado === 'morta') {
+          m.y += 8;
+          m.x += m.vx;
+          m.elemento.style.top = `${m.y}px`;
+          m.elemento.style.left = `${m.x}px`;
+          m.elemento.style.backgroundPosition = '0px 0px';
+          m.elemento.style.transform = 'rotate(180deg)';
+
+          if (m.y > window.innerHeight + 50) {
+            m.elemento.remove();
+            listaMoscas.splice(i, 1);
+          }
+          continue;
+        }
+
+        m.tempoEstado--;
+        if (m.tempoEstado <= 0) {
+          definirNovoComportamentoMosca(m);
+        }
+
+        m.x += m.vx;
+        m.y += m.vy;
+
+        if (m.x < 10) { m.x = 10; m.vx *= -1; }
+        if (m.x > window.innerWidth - 60) { m.x = window.innerWidth - 60; m.vx *= -1; }
+        if (m.y < 10) { m.y = 10; m.vy *= -1; }
+        if (m.y > window.innerHeight - 60) { m.y = window.innerHeight - 60; m.vy *= -1; }
+
+        m.elemento.style.left = `${m.x}px`;
+        m.elemento.style.top = `${m.y}px`;
+
+        let bgPosX = '0px';
+        let bgPosY = '0px';
+        let transformStyle = '';
+
+        if (m.estado === 'parada') {
+          bgPosX = '0px';
+          bgPosY = '0px';
+          transformStyle = `rotate(${m.rotacao}deg)`;
+        } else if (m.estado === 'andando') {
+          const frameAlternado = Math.floor(Date.now() / 200) % 2;
+          bgPosX = frameAlternado === 0 ? '0px' : '-100%';
+          bgPosY = '0px';
+          transformStyle = `rotate(${m.rotacao}deg)`;
+        } else if (m.estado === 'voando') {
+          const frameAlternado = Math.floor(Date.now() / 80) % 2;
+          bgPosX = frameAlternado === 0 ? '0px' : '-100%';
+          bgPosY = '-100%';
+
+          if (m.vx < 0) {
+            transformStyle = `scaleX(-1)`;
+          } else {
+            transformStyle = `scaleX(1)`;
+          }
+        }
+
+        m.elemento.style.backgroundPosition = `${bgPosX} ${bgPosY}`;
+        m.elemento.style.transform = transformStyle;
+      }
+    }
+
+    function espantarMosca() {
+      const index = listaMoscas.findIndex(m => m.elemento === this);
+      if (index !== -1 && listaMoscas[index].estado !== 'morta') {
+        let m = listaMoscas[index];
+        m.estado = 'voando';
+        m.tempoEstado = 60;
+        const ang = Math.random() * Math.PI * 2;
+        const velFuga = 4;
+        m.vx = Math.cos(ang) * velFuga;
+        m.vy = Math.sin(ang) * velFuga;
+      }
+    }
+
+    function fazerMoscasMorrerem(quantidade) {
+      let vivas = listaMoscas.filter(m => m.estado !== 'morta');
+      let alvoMorte = Math.min(quantidade, vivas.length);
+
+      for (let i = 0; i < alvoMorte; i++) {
+        let m = vivas[i];
+        m.estado = 'morta';
+        m.vx = (Math.random() - 0.5) * 2;
+        m.vy = 2;
+        m.elemento.style.pointerEvents = 'none';
+      }
+    }
+
+    function exibirBotaoAvanco() {
+      if (indiceAtual === questoes.length - 1) {
+        document.getElementById('btn-proximo').style.display = 'none';
+        document.getElementById('btn-terminar').style.display = 'inline-block';
+      } else {
+        document.getElementById('btn-proximo').style.display = 'inline-block';
+      }
+    }
+
+    function atualizarInterface() {
+      const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoAcumulada; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
+    }
+
+    function avancarQuestao() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+        atualizarInterface();
+      }
+    }
+  </script>
+
+</body>
+</html>
