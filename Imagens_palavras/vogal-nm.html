@@ -399,21 +399,19 @@
       { caminho: "../Atividades_com_imagens/bombom.png", nome: "bombom" },
       { caminho: "../Atividades_com_imagens/pombo.png", nome: "pombo" },
       { caminho: "../Atividades_com_imagens/fundo-do-mar.png", nome: "fundo do mar" },
-      { caminho: "../Atividades_com_imagens/gol.png", nome: "gol" },
-      { caminho: "../Atividades_com_imagens/goiaba.png", nome: "goiaba" },
-      { caminho: "../Atividades_com_imagens/cogumelo.png", nome: "cogumelo" },
-      { caminho: "../Atividades_com_imagens/guarana.png", nome: "guaraná" },
-      { caminho: "../Atividades_com_imagens/carregador.png", nome: "carregador" },
-      { caminho: "../Atividades_com_imagens/manga.png", nome: "manga" },      
-      { caminho: "../Atividades_com_imagens/guarda-chuva.png", nome: "guarda-chuva" }
+      { caminho: "../Atividades_com_imagens/umbigo.png", nome: "umbigo" },
+      { caminho: "../Atividades_com_imagens/manga.png", nome: "manga" },
+      { caminho: "../Atividades_com_imagens/montanha.png", nome: "montanha" },
+      { caminho: "../Atividades_com_imagens/melancia.png", nome: "melancia" },
+      { caminho: "../Atividades_com_imagens/injecao.png", nome: "injeção" }
     ];
 
     let pontosAtuais = 0;
     let slotSelecionadoIdx = null;
     let bancoImagens = [];
-    let estadoSlots = Array(16).fill(null);
-    let tentativasSlots = Array(16).fill(0);
-    let slotsTravados = Array(16).fill(false);
+    let estadoSlots = Array(listaItens.length).fill(null);
+    let tentativasSlots = Array(listaItens.length).fill(0);
+    let slotsTravados = Array(listaItens.length).fill(false);
 
     // Armazena as goteiras ativas guardando a posição em porcentagem (0 a 1)
     let goteirasAtivas = [];

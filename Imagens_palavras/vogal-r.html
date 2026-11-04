@@ -382,7 +382,6 @@
     // LISTA DOS 16 ESPAÇOS E SUAS RESPECTIVAS IMAGENS E RÓTULOS
     const listaItens = [
       { caminho: "../Atividades_com_imagens/arvore.png", nome: "árvore" },
-      { caminho: "../Atividades_com_imagens/galinha.png", nome: "galinha" },
       { caminho: "../Atividades_com_imagens/garfo.png", nome: "garfo" },
       { caminho: "../Atividades_com_imagens/ervilha.png", nome: "ervilha" },
       { caminho: "../Atividades_com_imagens/caderno.png", nome: "caderno" },
@@ -402,9 +401,9 @@
     let pontosAtuais = 0;
     let slotSelecionadoIdx = null;
     let bancoImagens = [];
-    let estadoSlots = Array(16).fill(null);
-    let tentativasSlots = Array(16).fill(0);
-    let slotsTravados = Array(16).fill(false);
+    let estadoSlots = Array(listaItens.length).fill(null);
+    let tentativasSlots = Array(listaItens.length).fill(0);
+    let slotsTravados = Array(listaItens.length).fill(false);
 
     // Armazena as goteiras ativas guardando a posição em porcentagem (0 a 1)
     let goteirasAtivas = [];
