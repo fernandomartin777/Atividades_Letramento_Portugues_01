@@ -382,29 +382,27 @@
     // LISTA DOS 16 ESPAÇOS E SUAS RESPECTIVAS IMAGENS E RÓTULOS
     const listaItens = [
       { caminho: "../Atividades_com_imagens/sapo.png", nome: "sapo" },
-      { caminho: "../Atividades_com_imagens/passarinho.png", nome: "pássaro" },
-      { caminho: "../Atividades_com_imagens/mesa.png", nome: "mesa" },
-      { caminho: "../Atividades_com_imagens/pessego.png", nome: "pêssego" },
-      { caminho: "../Atividades_com_imagens/sino.png", nome: "sino" },
-      { caminho: "../Atividades_com_imagens/fita_adesiva.png", nome: "fita adesiva" },
-      { caminho: "../Atividades_com_imagens/osso.png", nome: "osso" },
       { caminho: "../Atividades_com_imagens/sopa.png", nome: "sopa" },
-      { caminho: "../Atividades_com_imagens/sol.png", nome: "sol" },
-      { caminho: "../Atividades_com_imagens/vaso_sanitario.png", nome: "vaso sanitário" },
+      { caminho: "../Atividades_com_imagens/sino.png", nome: "sino" },
+      { caminho: "../Atividades_com_imagens/sapato.png", nome: "sapato" },
+      { caminho: "../Atividades_com_imagens/sabonete.png", nome: "sabonete" },
       { caminho: "../Atividades_com_imagens/suco.png", nome: "suco" },
       { caminho: "../Atividades_com_imagens/sujeira.png", nome: "sujeira" },
-      { caminho: "../Atividades_com_imagens/pastel.png", nome: "pastel" },
-      { caminho: "../Atividades_com_imagens/escova.png", nome: "escova" },
-      { caminho: "../Atividades_com_imagens/biscoito.png", nome: "biscoito" },
-      { caminho: "../Atividades_com_imagens/poste-de-luz.png", nome: "poste de luz" }
+      { caminho: "../Atividades_com_imagens/osso.png", nome: "osso" },
+      { caminho: "../Atividades_com_imagens/passarinho.png", nome: "pássaro" },
+      { caminho: "../Atividades_com_imagens/girassol.png", nome: "girassol" },
+      { caminho: "../Atividades_com_imagens/dinossauro.png", nome: "dinossauro" },
+      { caminho: "../Atividades_com_imagens/pessego.png", nome: "pêssego" },
+      { caminho: "../Atividades_com_imagens/vassoura.png", nome: "vassoura" },
+      { caminho: "../Atividades_com_imagens/travesseiro.png", nome: "travesseiro" }
     ];
 
     let pontosAtuais = 0;
     let slotSelecionadoIdx = null;
     let bancoImagens = [];
-    let estadoSlots = Array(16).fill(null);
-    let tentativasSlots = Array(16).fill(0);
-    let slotsTravados = Array(16).fill(false);
+    let estadoSlots = Array(listaItens.length).fill(null);
+    let tentativasSlots = Array(listaItens.length).fill(0);
+    let slotsTravados = Array(listaItens.length).fill(false);
 
     // Armazena as goteiras ativas guardando a posição em porcentagem (0 a 1)
     let goteirasAtivas = [];

@@ -382,29 +382,37 @@
     // LISTA DOS 16 ESPAÇOS E SUAS RESPECTIVAS IMAGENS E RÓTULOS
     const listaItens = [
       { caminho: "../Atividades_com_imagens/rato.png", nome: "rato" },
-      { caminho: "../Atividades_com_imagens/torrada.png", nome: "torrada" },
-      { caminho: "../Atividades_com_imagens/arara.png", nome: "arara" },
-      { caminho: "../Atividades_com_imagens/areia.png", nome: "areia" },
+      { caminho: "../Atividades_com_imagens/raposa.png", nome: "raposa" },
+      { caminho: "../Atividades_com_imagens/raquete.png", nome: "raquete" },
       { caminho: "../Atividades_com_imagens/rede.png", nome: "rede" },
-      { caminho: "../Atividades_com_imagens/torre.png", nome: "torre" },
       { caminho: "../Atividades_com_imagens/rio.png", nome: "rio" },
-      { caminho: "../Atividades_com_imagens/corrida.png", nome: "corrida" },
-      { caminho: "../Atividades_com_imagens/nariz.png", nome: "nariz" },
       { caminho: "../Atividades_com_imagens/roda.png", nome: "roda" },
       { caminho: "../Atividades_com_imagens/carro.png", nome: "carro" },
+      { caminho: "../Atividades_com_imagens/bezerro.png", nome: "bezerro" },
+      { caminho: "../Atividades_com_imagens/garrafa.png", nome: "garrafa" },
+      { caminho: "../Atividades_com_imagens/torre.png", nome: "torre" },
+      { caminho: "../Atividades_com_imagens/torrada.png", nome: "torrada" },
+      { caminho: "../Atividades_com_imagens/corrida.png", nome: "corrida" },
+      { caminho: "../Atividades_com_imagens/vassoura.png", nome: "vassoura" },
+      { caminho: "../Atividades_com_imagens/arara.png", nome: "arara" },
+      { caminho: "../Atividades_com_imagens/capivara.png", nome: "capivara" },
+      { caminho: "../Atividades_com_imagens/buraco.png", nome: "buraco" },
+      { caminho: "../Atividades_com_imagens/areia.png", nome: "areia" },
+      { caminho: "../Atividades_com_imagens/jacare.png", nome: "jacaré" },
+      { caminho: "../Atividades_com_imagens/bateria.png", nome: "bateria" },
+      { caminho: "../Atividades_com_imagens/dinossauro.png", nome: "dinossauro" },
       { caminho: "../Atividades_com_imagens/lixeiro.png", nome: "lixeiro" },
-      { caminho: "../Atividades_com_imagens/arvore.png", nome: "árvore" },
-      { caminho: "../Atividades_com_imagens/porta.png", nome: "porta" },
-      { caminho: "../Atividades_com_imagens/prato.png", nome: "prato" },
-      { caminho: "../Atividades_com_imagens/cobra.png", nome: "cobra" }
+      { caminho: "../Atividades_com_imagens/coruja.png", nome: "coruja" },
+      { caminho: "../Atividades_com_imagens/tartaruga.png", nome: "tartaruga" },      
+      { caminho: "../Atividades_com_imagens/travesseiro.png", nome: "travesseiro" }
     ];
 
     let pontosAtuais = 0;
     let slotSelecionadoIdx = null;
     let bancoImagens = [];
-    let estadoSlots = Array(16).fill(null);
-    let tentativasSlots = Array(16).fill(0);
-    let slotsTravados = Array(16).fill(false);
+    let estadoSlots = Array(listaItens.length).fill(null);
+    let tentativasSlots = Array(listaItens.length).fill(0);
+    let slotsTravados = Array(listaItens.length).fill(false);
 
     // Armazena as goteiras ativas guardando a posição em porcentagem (0 a 1)
     let goteirasAtivas = [];
