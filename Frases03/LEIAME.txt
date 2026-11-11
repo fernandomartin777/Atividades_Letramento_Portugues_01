@@ -1,0 +1,1 @@
+Atividade de interpretação com validação de respostas abertas.
