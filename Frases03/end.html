@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parabéns!</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #000000;
+    }
+
+    html {
+      font-size: 20px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 17px;
+      }
+    }
+
+    body {
+      background-color: #fff8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border: 2px solid #e67e22;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE LARANJA */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #fef5e7;
+      border: 2px solid #f39c12;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #e67e22;
+      width: 100%; /* Concluído */
+      transition: width 0.4s ease-in-out;
+    }
+
+    .info-pontos {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #a04000;
+    }
+
+    /* TÍTULO DE CONGRATULAÇÕES */
+    .titulo-congratulacoes {
+      font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+      font-weight: bold;
+      text-align: center;
+      color: #d35400;
+      margin: 15px 0 20px 0;
+    }
+
+    /* IMAGEM DE VITÓRIA */
+    .container-imagem-vitoria {
+      margin: 10px 0 20px 0;
+      text-align: center;
+      width: 100%;
+    }
+
+    .imagem-vitoria {
+      max-width: 100%;
+      max-height: 400px;
+      width: auto;
+      height: auto;
+      border-radius: 10px;
+      border: 3px solid #e67e22;
+      object-fit: contain;
+    }
+
+    /* TRILHA DE PRÊMIOS */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 36px;
+      background-color: #fef5e7;
+      border: 1.5px dashed #e67e22;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    /* ÁREA DO BOTÃO FIM */
+    .area-botoes {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .btn-fim {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #e67e22;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-fim:hover {
+      background-color: #d35400;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-pontos">
+        PONTOS: <span id="pontos-atuais">0</span>
+      </div>
+    </div>
+
+    <!-- MENSAGEM DE CONGRATULAÇÕES -->
+    <div class="titulo-congratulacoes">
+      🎉 Parabéns! Você concluiu todas as atividades com sucesso! 🎉
+    </div>
+
+    <!-- IMAGEM DE VITÓRIA -->
+    <div class="container-imagem-vitoria">
+      <img src="victory.png" alt="Vitória" class="imagem-vitoria">
+    </div>
+
+    <!-- TRILHA DE PRÊMIOS -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
+
+    <!-- BOTÃO FIM -->
+    <div class="area-botoes">
+      <a href="https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/" class="btn-fim">Fim</a>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      // Recupera a pontuação final armazenada
+      const pontuacaoFinal = parseInt(localStorage.getItem('pontosAluno') || localStorage.getItem('pontosTotal') || '0', 10);
+      
+      document.getElementById('pontos-atuais').innerText = pontuacaoFinal;
+
+      // Renderiza a quantidade correspondente de prêmios
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoFinal; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
+    };
+  </script>
+
+</body>
+</html>
