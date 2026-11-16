@@ -1,1 +1,1 @@
-Atividades com interpretação de frases com suporte a respostas abertas.
+Atividades com interpretação de frases.
