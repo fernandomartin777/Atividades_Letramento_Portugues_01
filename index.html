@@ -4,15 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atividades de Alfabetização, Letramento e Distinção Fonológica e Matemática Básica</title>
+  
+  <!-- Importação de fonte manuscrita decorada do Google Fonts para o "Seja bem-vindo!" -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <!-- Importação de fonte arredondada divertida para o alfabeto animado -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
   <style>
-    /* CONFIGURAÇÕES GLOBAIS E TEMA DA MOLDURA PRINCIPAL (AZUL) */
     :root {
       --bg-color: #f0f7f9;
       --card-bg: #ffffff;
-      --primary-color: #1a5b6e;
+      --primary-color: #1d4ed8; /* Azul Royal */
       --text-color: #2c3e50;
       --link-color: #0066cc;
-      --accent-color: #eef6f9;
+      --accent-color: #e0f2fe; /* Azul Bebê */
     }
 
     * {
@@ -37,14 +42,15 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
-    /* Header e Apresentação */
+    /* Moldura Principal com Título */
     .header-box {
-      border: 2px solid var(--primary-color);
+      border: 3px solid var(--primary-color);
       background-color: var(--accent-color);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 20px;
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.1);
     }
 
     h1 {
@@ -56,11 +62,149 @@
       font-weight: 700;
     }
 
+    /* Faixa do Alfabeto Animado */
+    .alfabeto-animado-container {
+      text-align: center;
+      margin-bottom: 25px;
+      padding: 12px;
+      background: #ffffff;
+      border: 2px dashed #93c5fd;
+      border-radius: 10px;
+    }
+
+    .alfabeto-animado {
+      font-family: 'Fredoka One', cursive, sans-serif;
+      font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+      letter-spacing: 3px;
+      word-spacing: 5px;
+    }
+
+    .letra-colorida {
+      display: inline-block;
+      color: #1d4ed8; /* Cor inicial azul para todas as letras */
+      animation: mudarCor 3s infinite alternate;
+    }
+
+    /* Cores alternadas animadas para as letras */
+    @keyframes mudarCor {
+      0% { color: #1d4ed8; transform: scale(1); }
+      20% { color: #ef4444; transform: scale(1.05); }
+      40% { color: #f59e0b; transform: translateY(-2px); }
+      60% { color: #10b981; transform: scale(1.05); }
+      80% { color: #3b82f6; transform: translateY(0); }
+      100% { color: #8b5cf6; transform: scale(1); }
+    }
+
+    /* Bloco de Boas-Vindas com Imagem à Esquerda e Texto à Direita */
+    .welcome-box {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 25px;
+      background: var(--accent-color);
+      border: 3px solid var(--primary-color);
+      border-radius: 12px;
+      padding: 15px 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.1);
+    }
+
+    .welcome-img {
+      height: 200px;
+      width: auto;
+      object-fit: contain;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .welcome-text {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      color: var(--primary-color);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Estrutura de Sanfona Vertical */
+    .activity-section {
+      margin-bottom: 15px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--accent-color);
+      padding: 14px 18px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+
+    .section-header:hover {
+      background-color: #dbeafe;
+    }
+
+    .section-title-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      text-transform: uppercase;
+    }
+
+    /* Seta e Ícone à Esquerda e Direita */
+    .toggle-arrow {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .section-header.active .toggle-arrow {
+      transform: rotate(90deg);
+    }
+
+    .section-icon {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    /* Conteúdo da Sanfona (Inicia Fechado) */
+    .section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      background-color: #ffffff;
+      padding: 0 18px;
+    }
+
+    .section-content.open {
+      padding: 18px;
+      max-height: 5000px; /* Altura máxima expansível */
+    }
+
     .intro-text {
       text-align: left;
       font-size: 1.05rem;
       margin-bottom: 1rem;
       text-indent: 2em;
+    }
+
+    .material-apoio-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+      margin: 25px 0 15px 0;
+      text-transform: uppercase;
     }
 
     .author {
@@ -69,28 +213,17 @@
       font-weight: bold;
       color: #555;
       margin-top: 15px;
-      margin-bottom: 35px;
-    }
-
-    /* ESTRUTURA DAS SEÇÕES COM CORES DINÂMICAS */
-    .activity-section {
-      margin-top: 40px;
       margin-bottom: 25px;
     }
 
-    .section-title {
-      font-size: 1.3rem;
-      color: var(--sec-primary);
-      border-bottom: 3px solid var(--sec-primary);
-      padding-bottom: 6px;
-      margin-bottom: 20px;
-    }
-
     .item-card {
-      background-color: var(--sec-bg);
-      border-left: 5px solid var(--sec-primary);
-      padding: 16px 20px;
-      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #f8fafc;
+      border-left: 5px solid var(--primary-color);
+      padding: 14px 18px;
+      margin-bottom: 12px;
       border-radius: 0 8px 8px 0;
       transition: transform 0.15s ease-in-out;
     }
@@ -99,10 +232,22 @@
       transform: translateX(3px);
     }
 
+    .item-info {
+      flex: 1;
+      padding-right: 10px;
+    }
+
     .item-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .item-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
     a {
@@ -110,49 +255,23 @@
       text-decoration: underline;
     }
 
-/* BOTÕES COM ESCALA SEQUENCIAL E UNIFORME (SEM DESBOTAR) */
     .btn-link {
       display: inline-block;
-      background-color: var(--sec-primary);
+      background-color: var(--primary-color);
       color: #ffffff !important;
-      padding: 9px 18px;
+      padding: 8px 16px;
       text-decoration: none;
       border-radius: 6px;
       font-weight: bold;
-      margin-top: 5px;
+      font-size: 0.95rem;
       transition: all 0.2s ease-in-out;
-      border: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    /* Data-Color 1: Cor Pura Base (Tom Vivo/Principal) */
-    .btn-link[data-color="1"] {
-      background-image: none;
-    }
-
-    /* Data-Color 2: Degrau 1 - Leve toque de sombra (10% mais escuro) */
-    .btn-link[data-color="2"] {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.10));
-    }
-
-    /* Data-Color 3: Degrau 2 - Sombra Média (20% mais escuro) */
-    .btn-link[data-color="3"] {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.20));
-    }
-
-    /* Data-Color 4: Degrau 3 - Sombra Profunda (30% mais escuro) */
-    .btn-link[data-color="4"] {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.30));
-    }
-
-    /* Hover Padronizado */
     .btn-link:hover {
-      background-color: var(--sec-hover) !important;
-      background-image: none !important;
-      color: #ffffff !important;
+      background-color: #1e40af !important;
       transform: translateY(-1px);
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     }
-
   </style>
 </head>
 <body>
@@ -164,544 +283,799 @@
       <h1>Atividades de Alfabetização, Letramento e Distinção Fonológica em Português Brasileiro e Matemática Básica</h1>
     </header>
 
-    <!-- Texto de Apresentação -->
-    <main>
-      <p class="intro-text">
-        Este site contém atividades para alfabetização e letramento em português brasileiro, voltadas principalmente para alunos com dificuldades de leitura. Visto que alguns alunos com tais dificuldades apresentam também dificuldades relacionadas a trocas de fonemas semelhantes e alguns estudos indicam que qualquer pessoa pode ter uma alfabetização melhor se receber pistas fonológicas, aqui também há material de apoio e atividades para trabalhar as diferenças entre fonemas parecidos.
-      </p>
-
-      <p class="intro-text">
-        Mais atividades serão acrescentadas conforme a necessidade e a disponibilidade para criá-las. Sendo assim, é recomendável que você acesse regularmente e procure por novos materiais.
-      </p>
-
-      <p class="intro-text">
-        Você também pode baixar os materiais deste site, modificá-los ou fazer contribuições para ele no repositório <a href="https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01" target="_blank" rel="noopener">https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01</a>.
-      </p>
-
-      <p class="intro-text">
-        <b>AVISO DE PRIVACIDADE:</b> Em atividades que peçam para inserir a foto de quem vai participar, sinta-se à vontade para fazer isso. Sua foto ficará apenas no seu próprio dispositivo e não será enviada para nenhum outro site. Caso deseje, pode conferir isso no código do site, no repositório mencionado acima.
-      </p>
-      
-      <div class="author">
-        Fernando A. Martiniano
+    <!-- Linha com o Alfabeto Divertido Animado -->
+    <div class="alfabeto-animado-container">
+      <div class="alfabeto-animado">
+        <span class="letra-colorida" style="animation-delay: 0s;">A</span>
+        <span class="letra-colorida" style="animation-delay: 0.2s;">B</span>
+        <span class="letra-colorida" style="animation-delay: 0.4s;">C</span>
+        <span class="letra-colorida" style="animation-delay: 0.6s;">D</span>
+        <span class="letra-colorida" style="animation-delay: 0.8s;">E</span>
+        <span class="letra-colorida" style="animation-delay: 1.0s;">F</span>
+        <span class="letra-colorida" style="animation-delay: 1.2s;">G</span>
+        <span class="letra-colorida" style="animation-delay: 1.4s;">H</span>
+        <span class="letra-colorida" style="animation-delay: 1.6s;">I</span>
+        <span class="letra-colorida" style="animation-delay: 1.8s;">J</span>
+        <span class="letra-colorida" style="animation-delay: 2.0s;">K</span>
+        <span class="letra-colorida" style="animation-delay: 2.2s;">L</span>
+        <span class="letra-colorida" style="animation-delay: 2.4s;">M</span>
+        <span class="letra-colorida" style="animation-delay: 2.6s;">N</span>
+        <span class="letra-colorida" style="animation-delay: 2.8s;">O</span>
+        <span class="letra-colorida" style="animation-delay: 3.0s;">P</span>
+        <span class="letra-colorida" style="animation-delay: 3.2s;">Q</span>
+        <span class="letra-colorida" style="animation-delay: 3.4s;">R</span>
+        <span class="letra-colorida" style="animation-delay: 3.6s;">S</span>
+        <span class="letra-colorida" style="animation-delay: 3.8s;">T</span>
+        <span class="letra-colorida" style="animation-delay: 4.0s;">U</span>
+        <span class="letra-colorida" style="animation-delay: 4.2s;">V</span>
+        <span class="letra-colorida" style="animation-delay: 4.4s;">W</span>
+        <span class="letra-colorida" style="animation-delay: 4.6s;">X</span>
+        <span class="letra-colorida" style="animation-delay: 4.8s;">Y</span>
+        <span class="letra-colorida" style="animation-delay: 5.0s;">Z</span>
       </div>
+    </div>
+
+    <!-- Seção de Boas-Vindas com Imagem à Esquerda e Texto à Direita -->
+    <div class="welcome-box">
+      <img src="Fernando/Fernando_Martin.png" alt="Fernando Martin" class="welcome-img">
+      <div class="welcome-text">Seja bem-vindo!</div>
+    </div>
+
+    <main>
 
       <!-- ================================================================= -->
-      <!-- SEÇÃO 1: INTRODUÇÃO (TEMA: VERDE TEAL) -->
-      <!-- ONDE ALTERAR CORES: Modifique os valores dentro do atributo style abaixo -->
+      <!-- SEÇÃO 1: INTRODUÇÃO E MATERIAL DE APOIO -->
       <!-- ================================================================= -->
-      <section class="activity-section" style="
-        --sec-primary: #0c0882;
-        --sec-bg: #c9d2f5;
-        --sec-hover: #010145;
-      ">
-        <h2 class="section-title">INTRODUÇÃO</h2>
-        <div class="item-card">
-          <a href="https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01/blob/31180112e5bb347afa59740cc073e4c27e0c38ac/Material_de_apoio/ALFABETO_ILUSTRADO_COM_PISTAS_PROPRIOCEPTIVAS.pdf" target="_blank" rel="noopener">
-            <strong>ALFABETO ILUSTRADO COM PISTAS PROPRIOCEPTIVAS (PDF)</strong>
-          </a>
+      <section class="activity-section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title-left">
+            <span class="toggle-arrow">▶</span>
+            <span>INTRODUÇÃO</span>
+          </div>
+          <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+        </div>
+        <div class="section-content">
+          <p class="intro-text">
+            Este site contém atividades para alfabetização e letramento em português brasileiro, voltadas principalmente para alunos com dificuldades de leitura. Visto que alguns alunos com tais dificuldades apresentam também dificuldades relacionadas a trocas de fonemas semelhantes e alguns estudos indicam que qualquer pessoa pode ter uma alfabetização melhor se receber pistas fonológicas, aqui também há material de apoio e atividades para trabalhar as diferenças entre fonemas parecidos.
+          </p>
+
+          <p class="intro-text">
+            Mais atividades serão acrescentadas conforme a necessidade e a disponibilidade para criá-las. Sendo assim, é recomendável que você acesse regularmente e procure por novos materiais.
+          </p>
+
+          <p class="intro-text">
+            Você também pode baixar os materiais deste site, modificá-los ou fazer contribuições para ele no repositório <a href="https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01" target="_blank" rel="noopener">https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01</a>.
+          </p>
+
+          <p class="intro-text">
+            <b>AVISO DE PRIVACIDADE:</b> Em atividades que peçam para inserir a foto de quem vai participar, sinta-se à vontade para fazer isso. Sua foto ficará apenas no seu próprio dispositivo e não será enviada para nenhum outro site. Caso deseje, pode conferir isso no código do site, no repositório mencionado acima.
+          </p>
+          
+          <div class="author">
+            Fernando A. Martiniano
+          </div>
+
+          <div class="material-apoio-title">MATERIAL DE APOIO</div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <a href="https://github.com/fernandomartin777/Atividades_Letramento_Portugues_01/blob/31180112e5bb347afa59740cc073e4c27e0c38ac/Material_de_apoio/ALFABETO_ILUSTRADO_COM_PISTAS_PROPRIOCEPTIVAS.pdf" target="_blank" rel="noopener">
+                <strong>ALFABETO ILUSTRADO COM PISTAS PROPRIOCEPTIVAS (PDF)</strong>
+              </a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- ================================================================= -->
-      <!-- SEÇÃO 2: ENTENDENDO AS LETRAS (TEMA: AZUL ESCURO) -->
+      <!-- SEÇÃO 2: ENTENDENDO AS LETRAS -->
       <!-- ================================================================= -->
-      <section class="activity-section" style="
-        --sec-primary: #0d9488;
-        --sec-bg: #f0fdfa;
-        --sec-hover: #0f766e;
-      ">
-        <h2 class="section-title">ENTENDENDO AS LETRAS</h2>
+      <section class="activity-section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title-left">
+            <span class="toggle-arrow">▶</span>
+            <span>ENTENDENDO AS LETRAS</span>
+          </div>
+          <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+        </div>
+        <div class="section-content">
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Combine as letras. (Reconhecimento de maiúsculas e minúsculas)</div>
+              <a href="Combinar_letras/combine_as_letras.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Combine as letras. (Reconhecimento de maiúsculas e minúsculas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Combine as letras. (Somente letras que causam mais dúvidas)</div>
+              <a href="Combinar_letras/combine_reduzido.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <!-- ONDE ALTERAR O TOM DO BOTÃO: mude data-color de 1 a 4 -->
-          <a href="Combinar_letras/combine_as_letras.html" class="btn-link" data-color="1">Acessar a atividade</a>
-        </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Combine as letras. (Reconhecimento de letra de imprensa e letra cursiva)</div>
+              <a href="Combinar_letras/combine_as_letras_cursiva.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">B/P, D/T - Estoure a bolha certa (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_bolha_01.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Combine as letras. (Somente letras que causam mais dúvidas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">J(G)/CH(X) - Estoure a bolha certa (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_bolha_02.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <!-- ONDE ALTERAR O TOM DO BOTÃO: mude data-color de 1 a 4 -->
-          <a href="Combinar_letras/combine_reduzido.html" class="btn-link" data-color="1">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Combine as letras. (Reconhecimento de letra de imprensa e letra cursiva)
-          </div>
-          <a href="Combinar_letras/combine_as_letras_cursiva.html" class="btn-link" data-color="1">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            B/P, D/T - Estoure a bolha certa (Diferenciação de fonemas)
-          </div>
-          <a href="Atividades_com_imagens/start_bolha_01.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            J(G)/CH(X) - Estoure a bolha certa (Diferenciação de fonemas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">S/Z - Estoure a bolha certa (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_bolha_03.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Atividades_com_imagens/start_bolha_02.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            S/Z - Estoure a bolha certa (Diferenciação de fonemas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">S/Z - Escreva os nomes das figuras (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_escrever-s-z.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Atividades_com_imagens/start_bolha_03.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            S/Z - Escreva os nomes das figuras (Diferenciação de fonemas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">M/N/NH - Estoure a bolha certa (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_bolha_04.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Atividades_com_imagens/start_escrever-s-z.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            M/N/NH - Estoure a bolha certa (Diferenciação de fonemas)
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">M/N/NH - Escreva os nomes das figuras (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_escrever-m-n.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Atividades_com_imagens/start_bolha_04.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            M/N/NH - Escreva os nomes das figuras (Diferenciação de fonemas)
-          </div>
-          <a href="Atividades_com_imagens/start_escrever-m-n.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            CQ/G - Estoure a bolha certa (Diferenciação de fonemas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">CQ/G - Estoure a bolha certa (Diferenciação de fonemas)</div>
+              <a href="Atividades_com_imagens/start_bolha_05.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Atividades_com_imagens/start_bolha_05.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            CQ/G - Figuras com leitura e escrita  (Diferenciação de fonemas / Animação do pterossauro)
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">CQ/G - Figuras com leitura e escrita (Diferenciação de fonemas / Animação do pterossauro)</div>
+              <a href="Jurassic01/start01.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Jurassic01/start01.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Letra S - Ordenação de letras
-          </div>
-          <a href="Ordenar_S/start.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>  
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Letra S - Ordenação de letras</div>
+              <a href="Ordenar_S/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>  
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Letra R - Ordenação de letras
-          </div>
-          <a href="Ordenar_R/start.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>  
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Posições das consoantes - Ordenação de letras
-          </div>
-          <a href="Ordenar_letras_consoantes/page00.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>      
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Letra R - Ordenação de letras</div>
+              <a href="Ordenar_R/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>  
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Posições das consoantes - Ordenação de letras</div>
+              <a href="Ordenar_letras_consoantes/page00.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>      
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Posições das consoantes - Quem é o intruso?
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Posições das consoantes - Quem é o intruso?</div>
+              <a href="Intruso_consoantes/page00.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Intruso_consoantes/page00.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Posições das consoantes - Jogo da forca (dicas fáceis)
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Posições das consoantes - Jogo da forca (dicas fáceis)</div>
+              <a href="Jogo_da_Forca_vogais_consoantes/page00.html" class="btn-link">Acessar o jogo</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Jogo_da_Forca_vogais_consoantes/page00.html" class="btn-link" data-color="4">Acessar o jogo</a>
-        </div>
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Sílabas complexas - Jogo de dicas estilo forca
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Sílabas complexas - Jogo de dicas estilo forca</div>
+              <a href="Dicas_silabas_complexas/start.html" class="btn-link">Acessar o jogo</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Dicas_silabas_complexas/start.html" class="btn-link" data-color="4">Acessar o jogo</a>
-        </div>        
-
-      <!-- ================================================================= -->
-      <!-- SEÇÃO 2.1: TREINANDO AS LETRAS (TEMA: AZUL ESCURO) -->
-      <!-- ================================================================= -->
-      <section class="activity-section" style="
-        --sec-primary: #1d4ed8;
-        --sec-bg: #eff6ff;
-        --sec-hover: #1e40af;
-      ">
-        <h2 class="section-title">TREINANDO AS LETRAS</h2>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            CQ - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start_CQ.html" class="btn-link" data-color="2">Acessar a atividade</a>
         </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            CQ - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_CQ.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            G - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start_G.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            G - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_G.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            JG - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start_JG.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            JG - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_JG.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            L/LH - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start_L_LH.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            L/N - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start_L_N.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            L/LH/N - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_L_LH_N.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+L - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start-vogal-l.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+L - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_vogal-l.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>        
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            M/N - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startM_N.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            M/N - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_MN.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            N/NH - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startN_NH.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            N/NH - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_N_NH.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+N/M - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start-vogal-nm.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+N/M - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_vogal-nm.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            S - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startS.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            S - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_S.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            S/Z - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startS_Z.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            S/Z - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_S_Z.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+S/Z - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start-vogal-sz.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+S/Z - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_vogal-sz.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            CH/X - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startX_CH.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            CH/X - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_X_CH.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>        
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            R - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startR.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            R - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_R.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>        
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+R - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/start-vogal-r.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Vogal+R - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_vogal-r.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>        
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Consoantes + R ou L - Colocar figuras junto com seus nomes
-          </div>
-          <a href="Imagens_palavras/startConsRL.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Consoantes + R ou L - Escrever o nome das figuras
-          </div>
-          <a href="Escrever_palavras/start_Escrever_ConsRL.html" class="btn-link" data-color="2">Acessar a atividade</a>
-        </div>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Sons do X - Escrita de palavras
-          </div>
-          <a href="Sons_do_X/start.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>
-
       </section>
 
       <!-- ================================================================= -->
-      <!-- SEÇÃO 3: LENDO E ENTENDENDO (TEMA: VERDE) -->
+      <!-- SEÇÃO 3: TREINANDO AS LETRAS -->
       <!-- ================================================================= -->
-      <section class="activity-section" style="
-        --sec-primary: #15803d;
-        --sec-bg: #f0fdf4;
-        --sec-hover: #166534;
-      ">
-        <h2 class="section-title">LENDO E ENTENDENDO</h2>
-
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Quem é o intruso? (Nível fácil)
+      <section class="activity-section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title-left">
+            <span class="toggle-arrow">▶</span>
+            <span>TREINANDO AS LETRAS</span>
           </div>
-          <a href="Intruso_facil/page00.html" class="btn-link" data-color="1">Acessar a atividade</a>
+          <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
         </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Desafio das Dicas (Nível básico)
+        <div class="section-content">
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">CQ - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start_CQ.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Desafio_das_dicas_01/page00.html" class="btn-link" data-color="2">Acessar a atividade</a>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">CQ - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_CQ.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">G - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start_G.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">G - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_G.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">JG - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start_JG.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">JG - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_JG.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">L/LH - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start_L_LH.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">L/N - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start_L_N.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">L/LH/N - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_L_LH_N.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+L - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start-vogal-l.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+L - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_vogal-l.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>        
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">M/N - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startM_N.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">M/N - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_MN.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">N/NH - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startN_NH.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">N/NH - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_N_NH.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+N/M - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start-vogal-nm.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+N/M - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_vogal-nm.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">S - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startS.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">S - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_S.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">S/Z - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startS_Z.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">S/Z - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_S_Z.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+S/Z - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start-vogal-sz.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+S/Z - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_vogal-sz.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">CH/X - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startX_CH.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">CH/X - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_X_CH.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>        
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">R - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startR.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">R - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_R.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>        
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+R - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/start-vogal-r.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Vogal+R - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_vogal-r.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>        
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Consoantes + R ou L - Colocar figuras junto com seus nomes</div>
+              <a href="Imagens_palavras/startConsRL.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Consoantes + R ou L - Escrever o nome das figuras</div>
+              <a href="Escrever_palavras/start_Escrever_ConsRL.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Sons do X - Escrita de palavras</div>
+              <a href="Sons_do_X/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
         </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- SEÇÃO 4: LENDO E ENTENDENDO -->
+      <!-- ================================================================= -->
+      <section class="activity-section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title-left">
+            <span class="toggle-arrow">▶</span>
+            <span>LENDO E ENTENDENDO</span>
+          </div>
+          <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+        </div>
+        <div class="section-content">
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Quem é o intruso? (Nível fácil)</div>
+              <a href="Intruso_facil/page00.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Desafio das Dicas (Nível básico)</div>
+              <a href="Desafio_das_dicas_01/page00.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
       
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Dicas com itens de mercado (Palavras diversas)
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Dicas com itens de mercado (Palavras diversas)</div>
+              <a href="Dicas_diversos_mercado/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Dicas_diversos_mercado/start.html" class="btn-link" data-color="2">Acessar a atividade</a>
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Você é o motorista. (Atividade multidisciplinar envolvendo português, matemática e geografia com mapas eletrônicos)</div>
+              <a href="Motorista/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>      
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Interpretação de frases e fotos 1 (Fácil)</div>
+              <a href="Frases_01/start_easy.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>      
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Interpretação de frases e fotos 1 (Médio)</div>
+              <a href="Frases_01/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>              
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Interpretação de mensagens 1</div>
+              <a href="Frases_02/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>                      
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Interpretação de mensagens 2 (com respostas abertas)</div>
+              <a href="Frases_03/start.html" class="btn-link">Acessar a atividade</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
         </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Você é o motorista. (Atividade multidisciplinar envolvendo português, matemática e geografia com mapas eletrônicos)
-          </div>
-          <a href="Motorista/start.html" class="btn-link" data-color="3">Acessar a atividade</a>
-        </div>      
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Interpretação de frases e fotos 1 (Fácil)
-          </div>
-          <a href="Frases_01/start_easy.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>      
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Interpretação de frases e fotos 1 (Médio)
-          </div>
-          <a href="Frases_01/start.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>              
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Interpretação de mensagens 1
-          </div>
-          <a href="Frases_02/start.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>                      
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Interpretação de mensagens 2 (com respostas abertas)
-          </div>
-          <a href="Frases_03/start.html" class="btn-link" data-color="4">Acessar a atividade</a>
-        </div>                      
-        
       </section>
        
-     
       <!-- ================================================================= -->
-      <!-- SEÇÃO 4: NÚMEROS E CONTAGEM (TEMA: ÂMBAR / LARANJA) -->
+      <!-- SEÇÃO 5: NÚMEROS E CONTAGEM -->
       <!-- ================================================================= -->
-      <section class="activity-section" style="
-        --sec-primary: #d97706;
-        --sec-bg: #fffbeb;
-        --sec-hover: #b45309;
-      ">
-        <h2 class="section-title">NÚMEROS E CONTAGEM</h2>
-        
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Contador de bolhas de sabão lento
+      <section class="activity-section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title-left">
+            <span class="toggle-arrow">▶</span>
+            <span>NÚMEROS E CONTAGEM</span>
           </div>
-          <a href="Contadores/contar_bolhas.html" class="btn-link" data-color="1">Acessar o jogo</a>
+          <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
         </div>
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Contador de bolhas de sabão rápido
+        <div class="section-content">
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Contador de bolhas de sabão lento</div>
+              <a href="Contadores/contar_bolhas.html" class="btn-link">Acessar o jogo</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Contadores/contar_bolhas_faster_numbers_up.html" class="btn-link" data-color="2">Acessar o jogo</a>
-        </div>      
 
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Contagem de estrelas
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Contador de bolhas de sabão rápido</div>
+              <a href="Contadores/contar_bolhas_faster_numbers_up.html" class="btn-link">Acessar o jogo</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>      
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Contagem de estrelas</div>
+              <a href="Contadores/contar_estrelas.html" class="btn-link">Acessar o jogo</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>      
+
+          <div class="item-card">
+            <div class="item-info">
+              <div class="item-title">Contagem de dinheiro</div>
+              <a href="Contadores/contar_dinheiro.html" class="btn-link">Acessar o jogo</a>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
           </div>
-          <a href="Contadores/contar_estrelas.html" class="btn-link" data-color="3">Acessar o jogo</a>
-        </div>      
-
-        <div class="item-card">
-          <div class="item-title" style="font-family: serif;">
-            Contagem de dinheiro
-          </div>
-          <a href="Contadores/contar_dinheiro.html" class="btn-link" data-color="4">Acessar o jogo</a>
-        </div>      
-      </section>
-
-      <!-- ================================================================= -->
-      <!-- SEÇÃO 5: OUTROS SITES (TEMA: ROXO) -->
-      <!-- ================================================================= -->
-      <section class="activity-section" style="
-        --sec-primary: #7e22ce;
-        --sec-bg: #faf5ff;
-        --sec-hover: #6b21a8;
-      ">
-        <h2 class="section-title">OUTROS SITES</h2>
-        <div class="item-card">
-          <p style="margin: 0 0 8px 0;">
-            <a href="https://learningapps.org/user/User19390669" target="_blank" rel="noopener">Acessar perfil com as atividades no LearningApps</a>
-          </p>
-          <p class="note-text">
-            (O <a href="https://learningapps.org/" target="_blank" rel="noopener">LearningApps</a> é um site externo e não possui link para retornar diretamente a esta página. Recomendamos abri-lo em uma nova aba ou retornar utilizando este endereço.)
-          </p>
         </div>
       </section>
 
+      <!-- ================================================================= -->
+      <!-- SEÇÃO 6: OUTROS SITES -->
+      <!-- ================================================================= -->
+      <section class="activity-section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title-left">
+            <span class="toggle-arrow">▶</span>
+            <span>OUTROS SITES</span>
+          </div>
+          <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+        </div>
+        <div class="section-content">
+          <div class="item-card">
+            <div class="item-info">
+              <p style="margin: 0 0 8px 0;">
+                <a href="https://learningapps.org/user/User19390669" target="_blank" rel="noopener">Acessar perfil com as atividades no LearningApps</a>
+              </p>
+              <p class="note-text" style="font-size: 0.9rem; color: #555;">
+                (O <a href="https://learningapps.org/" target="_blank" rel="noopener">LearningApps</a> é um site externo e não possui link para retornar diretamente a esta página. Recomendamos abri-lo em uma nova aba ou retornar utilizando este endereço.)
+              </p>
+            </div>
+            <div class="item-right-actions">
+              <img src="Icons/diamond.png" alt="Ícone" class="section-icon">
+            </div>
+          </div>
+        </div>
+      </section>
 
     </main>
 
   </div>
+
+  <!-- Script para controlar a abertura e fechamento das sanfonas -->
+  <script>
+    function toggleSection(headerElement) {
+      headerElement.classList.toggle('active');
+      const content = headerElement.nextElementSibling;
+      content.classList.toggle('open');
+    }
+  </script>
 
 </body>
 </html>
