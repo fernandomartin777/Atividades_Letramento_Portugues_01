@@ -11,3 +11,38 @@ Tamanho das fontes dos cards de texto:
 Procure a propriedade font-size dentro de .card.text-card:CSS.card.text-card {
   font-size: clamp(1.2rem, 2.2vw, 1.6rem); /* Aumente ou diminua estes valores */
 }
+
+
+
+Agora o Example_fixed.html aceita imagens de outras pastas, sem mexer nas questões que já funcionam. Sem nenhuma configuração, tudo continua usando ../Atividades_com_imagens/. Testei os casos abaixo e o carregamento das questões continua correto.
+
+A pasta padrão ficou numa constante no topo do script (PASTA_PADRAO_IMAGENS), e há duas formas de usar outra pasta:
+
+1. Pasta diferente para uma questão inteira: acrescente pastaImagens nela.
+
+js
+{
+  titulo: "Questão 3: Objetos do Dia a Dia",
+  pastaImagens: "../Outra_Pasta/",
+  paresNome: [ ... ],
+  ...
+}
+
+2. Pasta diferente para uma figura específica: escreva o caminho completo no lugar do nome.
+
+js
+{ img: "../Especial/bicicleta.png", text: "bicicleta" }
+
+Vale qualquer caminho que comece com ./, ../, /, http://, https:// ou data:. Isso permite misturar pastas dentro da mesma questão: figuras com nome simples vão para a pasta da questão (ou a padrão) e as com caminho completo vão para onde você indicou.
+
+Um nome com subpasta, como "animais/cobra.png", é buscado dentro da pasta da questão ou da pasta padrão. Se a pasta da questão for escrita sem a barra final, o código acrescenta a barra sozinho.
+
+Se alguma imagem não carregar, o caminho que o navegador tentou aparece no console (F12) como “Imagem não encontrada”, o que ajuda a achar erros de digitação.
+
+Enquanto mexia no arquivo, notei três entradas que parecem ter sobrado de edições antigas, por causa do || nos nomes. Não alterei nada nelas:
+
+Questão 2: "banana.png" || "batata.png" sempre resulta em banana.png, mas o texto do card é “batata”.
+Questão 8: "morango" || "laranja.png" resulta em "morango", sem extensão, e o texto é “laranja”. Essa imagem não vai carregar.
+Questão 10: "terra" || ... também resulta em "terra", sem .png.
+
+Com o || o JavaScript usa sempre o primeiro valor, então basta deixar um único nome correto em cada uma. Se você me disser quais são os arquivos certos, eu corrijo.
