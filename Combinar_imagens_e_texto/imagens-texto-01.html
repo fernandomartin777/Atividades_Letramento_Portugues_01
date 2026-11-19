@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Combine as Figuras e Textos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+      color: #ffffff;
+    }
+
+    #app-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER / TITLE & PROGRESS BAR */
+    header {
+      height: 56px;
+      min-height: 56px;
+      background: #2563eb;
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid #1e3a8a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 16px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .info-stats {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #e0f2fe;
+    }
+
+    /* PROGRESS BAR TRACK */
+    .trilho-barra {
+      width: 100%;
+      height: 6px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #4ade80;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    /* OVERLAY BANNER OVER TITLE */
+    #banner-congratulations {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 56px;
+      background: linear-gradient(90deg, #15803d, #22c55e);
+      color: #ffffff;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      animation: slideDown 0.4s ease-out forwards;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
+    }
+
+    .banner-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .next-btn {
+      padding: 6px 16px;
+      background: #ffffff;
+      color: #15803d;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .next-btn:hover {
+      background: #f0fdf4;
+      transform: scale(1.05);
+    }
+
+    /* GAME PLAY AREA - MODIFICADO COM COR AZUL CLARA (AZUL CÉU/BEBÊ) */
+    #play-area {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: calc(100% - 56px);
+      overflow: hidden;
+      background: #e0f2fe; 
+    }
+
+    /* CARDS */
+    .card {
+      position: absolute;
+      background: #ffffff;
+      border: 2.5px solid #1e40af;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.1s ease, box-shadow 0.15s ease, background-color 0.3s ease, border-color 0.3s ease;
+      z-index: 5;
+      text-align: center;
+      padding: calc(8px * var(--escala, 1));
+    }
+
+    /* Card sizes based on content type - MODIFICADO: TAMANHO DA IMAGEM DOBRADO (180px) */
+    .card.image-card {
+      width: calc(180px * var(--escala, 1));
+      height: calc(180px * var(--escala, 1));
+      background: #ffffff;
+    }
+
+    .card.image-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    /* MODIFICADO: TAMANHO DA FONTE DOS TEXTOS AUMENTADO */
+    /* CARD DE TEXTO
+       - O card cresce conforme o texto, até a largura máxima (--largura-max-texto).
+       - Nunca quebra uma palavra no meio: se uma palavra for mais larga que o máximo,
+         o card se alarga só o suficiente para ela caber inteira (min-width: min-content). */
+    .card.text-card {
+      --largura-max-texto: 280px;   /* <<< aumente aqui se quiser cards de texto mais largos */
+      width: -moz-max-content;
+      width: max-content;
+      min-width: -moz-min-content;
+      min-width: min-content;
+      max-width: calc(var(--largura-max-texto) * var(--escala, 1));
+      min-height: calc(70px * var(--escala, 1));
+      font-size: calc(clamp(1.2rem, 2.2vw, 1.6rem) * var(--escala, 1));
+      line-height: 1.25;
+      color: #1e293b;
+      padding: calc(12px * var(--escala, 1)) calc(16px * var(--escala, 1));
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
+      -webkit-hyphens: none;
+      hyphens: none;
+    }
+
+    .card.text-card .texto {
+      display: block;
+      min-width: calc(110px * var(--escala, 1));
+    }
+
+    .card.dragging {
+      cursor: grabbing;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+      z-index: 50 !important;
+      transform: scale(1.06);
+    }
+
+    .card.paired-left {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right-width: 1px;
+    }
+
+    .card.paired-right {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left-width: 1px;
+    }
+
+    .card.correct {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #14532d !important;
+    }
+
+    /* SPLIT LINK CONNECTOR BUTTON */
+    .unpair-btn {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      background: #ef4444;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 60;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .unpair-btn:hover {
+      background: #dc2626;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    /* CHECK BUTTON */
+    #check-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: 3px solid #60a5fa;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4), 0 0 15px rgba(37, 99, 235, 0.5);
+      cursor: pointer;
+      z-index: 80;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #check-btn:hover {
+      transform: scale(1.08);
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 20px rgba(37, 99, 235, 0.8);
+    }
+
+    #check-btn:active {
+      transform: scale(0.95);
+    }
+
+    #check-btn svg {
+      width: 34px;
+      height: 34px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <header>
+      <div class="header-top-row">
+        <h1 id="header-title">Combine as Figuras e Textos</h1>
+        <div class="info-stats">PONTOS: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">0</span></div>
+      </div>
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+    </header>
+
+    <div id="banner-congratulations">
+      <div class="banner-text">
+        <span id="banner-msg">🎉 Parabéns! Questão concluída com sucesso!</span>
+      </div>
+      <button class="next-btn" id="btn-next-question">Próximo</button>
+    </div>
+
+    <main id="play-area"></main>
+
+    <button id="check-btn" title="Verificar combinações">
+      <svg viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    // ----------------------------------------------------
+    // PASTAS DAS IMAGENS
+    // Por padrão, todas as imagens são buscadas nesta pasta:
+    // ----------------------------------------------------
+    const PASTA_PADRAO_IMAGENS = "../Atividades_com_imagens/";
+
+    // Como indicar imagens que estão em OUTRA pasta (todas opcionais):
+    //
+    // 1) Para a questão inteira, acrescente "pastaImagens" na questão:
+    //      { titulo: "Questão 3: ...", pastaImagens: "../Outra_Pasta/", pares: [...], ... }
+    //
+    // 2) Para UMA figura específica, escreva o caminho completo no lugar do nome.
+    //    Vale qualquer caminho que comece com  ./   ../   /   http://   https://   data:
+    //      { img: "../Outra_Pasta/cobra.png", text: "cobra" }
+    //      { img: "https://meusite.com/imagens/cobra.png", text: "cobra" }
+    //
+    // 3) Um nome com subpasta (ex.: "animais/cobra.png") é buscado dentro da pasta
+    //    da questão (ou da pasta padrão, se a questão não tiver "pastaImagens").
+    //
+    // Se nada disso for informado, tudo continua funcionando como antes.
+    // ----------------------------------------------------
+
+    // ----------------------------------------------------
+    // BANCO DE QUESTÕES
+    //
+    // Cada questão tem:
+    //   titulo:      o título que aparece no topo
+    //   pares:       as combinações CERTAS (1, 2, 3, 4, 5... quantas você quiser).
+    //                Cada par é uma imagem + um texto (palavra, frase, o que for).
+    //   sobrasImg:   (opcional) imagens que sobram, sem par
+    //   sobrasTexto: (opcional) textos que sobram, sem par (palavras e frases misturadas)
+    //   pastaImagens:(opcional) pasta das imagens desta questão
+    //
+    // A pontuação máxima e a validação da questão se ajustam sozinhas
+    // ao número de pares que você colocar.
+    // ----------------------------------------------------
+    const questoes = [
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 1)",
+        pares: [
+          { img: "arvore.png", text: "árvore" },
+          { img: "aranha.png", text: "aranha" },
+          { img: "areia.png", text: "areia" },
+          { img: "arroz.png", text: "arroz" }
+        ],
+        sobrasImg: [],
+        sobrasTexto: [
+          "armário",
+          "arrumado",
+          "aro"
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 2)",
+        pares: [
+          { img: "sol.png", text: "sol" },
+          { img: "mel.png", text: "mel" },
+          { img: "balde.png", text: "balde" }
+        ],
+        sobrasImg: [],
+        sobrasTexto: [
+          "solo",
+          "mela",
+          "melado",
+          "balada"
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 3)",
+        pares: [
+          { img: "laranja.png", text: "laranja" },
+          { img: "manga.png", text: "manga" },
+          { img: "melancia.png", text: "melancia" },
+          { img: "janela.png", text: "janela" }
+        ],
+        sobrasImg: ["lampada.png", "mamao.png", "mesa.png", "jacare.png"],
+        sobrasTexto: [
+          
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 4)",
+        pares: [
+          { img: "frutas.png", text: "frutas" },
+          { img: "pastel.png", text: "pastel" },
+          { img: "estrela.png", text: "estrela" },
+          { img: "pessego.png", text: "pêssego" }
+        ],
+        sobrasImg: ["laranja.png", "mamao.png", "pasta-de-dente.png", "peixe.png", "espelho.png"],
+        sobrasTexto: [
+          
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 5)",
+        pares: [
+          { img: "abacaxi.png", text: "abacaxi" },
+          { img: "elefante-real.png", text: "elefante" },
+          { img: "ioio.png", text: "ioiô" },
+          { img: "urubu.png", text: "urubu" },
+          { img: "onibus.png", text: "ônibus" }
+        ],
+        sobrasImg: ["arvore.png", "igreja.png", "urso.png", "estrela.png"],
+        sobrasTexto: [
+          "abacate",
+          "eletricidade",
+          "ilha",
+          "ovo",
+          "único"
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 6)",
+        pares: [
+          { img: "homem.png", text: "homem" },
+          { img: "horta.png", text: "horta" },
+          { img: "helicoptero.png", text: "helicóptero" }
+        ],
+        sobrasImg: ["oculos.png", "elefante.png"],
+        sobrasTexto: [
+          "ônibus",
+          "elefante",
+          "osso"
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 7)",
+        pares: [
+          { img: "chapeu.png", text: "chapéu" },
+          { img: "chocolate.png", text: "chocolate" },
+          { img: "abelha.png", text: "abelha" },
+          { img: "aranha.png", text: "aranha" },
+          { img: "linha.png", text: "linha" },
+          { img: "olho.png", text: "olho" }
+        ],
+        sobrasImg: ["chuva.png", "livro.png", "abacate.png", "osso.png"],
+        sobrasTexto: [
+          "chave",
+          "abacaxi",
+          "óculos",
+          "lixo",
+          "antena"
+        ]
+      },
+      {
+        titulo: "Coloque as imagens junto com as palavras ou frases. Podem sobrar algumas. (Questão 8)",
+        pares: [
+          { img: "hortela.png", text: "hortelã" },
+          { img: "onda.png", text: "onda" },
+          { img: "harpa.png", text: "harpa" },
+          { img: "apito.png", text: "apito" }
+        ],
+        sobrasImg: ["onca.png", "arvore.png", "horta.png"],
+        sobrasTexto: [
+          "homem",
+          "ônibus",
+          "abacaxi",
+          "óculos"
+        ]
+      }
+    ];
+
+    // Variáveis de Estado Global do Jogo
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    // 1 ponto por par certo: soma dos pares de todas as questões (calculado sozinho)
+    const maxPontosPossiveis = questoes.reduce((soma, q) => soma + q.pares.length, 0);
+
+    // Estado da Questão Atual
+    let cards = [];
+    let pairs = []; // { id, leftCard, rightCard, btnEl, matchKey }
+    let pairIdCounter = 1;
+    let highestZIndex = 10;
+    let checkedPairsTracker = new Set(); // Armazena pares já pontuados ou já errados para cumprir regra de 1 ponto único e sem pontuar duplicado/refeito
+
+    let isDragging = false;
+    let draggedEntity = null;
+    let jaInteragiu = false; // true depois que o aluno mexe em algum card da questão atual
+
+    // Elementos DOM
+    const playArea = document.getElementById('play-area');
+    const checkBtn = document.getElementById('check-btn');
+    const banner = document.getElementById('banner-congratulations');
+    const nextQuestionBtn = document.getElementById('btn-next-question');
+    const headerTitle = document.getElementById('header-title');
+    const txtPontos = document.getElementById('txt-pontos');
+    const txtMaxPontos = document.getElementById('txt-max-pontos');
+    const barraPreenchimento = document.getElementById('barra-preenchimento');
+    const bannerMsg = document.getElementById('banner-msg');
+
+    // Recuperar progresso da URL ou LocalStorage ao carregar
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, parseInt(qParam, 10)));
+      }
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || '0', 10);
+      }
+
+      txtMaxPontos.textContent = maxPontosPossiveis;
+      atualizarInterfaceGeral();
+      carregarQuestao(indiceAtual);
+    };
+
+    function atualizarInterfaceGeral() {
+      txtPontos.textContent = pontuacaoAcumulada;
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      const perc = ((indiceAtual) / questoes.length) * 100;
+      barraPreenchimento.style.width = `${perc}%`;
+    }
+
+    function carregarQuestao(index) {
+      playArea.querySelectorAll('.card, .unpair-btn').forEach(el => el.remove());
+      cards = [];
+      pairs = [];
+      pairIdCounter = 1;
+      checkedPairsTracker.clear();
+      jaInteragiu = false;
+      banner.style.display = 'none';
+
+      const q = questoes[index];
+      headerTitle.textContent = q.titulo;
+
+      // Compilar todos os elementos da questão atual
+      let rawCardsData = [];
+
+      // Pares (imagem + texto): quantos você colocou na questão
+      q.pares.forEach((p, idx) => {
+        const matchKey = `par_${index}_${idx}`;
+        rawCardsData.push({ type: 'image', content: p.img, matchKey: matchKey, isPair: true });
+        rawCardsData.push({ type: 'text', content: p.text, matchKey: matchKey, isPair: true });
+      });
+
+      // Imagens que sobram (sem par)
+      (q.sobrasImg || []).forEach((imgName, idx) => {
+        rawCardsData.push({ type: 'image', content: imgName, matchKey: `sobra_img_${index}_${idx}`, isPair: false });
+      });
+
+      // Textos que sobram (sem par)
+      (q.sobrasTexto || []).forEach((texto, idx) => {
+        rawCardsData.push({ type: 'text', content: texto, matchKey: `sobra_texto_${index}_${idx}`, isPair: false });
+      });
+
+      // Informa a cada card de imagem qual é a pasta desta questão (se ela tiver uma própria)
+      rawCardsData.forEach(item => { item.pasta = q.pastaImagens; });
+
+      // Embaralhar todos os cards da questão
+      rawCardsData = shuffleArray(rawCardsData);
+
+      // Cria os cards (posição provisória) e depois distribui sem sobreposição e sem sair da tela
+      rawCardsData.forEach(item => {
+        cards.push(createCardElement(item, 0, 0));
+      });
+
+      organizarCards();
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // ----------------------------------------------------
+    // DISTRIBUIÇÃO DOS CARDS: sem sobreposição e totalmente dentro da tela
+    // 1) mede o tamanho real de cada card (imagens e frases de tamanhos diferentes)
+    // 2) tenta posições aleatórias que não colidam com nenhum outro card
+    // 3) se não couber, tenta um encaixe em "prateleiras" (sempre sem colisão)
+    // 4) se ainda não couber (telas pequenas), reduz o tamanho dos cards e repete
+    // ----------------------------------------------------
+    const MARGEM_BORDA = 10;       // distância mínima entre um card e a borda da área
+    const ESPACO_ENTRE_CARDS = 14; // distância mínima entre dois cards
+    const PASSOS_DE_ESCALA = 13;   // 1.00, 0.95, ... até 0.35
+
+    function retangulosSeSobrepoem(a, b, folga) {
+      return a.x < b.x + b.w + folga && a.x + a.w + folga > b.x &&
+             a.y < b.y + b.h + folga && a.y + a.h + folga > b.y;
+    }
+
+    // Área do botão de verificar (✓), para nenhum card nascer escondido embaixo dele
+    function obterZonaProibida(areaRect) {
+      const r = checkBtn.getBoundingClientRect();
+      const folga = 10;
+      return {
+        x: r.left - areaRect.left - folga,
+        y: r.top - areaRect.top - folga,
+        w: r.width + folga * 2,
+        h: r.height + folga * 2
+      };
+    }
+
+    function tentarLayoutAleatorio(tamanhos, W, H, zona) {
+      // Cards maiores primeiro: aumenta muito a chance de caber tudo
+      const ordem = tamanhos.map((_, i) => i)
+        .sort((a, b) => tamanhos[b].w * tamanhos[b].h - tamanhos[a].w * tamanhos[a].h);
+
+      for (let tentativa = 0; tentativa < 40; tentativa++) {
+        const colocados = [];
+        const resultado = new Array(tamanhos.length);
+        let deuCerto = true;
+
+        for (const i of ordem) {
+          const { w, h } = tamanhos[i];
+          const maxX = W - MARGEM_BORDA - w;
+          const maxY = H - MARGEM_BORDA - h;
+          if (maxX < MARGEM_BORDA || maxY < MARGEM_BORDA) return null; // card maior que a área
+
+          let achou = false;
+          for (let t = 0; t < 200; t++) {
+            const r = {
+              x: MARGEM_BORDA + Math.random() * (maxX - MARGEM_BORDA),
+              y: MARGEM_BORDA + Math.random() * (maxY - MARGEM_BORDA),
+              w, h
+            };
+            if (retangulosSeSobrepoem(r, zona, 0)) continue;
+            if (colocados.some(c => retangulosSeSobrepoem(r, c, ESPACO_ENTRE_CARDS))) continue;
+            colocados.push(r);
+            resultado[i] = r;
+            achou = true;
+            break;
+          }
+          if (!achou) { deuCerto = false; break; }
+        }
+        if (deuCerto) return resultado;
+      }
+      return null;
+    }
+
+    function tentarLayoutEmPrateleiras(tamanhos, W, H, zona) {
+      const ordem = tamanhos.map((_, i) => i)
+        .sort((a, b) => tamanhos[b].h - tamanhos[a].h);
+      const resultado = new Array(tamanhos.length);
+      let x = MARGEM_BORDA, y = MARGEM_BORDA, alturaLinha = 0;
+
+      for (const i of ordem) {
+        const { w, h } = tamanhos[i];
+        let colocado = false;
+
+        for (let seguranca = 0; seguranca < 200; seguranca++) {
+          if (x + w > W - MARGEM_BORDA) {          // não cabe na linha: nova linha
+            x = MARGEM_BORDA;
+            y += alturaLinha + ESPACO_ENTRE_CARDS;
+            alturaLinha = 0;
+          }
+          if (y + h > H - MARGEM_BORDA) return null; // acabou o espaço vertical
+
+          const r = { x, y, w, h };
+          if (retangulosSeSobrepoem(r, zona, 0)) {   // bateu no botão ✓: pula para depois dele
+            x = zona.x + zona.w + ESPACO_ENTRE_CARDS;
+            continue;
+          }
+          resultado[i] = r;
+          x += w + ESPACO_ENTRE_CARDS;
+          alturaLinha = Math.max(alturaLinha, h);
+          colocado = true;
+          break;
+        }
+        if (!colocado) return null;
+      }
+      return resultado;
+    }
+
+    function organizarCards() {
+      const areaRect = playArea.getBoundingClientRect();
+      const W = areaRect.width || window.innerWidth;
+      const H = areaRect.height || (window.innerHeight - 56);
+      const zona = obterZonaProibida(areaRect);
+      let layout = null;
+
+      for (let passo = 0; passo <= PASSOS_DE_ESCALA && !layout; passo++) {
+        const escala = 1 - passo * 0.05;
+        playArea.style.setProperty('--escala', escala.toFixed(2));
+
+        // Mede o tamanho real de cada card nesta escala (em 0,0 para o texto não ser espremido)
+        const tamanhos = cards.map(c => {
+          c.style.left = '0px';
+          c.style.top = '0px';
+          return { w: c.offsetWidth, h: c.offsetHeight };
+        });
+
+        layout = tentarLayoutAleatorio(tamanhos, W, H, zona) ||
+                 tentarLayoutEmPrateleiras(tamanhos, W, H, zona);
+      }
+
+      if (!layout) {
+        // Último recurso (tela minúscula): mantém tudo dentro da tela, mesmo que encoste
+        layout = cards.map(c => ({
+          x: Math.random() * Math.max(0, W - c.offsetWidth),
+          y: Math.random() * Math.max(0, H - c.offsetHeight)
+        }));
+      }
+
+      cards.forEach((c, i) => {
+        c.style.left = `${Math.round(layout[i].x)}px`;
+        c.style.top = `${Math.round(layout[i].y)}px`;
+      });
+    }
+
+    // Confere se o layout atual está sem sobreposição e dentro da tela
+    function layoutEstaValido() {
+      const areaRect = playArea.getBoundingClientRect();
+      const rects = cards.map(c => ({
+        x: parseFloat(c.style.left), y: parseFloat(c.style.top),
+        w: c.offsetWidth, h: c.offsetHeight
+      }));
+      for (let i = 0; i < rects.length; i++) {
+        const a = rects[i];
+        if (a.x < 0 || a.y < 0 || a.x + a.w > areaRect.width || a.y + a.h > areaRect.height) return false;
+        for (let j = i + 1; j < rects.length; j++) {
+          if (retangulosSeSobrepoem(a, rects[j], 0)) return false;
+        }
+      }
+      return true;
+    }
+
+    // Monta o caminho final de uma imagem (ver explicação no topo do script)
+    function resolverCaminhoImagem(nome, pastaDaQuestao) {
+      const caminho = String(nome).trim();
+      // Caminho completo / absoluto / URL: usa exatamente como foi escrito
+      if (/^(\.{1,2}\/|\/|https?:|data:)/i.test(caminho)) return caminho;
+      // Nome simples (ou com subpasta): usa a pasta da questão ou a pasta padrão
+      let pasta = pastaDaQuestao || PASTA_PADRAO_IMAGENS;
+      if (!pasta.endsWith('/')) pasta += '/';
+      return pasta + caminho;
+    }
+
+    function createCardElement(data, x, y) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.matchKey = data.matchKey;
+      card.dataset.cardType = data.type;
+
+      if (data.type === 'image') {
+        card.classList.add('image-card');
+        const img = document.createElement('img');
+        img.src = resolverCaminhoImagem(data.content, data.pasta);
+        img.alt = "Figura";
+        img.onerror = () => console.warn('Imagem não encontrada:', img.getAttribute('src'));
+        card.appendChild(img);
+      } else {
+        card.classList.add('text-card');
+        const spanTexto = document.createElement('span');
+        spanTexto.className = 'texto';
+        spanTexto.textContent = data.content;
+        card.appendChild(spanTexto);
+      }
+
+      card.style.left = `${x}px`;
+      card.style.top = `${y}px`;
+      card.style.zIndex = highestZIndex++;
+
+      card.addEventListener('pointerdown', onPointerDown);
+      playArea.appendChild(card);
+      return card;
+    }
+
+    // ARRASTAR E SOLTAR (POINTER EVENTS)
+    function onPointerDown(e) {
+      if (e.target.classList.contains('unpair-btn')) return;
+      e.preventDefault();
+      jaInteragiu = true;
+      const card = e.currentTarget;
+      card.setPointerCapture(e.pointerId);
+
+      highestZIndex += 2;
+      const pair = getPairByCard(card);
+
+      if (pair) {
+        pair.leftCard.style.zIndex = highestZIndex;
+        pair.rightCard.style.zIndex = highestZIndex;
+        if (pair.btnEl) pair.btnEl.style.zIndex = highestZIndex + 1;
+
+        draggedEntity = {
+          type: 'pair',
+          pair: pair,
+          pointerId: e.pointerId,
+          startPointerX: e.clientX,
+          startPointerY: e.clientY,
+          startLeftX: parseFloat(pair.leftCard.style.left),
+          startLeftY: parseFloat(pair.leftCard.style.top),
+          startRightX: parseFloat(pair.rightCard.style.left),
+          startRightY: parseFloat(pair.rightCard.style.top)
+        };
+        pair.leftCard.classList.add('dragging');
+        pair.rightCard.classList.add('dragging');
+      } else {
+        card.style.zIndex = highestZIndex;
+        draggedEntity = {
+          type: 'card',
+          card: card,
+          pointerId: e.pointerId,
+          startPointerX: e.clientX,
+          startPointerY: e.clientY,
+          startX: parseFloat(card.style.left),
+          startY: parseFloat(card.style.top)
+        };
+        card.classList.add('dragging');
+      }
+
+      isDragging = true;
+      card.addEventListener('pointermove', onPointerMove);
+      card.addEventListener('pointerup', onPointerUp);
+      card.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging || !draggedEntity) return;
+      const deltaX = e.clientX - draggedEntity.startPointerX;
+      const deltaY = e.clientY - draggedEntity.startPointerY;
+      const areaRect = playArea.getBoundingClientRect();
+
+      if (draggedEntity.type === 'card') {
+        const card = draggedEntity.card;
+        let newX = draggedEntity.startX + deltaX;
+        let newY = draggedEntity.startY + deltaY;
+        newX = Math.max(0, Math.min(areaRect.width - card.offsetWidth, newX));
+        newY = Math.max(0, Math.min(areaRect.height - card.offsetHeight, newY));
+        card.style.left = `${newX}px`;
+        card.style.top = `${newY}px`;
+      } else if (draggedEntity.type === 'pair') {
+        const pair = draggedEntity.pair;
+        let newLeftX = draggedEntity.startLeftX + deltaX;
+        let newLeftY = draggedEntity.startLeftY + deltaY;
+        let newRightX = draggedEntity.startRightX + deltaX;
+        let newRightY = draggedEntity.startRightY + deltaY;
+
+        if (newLeftX < 0) {
+          newLeftX = 0;
+          newRightX = pair.leftCard.offsetWidth;
+        } else if (newRightX + pair.rightCard.offsetWidth > areaRect.width) {
+          newRightX = areaRect.width - pair.rightCard.offsetWidth;
+          newLeftX = newRightX - pair.leftCard.offsetWidth;
+        }
+
+        newLeftY = Math.max(0, Math.min(areaRect.height - pair.leftCard.offsetHeight, newLeftY));
+        newRightY = newLeftY;
+
+        pair.leftCard.style.left = `${newLeftX}px`;
+        pair.leftCard.style.top = `${newLeftY}px`;
+        pair.rightCard.style.left = `${newRightX}px`;
+        pair.rightCard.style.top = `${newRightY}px`;
+
+        updatePairButtonPosition(pair);
+      }
+    }
+
+    function onPointerUp(e) {
+      if (!isDragging || !draggedEntity) return;
+      const card = e.currentTarget;
+      card.releasePointerCapture(e.pointerId);
+
+      card.removeEventListener('pointermove', onPointerMove);
+      card.removeEventListener('pointerup', onPointerUp);
+      card.removeEventListener('pointercancel', onPointerUp);
+
+      if (draggedEntity.type === 'card') {
+        draggedEntity.card.classList.remove('dragging');
+        checkSnapProximity(draggedEntity.card);
+      } else if (draggedEntity.type === 'pair') {
+        draggedEntity.pair.leftCard.classList.remove('dragging');
+        draggedEntity.pair.rightCard.classList.remove('dragging');
+      }
+
+      isDragging = false;
+      draggedEntity = null;
+    }
+
+    // ENCAIXE AUTOMÁTICO (GRUDE)
+    function checkSnapProximity(movedCard) {
+      if (getPairByCard(movedCard)) return;
+
+      const movedRect = movedCard.getBoundingClientRect();
+      let closestCard = null;
+      let minDistance = Infinity;
+      const SNAP_THRESHOLD = 50;
+
+      cards.forEach(otherCard => {
+        if (otherCard === movedCard) return;
+        if (getPairByCard(otherCard)) return;
+        // Permitir colar imagem com texto (tipos diferentes)
+        if (otherCard.dataset.cardType === movedCard.dataset.cardType) return;
+
+        const otherRect = otherCard.getBoundingClientRect();
+        const dx = (movedRect.left + movedRect.width / 2) - (otherRect.left + otherRect.width / 2);
+        const dy = (movedRect.top + movedRect.height / 2) - (otherRect.top + otherRect.height / 2);
+        const distance = Math.hypot(dx, dy);
+
+        if (distance < SNAP_THRESHOLD + 60) {
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestCard = otherCard;
+          }
+        }
+      });
+
+      if (closestCard) {
+        let leftCard, rightCard;
+        if (movedCard.dataset.cardType === 'image') {
+          leftCard = movedCard;
+          rightCard = closestCard;
+        } else {
+          leftCard = closestCard;
+          rightCard = movedCard;
+        }
+        pairCards(leftCard, rightCard);
+      }
+    }
+
+    function pairCards(leftCard, rightCard) {
+      const leftX = parseFloat(leftCard.style.left);
+      const topY = parseFloat(leftCard.style.top);
+
+      leftCard.classList.add('paired-left');
+      rightCard.classList.add('paired-right');
+
+      rightCard.style.left = `${leftX + leftCard.offsetWidth}px`;
+      rightCard.style.top = `${topY}px`;
+
+      const btn = document.createElement('button');
+      btn.className = 'unpair-btn';
+      btn.innerHTML = '✕';
+      btn.title = 'Separar cartas';
+
+      const pairObj = {
+        id: pairIdCounter++,
+        leftCard: leftCard,
+        rightCard: rightCard,
+        btnEl: btn
+      };
+
+      btn.addEventListener('click', () => unpairCards(pairObj));
+      playArea.appendChild(btn);
+      pairs.push(pairObj);
+      updatePairButtonPosition(pairObj);
+    }
+
+    function updatePairButtonPosition(pair) {
+      if (!pair.btnEl) return;
+      const leftX = parseFloat(pair.leftCard.style.left);
+      const topY = parseFloat(pair.leftCard.style.top);
+      const cardW = pair.leftCard.offsetWidth;
+      const cardH = pair.leftCard.offsetHeight;
+      pair.btnEl.style.left = `${leftX + cardW}px`;
+      pair.btnEl.style.top = `${topY + (cardH / 2)}px`;
+    }
+
+    function unpairCards(pair) {
+      pair.leftCard.classList.remove('paired-left', 'correct');
+      pair.rightCard.classList.remove('paired-right', 'correct');
+      if (pair.btnEl) pair.btnEl.remove();
+
+      const currentX = parseFloat(pair.rightCard.style.left);
+      pair.rightCard.style.left = `${currentX + 20}px`;
+      pairs = pairs.filter(p => p.id !== pair.id);
+    }
+
+    function getPairByCard(card) {
+      return pairs.find(p => p.leftCard === card || p.rightCard === card);
+    }
+
+    // BOTÃO DE VERIFICAÇÃO E REGRAS DE PONTUAÇÃO SOLICITADAS
+    checkBtn.addEventListener('click', () => {
+      let correctPairsInThisCheck = 0;
+      // Quantos pares CERTOS existem nesta questão (as sobras não contam)
+      const totalExpectedPairs = questoes[indiceAtual].pares.length;
+
+      const currentPairs = [...pairs];
+
+      currentPairs.forEach(pair => {
+        const keyLeft = pair.leftCard.dataset.matchKey;
+        const keyRight = pair.rightCard.dataset.matchKey;
+
+        if (keyLeft === keyRight) {
+          // Combinação Correta
+          pair.leftCard.classList.add('correct');
+          pair.rightCard.classList.add('correct');
+          correctPairsInThisCheck++;
+
+          // Regra de Pontuação: Se nunca foi verificado antes e é a primeira tentativa correta, soma ponto
+          if (!checkedPairsTracker.has(keyLeft)) {
+            checkedPairsTracker.add(keyLeft + "_scored");
+            checkedPairsTracker.add(keyLeft); // Marca como processado para não pontuar novamente
+            pontuacaoAcumulada += 1; // 1 ponto por par correto na primeira tentativa
+          }
+        } else {
+          // Combinação Errada -> Separa automaticamente
+          // Marca no tracker que este par teve erro na primeira tentativa, logo não dará mais pontos futuros
+          checkedPairsTracker.add(keyLeft); 
+          checkedPairsTracker.add(keyRight);
+          unpairCards(pair);
+        }
+      });
+
+      atualizarInterfaceGeral();
+
+      // Verificar se TODOS os pares da questão (quantos forem) estão corretos simultaneamente
+      // (As sobras soltas não impedem a conclusão se os pares corretos estiverem formados)
+      if (correctPairsInThisCheck === totalExpectedPairs) {
+        if (indiceAtual === questoes.length - 1) {
+          bannerMsg.textContent = "🏆 Parabéns! Você concluiu todas as atividades com sucesso!";
+          nextQuestionBtn.textContent = "Terminar";
+        } else {
+          bannerMsg.textContent = "🎉 Parabéns! Você combinou todos os pares corretamente!";
+          nextQuestionBtn.textContent = "Próximo";
+        }
+        banner.style.display = 'flex';
+      }
+    });
+
+    // BOTÃO DO OVERLAY (PRÓXIMO / TERMINAR)
+    nextQuestionBtn.addEventListener('click', () => {
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        atualizarInterfaceGeral();
+        carregarQuestao(indiceAtual);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Última questão -> Redirecionar para o repositório solicitado
+        window.location.href = 'https://fernandomartin777.github.io/Atividades_Letramento_Portugues_01/';
+      }
+    });
+
+    // Ajustes de redimensionamento de tela
+    let timerResize = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(timerResize);
+      timerResize = setTimeout(ajustarAposRedimensionar, 150);
+    });
+
+    function ajustarAposRedimensionar() {
+      // Se o aluno ainda não mexeu em nada (ex.: girou o celular logo ao abrir),
+      // redistribui os cards caso o layout tenha ficado inválido.
+      if (!jaInteragiu && cards.length && !layoutEstaValido()) {
+        organizarCards();
+        return;
+      }
+      const areaRect = playArea.getBoundingClientRect();
+      cards.forEach(card => {
+        let x = parseFloat(card.style.left);
+        let y = parseFloat(card.style.top);
+        if (x + card.offsetWidth > areaRect.width) {
+          card.style.left = `${Math.max(0, areaRect.width - card.offsetWidth)}px`;
+        }
+        if (y + card.offsetHeight > areaRect.height) {
+          card.style.top = `${Math.max(0, areaRect.height - card.offsetHeight)}px`;
+        }
+      });
+      pairs.forEach(updatePairButtonPosition);
+    }
+  </script>
+</body>
+</html>

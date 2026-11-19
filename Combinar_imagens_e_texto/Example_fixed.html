@@ -181,13 +181,32 @@
     }
 
     /* MODIFICADO: TAMANHO DA FONTE DOS TEXTOS AUMENTADO */
+    /* CARD DE TEXTO
+       - O card cresce conforme o texto, até a largura máxima (--largura-max-texto).
+       - Nunca quebra uma palavra no meio: se uma palavra for mais larga que o máximo,
+         o card se alarga só o suficiente para ela caber inteira (min-width: min-content). */
     .card.text-card {
-      min-width: calc(140px * var(--escala, 1));
-      max-width: calc(280px * var(--escala, 1));
+      --largura-max-texto: 280px;   /* <<< aumente aqui se quiser cards de texto mais largos */
+      width: -moz-max-content;
+      width: max-content;
+      min-width: -moz-min-content;
+      min-width: min-content;
+      max-width: calc(var(--largura-max-texto) * var(--escala, 1));
       min-height: calc(70px * var(--escala, 1));
       font-size: calc(clamp(1.2rem, 2.2vw, 1.6rem) * var(--escala, 1));
+      line-height: 1.25;
       color: #1e293b;
       padding: calc(12px * var(--escala, 1)) calc(16px * var(--escala, 1));
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
+      -webkit-hyphens: none;
+      hyphens: none;
+    }
+
+    .card.text-card .texto {
+      display: block;
+      min-width: calc(110px * var(--escala, 1));
     }
 
     .card.dragging {
@@ -287,7 +306,7 @@
     <header>
       <div class="header-top-row">
         <h1 id="header-title">Combine as Figuras e Textos</h1>
-        <div class="info-stats">PONTOS: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">60</span></div>
+        <div class="info-stats">PONTOS: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">0</span></div>
       </div>
       <div class="trilho-barra">
         <div id="barra-preenchimento" class="preenchimento-barra"></div>
@@ -320,7 +339,7 @@
     // Como indicar imagens que estão em OUTRA pasta (todas opcionais):
     //
     // 1) Para a questão inteira, acrescente "pastaImagens" na questão:
-    //      { titulo: "Questão 3: ...", pastaImagens: "../Outra_Pasta/", paresNome: [...], ... }
+    //      { titulo: "Questão 3: ...", pastaImagens: "../Outra_Pasta/", pares: [...], ... }
     //
     // 2) Para UMA figura específica, escreva o caminho completo no lugar do nome.
     //    Vale qualquer caminho que comece com  ./   ../   /   http://   https://   data:
@@ -334,176 +353,176 @@
     // ----------------------------------------------------
 
     // ----------------------------------------------------
-    // BANCO DE DADOS DAS 10 QUESTÕES
-    // Fácil de adicionar/remover ou modificar cards e textos
+    // BANCO DE QUESTÕES
+    //
+    // Cada questão tem:
+    //   titulo:      o título que aparece no topo
+    //   pares:       as combinações CERTAS (1, 2, 3, 4, 5... quantas você quiser).
+    //                Cada par é uma imagem + um texto (palavra, frase, o que for).
+    //   sobrasImg:   (opcional) imagens que sobram, sem par
+    //   sobrasTexto: (opcional) textos que sobram, sem par (palavras e frases misturadas)
+    //   pastaImagens:(opcional) pasta das imagens desta questão
+    //
+    // A pontuação máxima e a validação da questão se ajustam sozinhas
+    // ao número de pares que você colocar.
     // ----------------------------------------------------
     const questoes = [
       {
         titulo: "Questão 1: Animais e Natureza",
-        paresNome: [
+        pares: [
           { img: "cobra.png", text: "cobra" },
-          { img: "zebra.png", text: "zebra" }
-        ],
-        paresFrase: [
+          { img: "zebra.png", text: "zebra" },
           { img: "aranha.png", text: "A aranha tece sua teia com fios de seda." },
           { img: "arara.png", text: "A arara voa colorida pela floresta tropical." }
         ],
         sobrasImg: ["aguia.png", "antena.png"],
-        sobrasPalavras: ["azul", "balde"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "azul",
+          "balde",
           "O vento sopra forte entre as árvores altas.",
           "A água limpa corre cristalina pelo rio."
         ]
       },
       {
         titulo: "Questão 2: Alimentos e Frutas",
-        paresNome: [
+        pares: [
           { img: "alface.png", text: "alface" },
-          { img: "banana.png" || "batata.png", text: "batata" }
-        ],
-        paresFrase: [
+          { img: "batata.png", text: "batata" },
           { img: "biscoito.png", text: "O biscoito crocante é delicioso com café." },
           { img: "bolo.png", text: "O bolo de chocolate saiu quentinho do forno." }
         ],
         sobrasImg: ["cafe.png", "caju.png"],
-        sobrasPalavras: ["carro", "casa"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "carro",
+          "casa",
           "As frutas frescas dão muita energia para o corpo.",
           "O suco natural refresca nos dias quentes de sol."
         ]
       },
       {
         titulo: "Questão 3: Objetos do Dia a Dia",
-        paresNome: [
+        pares: [
           { img: "bicicleta.png", text: "bicicleta" },
-          { img: "bota.png", text: "bota" }
-        ],
-        paresFrase: [
+          { img: "bota.png", text: "bota" },
           { img: "cadeira.png", text: "A cadeira de madeira está firme na sala." },
           { img: "caderno.png", text: "O caderno guarda anotações importantes da aula." }
         ],
         sobrasImg: ["caneta.png", "chave.png"],
-        sobrasPalavras: ["copo", "lapis"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "copo",
+          "lapis",
           "Guardamos os materiais escolares organizados na mochila.",
           "A porta trancada precisa da chave certa para abrir."
         ]
       },
       {
         titulo: "Questão 4: Meios de Transporte",
-        paresNome: [
+        pares: [
           { img: "caminhao.png", text: "caminhão" },
-          { img: "carro.png", text: "carro" }
-        ],
-        paresFrase: [
+          { img: "carro.png", text: "carro" },
           { img: "navio.png", text: "O navio grande navega pelas ondas do mar." },
           { img: "onibus.png", text: "O ônibus leva os passageiros até o centro." }
         ],
         sobrasImg: ["trem.png", "taxi.png"],
-        sobrasPalavras: ["jipe", "moto" || "roda"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "jipe",
+          "moto",
           "O trânsito na cidade exige muita atenção dos motoristas.",
           "Viajar para longe de trem é uma aventura."
         ]
       },
       {
         titulo: "Questão 5: Vestuário e Acessórios",
-        paresNome: [
+        pares: [
           { img: "blusa.png", text: "blusa" },
-          { img: "camiseta.png", text: "camiseta" }
-        ],
-        paresFrase: [
+          { img: "camiseta.png", text: "camiseta" },
           { img: "chapeu.png", text: "O chapéu protege o rosto forte do sol." },
           { img: "chinelo.png", text: "O chinelo confortável é ótimo para descansar." }
         ],
         sobrasImg: ["cinto.png", "vestido.png"],
-        sobrasPalavras: ["laco", "luvas"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "laco",
+          "luvas",
           "Roupas limpas e bem cuidadas duram muito mais tempo.",
           "Escolhemos agasalhos quentinhos para os dias de inverno."
         ]
       },
       {
         titulo: "Questão 6: Animais da Floresta",
-        paresNome: [
+        pares: [
           { img: "elefante.png", text: "elefante" },
-          { img: "girafa.png", text: "girafa" }
-        ],
-        paresFrase: [
+          { img: "girafa.png", text: "girafa" },
           { img: "macaco.png", text: "O macaco pula ágil entre os galhos altos." },
           { img: "tigre.png", text: "O tigre caminha silencioso pela mata." }
         ],
         sobrasImg: ["urso.png", "vaca.png"],
-        sobrasPalavras: ["lobo" || "pato", "sapo"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "lobo",
+          "sapo",
           "A floresta abriga bichos de todas as formas e cores.",
           "Os animais silvestres precisam de proteção na natureza."
         ]
       },
       {
         titulo: "Questão 7: Casa e Conforto",
-        paresNome: [
+        pares: [
           { img: "geladeira.png", text: "geladeira" },
-          { img: "janela.png", text: "janela" }
-        ],
-        paresFrase: [
+          { img: "janela.png", text: "janela" },
           { img: "mesa.png", text: "A família se reúne alegre ao redor da mesa." },
           { img: "porta.png", text: "A porta aberta deixa a brisa fresca entrar." }
         ],
         sobrasImg: ["televisao.png", "tapete.png"],
-        sobrasPalavras: ["cama" || "pia", "fogao" || "lampada"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "cama",
+          "fogao",
           "Manter a casa limpa traz bem-estar para todos.",
           "Cada cômodo tem móveis úteis para o dia a dia."
         ]
       },
       {
         titulo: "Questão 8: Alimentos e Doces",
-        paresNome: [
+        pares: [
           { img: "melancia.png", text: "melancia" },
-          { img: "morango" || "laranja.png", text: "laranja" }
-        ],
-        paresFrase: [
+          { img: "laranja.png", text: "laranja" },
           { img: "pacoca.png", text: "A paçoca docinha derrete na boca com sabor." },
           { img: "queijo.png", text: "O queijo fresquinho combina com pão macio." }
         ],
         sobrasImg: ["sorvete.png", "tomate.png"],
-        sobrasPalavras: ["uva", "mel"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "uva",
+          "mel",
           "Comer alimentos saudáveis fortalece a nossa saúde.",
           "Receitas caseiras feitas com carinho são as melhores."
         ]
       },
       {
         titulo: "Questão 9: Instrumentos e Lazer",
-        paresNome: [
+        pares: [
           { img: "guitarra.png", text: "guitarra" },
-          { img: "microfone.png", text: "microfone" }
-        ],
-        paresFrase: [
+          { img: "microfone.png", text: "microfone" },
           { img: "pipa.png", text: "A pipa colorida sobe alto no céu azul." },
           { img: "trofeu.png", text: "O campeão levantou o troféu com orgulho." }
         ],
         sobrasImg: ["saxofone.png", "bola.png"],
-        sobrasPalavras: ["circo", "festa"],
-        sobrasFrases: [
+        sobrasTexto: [
+          "circo",
+          "festa",
           "Brincar ao ar livre traz alegria e muita diversão.",
           "A música anima qualquer momento da nossa rotina."
         ]
       },
       {
         titulo: "Questão 10: Céu e Espaço",
-        paresNome: [
+        pares: [
           { img: "estrela.png", text: "estrela" },
-          { img: "lua.png", text: "lua" }
-        ],
-        paresFrase: [
+          { img: "lua.png", text: "lua" },
           { img: "nuvem.png", text: "A nuvem branquinha viaja mansa pelo vento." },
           { img: "sol.png", text: "O sol brilha radiante aquecendo a manhã." }
         ],
-        sobrasImg: ["foguete.png", "terra" || "arco-iris" || "noite.png"],
-        sobrasPalavras: ["noite", "onda"],
-        sobrasFrases: [
+        sobrasImg: ["foguete.png", "terra.png"],
+        sobrasTexto: [
+          "noite",
+          "onda",
           "O universo guarda grandes mistérios e belezas.",
           "Olhar para o céu estrelado desperta a imaginação."
         ]
@@ -513,7 +532,8 @@
     // Variáveis de Estado Global do Jogo
     let indiceAtual = 0;
     let pontuacaoAcumulada = 0;
-    let maxPontosPossiveis = questoes.length * 6; // 6 pares por questão (2 nome + 2 frase) = 60 pts max
+    // 1 ponto por par certo: soma dos pares de todas as questões (calculado sozinho)
+    const maxPontosPossiveis = questoes.reduce((soma, q) => soma + q.pares.length, 0);
 
     // Estado da Questão Atual
     let cards = [];
@@ -579,33 +599,21 @@
       // Compilar todos os elementos da questão atual
       let rawCardsData = [];
 
-      // 2 pares de nome
-      q.paresNome.forEach((p, idx) => {
-        const matchKey = `par_nome_${index}_${idx}`;
+      // Pares (imagem + texto): quantos você colocou na questão
+      q.pares.forEach((p, idx) => {
+        const matchKey = `par_${index}_${idx}`;
         rawCardsData.push({ type: 'image', content: p.img, matchKey: matchKey, isPair: true });
         rawCardsData.push({ type: 'text', content: p.text, matchKey: matchKey, isPair: true });
       });
 
-      // 2 pares de frase
-      q.paresFrase.forEach((p, idx) => {
-        const matchKey = `par_frase_${index}_${idx}`;
-        rawCardsData.push({ type: 'image', content: p.img, matchKey: matchKey, isPair: true });
-        rawCardsData.push({ type: 'text', content: p.text, matchKey: matchKey, isPair: true });
-      });
-
-      // Sobras Imagem (2 cards)
-      q.sobrasImg.forEach((imgName, idx) => {
+      // Imagens que sobram (sem par)
+      (q.sobrasImg || []).forEach((imgName, idx) => {
         rawCardsData.push({ type: 'image', content: imgName, matchKey: `sobra_img_${index}_${idx}`, isPair: false });
       });
 
-      // Sobras Palavras (2 cards)
-      q.sobrasPalavras.forEach((palavra, idx) => {
-        rawCardsData.push({ type: 'text', content: palavra, matchKey: `sobra_palavra_${index}_${idx}`, isPair: false });
-      });
-
-      // Sobras Frases (2 cards)
-      q.sobrasFrases.forEach((frase, idx) => {
-        rawCardsData.push({ type: 'text', content: frase, matchKey: `sobra_frase_${index}_${idx}`, isPair: false });
+      // Textos que sobram (sem par)
+      (q.sobrasTexto || []).forEach((texto, idx) => {
+        rawCardsData.push({ type: 'text', content: texto, matchKey: `sobra_texto_${index}_${idx}`, isPair: false });
       });
 
       // Informa a cada card de imagem qual é a pasta desta questão (se ela tiver uma própria)
@@ -809,7 +817,10 @@
         card.appendChild(img);
       } else {
         card.classList.add('text-card');
-        card.textContent = data.content;
+        const spanTexto = document.createElement('span');
+        spanTexto.className = 'texto';
+        spanTexto.textContent = data.content;
+        card.appendChild(spanTexto);
       }
 
       card.style.left = `${x}px`;
@@ -1028,7 +1039,8 @@
     // BOTÃO DE VERIFICAÇÃO E REGRAS DE PONTUAÇÃO SOLICITADAS
     checkBtn.addEventListener('click', () => {
       let correctPairsInThisCheck = 0;
-      let totalExpectedPairs = 4; // 2 nomes + 2 frases por questão
+      // Quantos pares CERTOS existem nesta questão (as sobras não contam)
+      const totalExpectedPairs = questoes[indiceAtual].pares.length;
 
       const currentPairs = [...pairs];
 
@@ -1059,7 +1071,7 @@
 
       atualizarInterfaceGeral();
 
-      // Verificar se todos os 4 pares válidos estão corretos simultaneamente
+      // Verificar se TODOS os pares da questão (quantos forem) estão corretos simultaneamente
       // (As sobras soltas não impedem a conclusão se os pares corretos estiverem formados)
       if (correctPairsInThisCheck === totalExpectedPairs) {
         if (indiceAtual === questoes.length - 1) {
