@@ -56,6 +56,8 @@
     }
 
     h1 {
+      flex: 1;
+      min-width: 0;
       font-size: 1.1rem;
       font-weight: 700;
       color: #ffffff;
@@ -68,6 +70,17 @@
       font-size: 0.95rem;
       font-weight: bold;
       color: #e0f2fe;
+      white-space: nowrap;
+      margin-left: 12px;
+    }
+
+    /* CONTADOR DE QUESTÕES (extremidade esquerda da barra) */
+    .info-questao {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #e0f2fe;
+      white-space: nowrap;
+      margin-right: 28px; /* espaço para não grudar no título */
     }
 
     /* PROGRESS BAR TRACK */
@@ -181,32 +194,13 @@
     }
 
     /* MODIFICADO: TAMANHO DA FONTE DOS TEXTOS AUMENTADO */
-    /* CARD DE TEXTO
-       - O card cresce conforme o texto, até a largura máxima (--largura-max-texto).
-       - Nunca quebra uma palavra no meio: se uma palavra for mais larga que o máximo,
-         o card se alarga só o suficiente para ela caber inteira (min-width: min-content). */
     .card.text-card {
-      --largura-max-texto: 280px;   /* <<< aumente aqui se quiser cards de texto mais largos */
-      width: -moz-max-content;
-      width: max-content;
-      min-width: -moz-min-content;
-      min-width: min-content;
-      max-width: calc(var(--largura-max-texto) * var(--escala, 1));
+      min-width: calc(140px * var(--escala, 1));
+      max-width: calc(280px * var(--escala, 1));
       min-height: calc(70px * var(--escala, 1));
       font-size: calc(clamp(1.2rem, 2.2vw, 1.6rem) * var(--escala, 1));
-      line-height: 1.25;
       color: #1e293b;
       padding: calc(12px * var(--escala, 1)) calc(16px * var(--escala, 1));
-      white-space: normal;
-      overflow-wrap: normal;
-      word-break: normal;
-      -webkit-hyphens: none;
-      hyphens: none;
-    }
-
-    .card.text-card .texto {
-      display: block;
-      min-width: calc(110px * var(--escala, 1));
     }
 
     .card.dragging {
@@ -216,16 +210,17 @@
       transform: scale(1.06);
     }
 
-    .card.paired-left {
-      border-top-right-radius: 0;
+    /* Par combinado: imagem em cima, texto embaixo */
+    .card.paired-top {
+      border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      border-right-width: 1px;
+      border-bottom-width: 1px;
     }
 
-    .card.paired-right {
+    .card.paired-bottom {
       border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      border-left-width: 1px;
+      border-top-right-radius: 0;
+      border-top-width: 1px;
     }
 
     .card.correct {
@@ -305,8 +300,9 @@
   <div id="app-container">
     <header>
       <div class="header-top-row">
+        <div class="info-questao">Questão <span id="txt-questao-atual">1</span> / <span id="txt-total-questoes">1</span></div>
         <h1 id="header-title">Combine as Figuras e Textos</h1>
-        <div class="info-stats">PONTOS: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">0</span></div>
+        <div class="info-stats">PONTOS: <span id="txt-pontos">0</span> / <span id="txt-max-pontos">60</span></div>
       </div>
       <div class="trilho-barra">
         <div id="barra-preenchimento" class="preenchimento-barra"></div>
@@ -339,7 +335,7 @@
     // Como indicar imagens que estão em OUTRA pasta (todas opcionais):
     //
     // 1) Para a questão inteira, acrescente "pastaImagens" na questão:
-    //      { titulo: "Questão 3: ...", pastaImagens: "../Outra_Pasta/", pares: [...], ... }
+    //      { titulo: "Questão 3: ...", pastaImagens: "../Outra_Pasta/", paresNome: [...], ... }
     //
     // 2) Para UMA figura específica, escreva o caminho completo no lugar do nome.
     //    Vale qualquer caminho que comece com  ./   ../   /   http://   https://   data:
@@ -353,18 +349,8 @@
     // ----------------------------------------------------
 
     // ----------------------------------------------------
-    // BANCO DE QUESTÕES
-    //
-    // Cada questão tem:
-    //   titulo:      o título que aparece no topo
-    //   pares:       as combinações CERTAS (1, 2, 3, 4, 5... quantas você quiser).
-    //                Cada par é uma imagem + um texto (palavra, frase, o que for).
-    //   sobrasImg:   (opcional) imagens que sobram, sem par
-    //   sobrasTexto: (opcional) textos que sobram, sem par (palavras e frases misturadas)
-    //   pastaImagens:(opcional) pasta das imagens desta questão
-    //
-    // A pontuação máxima e a validação da questão se ajustam sozinhas
-    // ao número de pares que você colocar.
+    // BANCO DE DADOS DAS 10 QUESTÕES
+    // Fácil de adicionar/remover ou modificar cards e textos
     // ----------------------------------------------------
     const questoes = [
       {
@@ -407,7 +393,7 @@
         ],
         sobrasImg: ["lampada.png", "mamao.png", "mesa.png", "jacare.png"],
         sobrasTexto: [
-          
+
         ]
       },
       {
@@ -420,7 +406,7 @@
         ],
         sobrasImg: ["laranja.png", "mamao.png", "pasta-de-dente.png", "peixe.png", "espelho.png"],
         sobrasTexto: [
-          
+
         ]
       },
       {
@@ -448,10 +434,10 @@
           { img: "horta.png", text: "horta" },
           { img: "helicoptero.png", text: "helicóptero" }
         ],
-        sobrasImg: ["oculos.png", "elefante.png"],
+        sobrasImg: ["oculos.png", "elefante-real.png"],
         sobrasTexto: [
           "ônibus",
-          "elefante",
+          "elevador",
           "osso"
         ]
       },
@@ -492,15 +478,35 @@
       }
     ];
 
+
     // Variáveis de Estado Global do Jogo
     let indiceAtual = 0;
     let pontuacaoAcumulada = 0;
-    // 1 ponto por par certo: soma dos pares de todas as questões (calculado sozinho)
-    const maxPontosPossiveis = questoes.reduce((soma, q) => soma + q.pares.length, 0);
+    // Aceita os dois formatos de questão:
+    //   formato antigo: pares + sobrasImg + sobrasTexto
+    //   formato novo:   paresNome + paresFrase + sobrasImg + sobrasPalavras + sobrasFrases
+    function normalizarQuestao(q) {
+      return {
+        ...q,
+        paresNome: q.paresNome || q.pares || [],
+        paresFrase: q.paresFrase || [],
+        sobrasImg: q.sobrasImg || [],
+        sobrasPalavras: q.sobrasPalavras || q.sobrasTexto || [],
+        sobrasFrases: q.sobrasFrases || []
+      };
+    }
+    function contarPares(q) {
+      const n = normalizarQuestao(q);
+      return n.paresNome.length + n.paresFrase.length;
+    }
+
+    // Pontuação máxima = 1 ponto por par, somando todas as questões
+    let maxPontosPossiveis = questoes.reduce((soma, q) => soma + contarPares(q), 0);
+    let paresEsperados = 0; // número de pares da questão atual
 
     // Estado da Questão Atual
     let cards = [];
-    let pairs = []; // { id, leftCard, rightCard, btnEl, matchKey }
+    let pairs = []; // { id, imgCard, txtCard, btnEl, matchKey }
     let pairIdCounter = 1;
     let highestZIndex = 10;
     let checkedPairsTracker = new Set(); // Armazena pares já pontuados ou já errados para cumprir regra de 1 ponto único e sem pontuar duplicado/refeito
@@ -517,6 +523,8 @@
     const headerTitle = document.getElementById('header-title');
     const txtPontos = document.getElementById('txt-pontos');
     const txtMaxPontos = document.getElementById('txt-max-pontos');
+    const txtQuestaoAtual = document.getElementById('txt-questao-atual');
+    const txtTotalQuestoes = document.getElementById('txt-total-questoes');
     const barraPreenchimento = document.getElementById('barra-preenchimento');
     const bannerMsg = document.getElementById('banner-msg');
 
@@ -527,7 +535,9 @@
       const pParam = urlParams.get('p');
 
       if (qParam !== null && !isNaN(qParam)) {
-        indiceAtual = Math.max(0, Math.min(questoes.length - 1, parseInt(qParam, 10)));
+        // O painel do professor conta as questões a partir de 1 (q=2 -> segunda questão),
+        // enquanto a lista "questoes" começa em 0. Por isso subtraímos 1 aqui.
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, parseInt(qParam, 10) - 1));
       }
       if (pParam !== null && !isNaN(pParam)) {
         pontuacaoAcumulada = parseInt(pParam, 10);
@@ -542,6 +552,8 @@
 
     function atualizarInterfaceGeral() {
       txtPontos.textContent = pontuacaoAcumulada;
+      txtQuestaoAtual.textContent = indiceAtual + 1;
+      txtTotalQuestoes.textContent = questoes.length;
       localStorage.setItem('pontosAluno', pontuacaoAcumulada);
       const perc = ((indiceAtual) / questoes.length) * 100;
       barraPreenchimento.style.width = `${perc}%`;
@@ -556,27 +568,40 @@
       jaInteragiu = false;
       banner.style.display = 'none';
 
-      const q = questoes[index];
+      const q = normalizarQuestao(questoes[index]);
+      paresEsperados = contarPares(questoes[index]);
       headerTitle.textContent = q.titulo;
 
       // Compilar todos os elementos da questão atual
       let rawCardsData = [];
 
-      // Pares (imagem + texto): quantos você colocou na questão
-      q.pares.forEach((p, idx) => {
-        const matchKey = `par_${index}_${idx}`;
+      // 2 pares de nome
+      q.paresNome.forEach((p, idx) => {
+        const matchKey = `par_nome_${index}_${idx}`;
         rawCardsData.push({ type: 'image', content: p.img, matchKey: matchKey, isPair: true });
         rawCardsData.push({ type: 'text', content: p.text, matchKey: matchKey, isPair: true });
       });
 
-      // Imagens que sobram (sem par)
-      (q.sobrasImg || []).forEach((imgName, idx) => {
+      // 2 pares de frase
+      q.paresFrase.forEach((p, idx) => {
+        const matchKey = `par_frase_${index}_${idx}`;
+        rawCardsData.push({ type: 'image', content: p.img, matchKey: matchKey, isPair: true });
+        rawCardsData.push({ type: 'text', content: p.text, matchKey: matchKey, isPair: true });
+      });
+
+      // Sobras Imagem (2 cards)
+      q.sobrasImg.forEach((imgName, idx) => {
         rawCardsData.push({ type: 'image', content: imgName, matchKey: `sobra_img_${index}_${idx}`, isPair: false });
       });
 
-      // Textos que sobram (sem par)
-      (q.sobrasTexto || []).forEach((texto, idx) => {
-        rawCardsData.push({ type: 'text', content: texto, matchKey: `sobra_texto_${index}_${idx}`, isPair: false });
+      // Sobras Palavras (2 cards)
+      q.sobrasPalavras.forEach((palavra, idx) => {
+        rawCardsData.push({ type: 'text', content: palavra, matchKey: `sobra_palavra_${index}_${idx}`, isPair: false });
+      });
+
+      // Sobras Frases (2 cards)
+      q.sobrasFrases.forEach((frase, idx) => {
+        rawCardsData.push({ type: 'text', content: frase, matchKey: `sobra_frase_${index}_${idx}`, isPair: false });
       });
 
       // Informa a cada card de imagem qual é a pasta desta questão (se ela tiver uma própria)
@@ -780,10 +805,7 @@
         card.appendChild(img);
       } else {
         card.classList.add('text-card');
-        const spanTexto = document.createElement('span');
-        spanTexto.className = 'texto';
-        spanTexto.textContent = data.content;
-        card.appendChild(spanTexto);
+        card.textContent = data.content;
       }
 
       card.style.left = `${x}px`;
@@ -807,8 +829,8 @@
       const pair = getPairByCard(card);
 
       if (pair) {
-        pair.leftCard.style.zIndex = highestZIndex;
-        pair.rightCard.style.zIndex = highestZIndex;
+        pair.imgCard.style.zIndex = highestZIndex;
+        pair.txtCard.style.zIndex = highestZIndex;
         if (pair.btnEl) pair.btnEl.style.zIndex = highestZIndex + 1;
 
         draggedEntity = {
@@ -817,13 +839,11 @@
           pointerId: e.pointerId,
           startPointerX: e.clientX,
           startPointerY: e.clientY,
-          startLeftX: parseFloat(pair.leftCard.style.left),
-          startLeftY: parseFloat(pair.leftCard.style.top),
-          startRightX: parseFloat(pair.rightCard.style.left),
-          startRightY: parseFloat(pair.rightCard.style.top)
+          startImgX: parseFloat(pair.imgCard.style.left),
+          startImgY: parseFloat(pair.imgCard.style.top)
         };
-        pair.leftCard.classList.add('dragging');
-        pair.rightCard.classList.add('dragging');
+        pair.imgCard.classList.add('dragging');
+        pair.txtCard.classList.add('dragging');
       } else {
         card.style.zIndex = highestZIndex;
         draggedEntity = {
@@ -859,29 +879,9 @@
         card.style.left = `${newX}px`;
         card.style.top = `${newY}px`;
       } else if (draggedEntity.type === 'pair') {
-        const pair = draggedEntity.pair;
-        let newLeftX = draggedEntity.startLeftX + deltaX;
-        let newLeftY = draggedEntity.startLeftY + deltaY;
-        let newRightX = draggedEntity.startRightX + deltaX;
-        let newRightY = draggedEntity.startRightY + deltaY;
-
-        if (newLeftX < 0) {
-          newLeftX = 0;
-          newRightX = pair.leftCard.offsetWidth;
-        } else if (newRightX + pair.rightCard.offsetWidth > areaRect.width) {
-          newRightX = areaRect.width - pair.rightCard.offsetWidth;
-          newLeftX = newRightX - pair.leftCard.offsetWidth;
-        }
-
-        newLeftY = Math.max(0, Math.min(areaRect.height - pair.leftCard.offsetHeight, newLeftY));
-        newRightY = newLeftY;
-
-        pair.leftCard.style.left = `${newLeftX}px`;
-        pair.leftCard.style.top = `${newLeftY}px`;
-        pair.rightCard.style.left = `${newRightX}px`;
-        pair.rightCard.style.top = `${newRightY}px`;
-
-        updatePairButtonPosition(pair);
+        posicionarPar(draggedEntity.pair,
+                      draggedEntity.startImgX + deltaX,
+                      draggedEntity.startImgY + deltaY);
       }
     }
 
@@ -898,8 +898,8 @@
         draggedEntity.card.classList.remove('dragging');
         checkSnapProximity(draggedEntity.card);
       } else if (draggedEntity.type === 'pair') {
-        draggedEntity.pair.leftCard.classList.remove('dragging');
-        draggedEntity.pair.rightCard.classList.remove('dragging');
+        draggedEntity.pair.imgCard.classList.remove('dragging');
+        draggedEntity.pair.txtCard.classList.remove('dragging');
       }
 
       isDragging = false;
@@ -935,27 +935,47 @@
       });
 
       if (closestCard) {
-        let leftCard, rightCard;
+        let imgCard, txtCard;
         if (movedCard.dataset.cardType === 'image') {
-          leftCard = movedCard;
-          rightCard = closestCard;
+          imgCard = movedCard;
+          txtCard = closestCard;
         } else {
-          leftCard = closestCard;
-          rightCard = movedCard;
+          imgCard = closestCard;
+          txtCard = movedCard;
         }
-        pairCards(leftCard, rightCard);
+        pairCards(imgCard, txtCard);
       }
     }
 
-    function pairCards(leftCard, rightCard) {
-      const leftX = parseFloat(leftCard.style.left);
-      const topY = parseFloat(leftCard.style.top);
+    // Geometria de um par: imagem em cima, texto embaixo e centralizado em relação à imagem
+    function medirPar(pair) {
+      const imgW = pair.imgCard.offsetWidth;
+      const imgH = pair.imgCard.offsetHeight;
+      const txtW = pair.txtCard.offsetWidth;
+      const txtH = pair.txtCard.offsetHeight;
+      const dx = (imgW - txtW) / 2;            // posição X do texto em relação à imagem
+      const esq = Math.min(0, dx);             // quanto o conjunto avança à esquerda da imagem
+      const dir = Math.max(imgW, dx + txtW);   // borda direita do conjunto (a partir do X da imagem)
+      return { imgW, imgH, txtH, dx, esq, dir, altura: imgH + txtH };
+    }
 
-      leftCard.classList.add('paired-left');
-      rightCard.classList.add('paired-right');
+    // Coloca o par com a imagem em (imgX, imgY), mantendo tudo dentro da área de jogo
+    function posicionarPar(pair, imgX, imgY) {
+      const m = medirPar(pair);
+      const area = playArea.getBoundingClientRect();
+      imgX = Math.max(-m.esq, Math.min(area.width - m.dir, imgX));
+      imgY = Math.max(0, Math.min(area.height - m.altura, imgY));
 
-      rightCard.style.left = `${leftX + leftCard.offsetWidth}px`;
-      rightCard.style.top = `${topY}px`;
+      pair.imgCard.style.left = `${imgX}px`;
+      pair.imgCard.style.top = `${imgY}px`;
+      pair.txtCard.style.left = `${imgX + m.dx}px`;
+      pair.txtCard.style.top = `${imgY + m.imgH}px`;
+      updatePairButtonPosition(pair);
+    }
+
+    function pairCards(imgCard, txtCard) {
+      imgCard.classList.add('paired-top');
+      txtCard.classList.add('paired-bottom');
 
       const btn = document.createElement('button');
       btn.className = 'unpair-btn';
@@ -964,57 +984,65 @@
 
       const pairObj = {
         id: pairIdCounter++,
-        leftCard: leftCard,
-        rightCard: rightCard,
+        imgCard: imgCard,
+        txtCard: txtCard,
         btnEl: btn
       };
 
       btn.addEventListener('click', () => unpairCards(pairObj));
       playArea.appendChild(btn);
       pairs.push(pairObj);
-      updatePairButtonPosition(pairObj);
+
+      // O texto vai para baixo da imagem, centralizado nela
+      posicionarPar(pairObj, parseFloat(imgCard.style.left), parseFloat(imgCard.style.top));
     }
 
+    // O botão ✕ fica na emenda entre os dois cards, centralizado
     function updatePairButtonPosition(pair) {
       if (!pair.btnEl) return;
-      const leftX = parseFloat(pair.leftCard.style.left);
-      const topY = parseFloat(pair.leftCard.style.top);
-      const cardW = pair.leftCard.offsetWidth;
-      const cardH = pair.leftCard.offsetHeight;
-      pair.btnEl.style.left = `${leftX + cardW}px`;
-      pair.btnEl.style.top = `${topY + (cardH / 2)}px`;
+      const imgX = parseFloat(pair.imgCard.style.left);
+      const imgY = parseFloat(pair.imgCard.style.top);
+      pair.btnEl.style.left = `${imgX + pair.imgCard.offsetWidth / 2}px`;
+      pair.btnEl.style.top = `${imgY + pair.imgCard.offsetHeight}px`;
     }
 
     function unpairCards(pair) {
-      pair.leftCard.classList.remove('paired-left', 'correct');
-      pair.rightCard.classList.remove('paired-right', 'correct');
+      pair.imgCard.classList.remove('paired-top', 'correct');
+      pair.txtCard.classList.remove('paired-bottom', 'correct');
       if (pair.btnEl) pair.btnEl.remove();
 
-      const currentX = parseFloat(pair.rightCard.style.left);
-      pair.rightCard.style.left = `${currentX + 20}px`;
+      // Afasta um pouco os cards para ficar claro que foram separados
+      const FOLGA = 20;
+      const areaH = playArea.getBoundingClientRect().height;
+      const imgY = parseFloat(pair.imgCard.style.top);
+      const txtY = parseFloat(pair.txtCard.style.top);
+      if (txtY + pair.txtCard.offsetHeight + FOLGA <= areaH) {
+        pair.txtCard.style.top = `${txtY + FOLGA}px`;
+      } else {
+        pair.imgCard.style.top = `${Math.max(0, imgY - FOLGA)}px`;
+      }
       pairs = pairs.filter(p => p.id !== pair.id);
     }
 
     function getPairByCard(card) {
-      return pairs.find(p => p.leftCard === card || p.rightCard === card);
+      return pairs.find(p => p.imgCard === card || p.txtCard === card);
     }
 
     // BOTÃO DE VERIFICAÇÃO E REGRAS DE PONTUAÇÃO SOLICITADAS
     checkBtn.addEventListener('click', () => {
       let correctPairsInThisCheck = 0;
-      // Quantos pares CERTOS existem nesta questão (as sobras não contam)
-      const totalExpectedPairs = questoes[indiceAtual].pares.length;
+      let totalExpectedPairs = paresEsperados; // nº de pares da questão atual
 
       const currentPairs = [...pairs];
 
       currentPairs.forEach(pair => {
-        const keyLeft = pair.leftCard.dataset.matchKey;
-        const keyRight = pair.rightCard.dataset.matchKey;
+        const keyLeft = pair.imgCard.dataset.matchKey;
+        const keyRight = pair.txtCard.dataset.matchKey;
 
         if (keyLeft === keyRight) {
           // Combinação Correta
-          pair.leftCard.classList.add('correct');
-          pair.rightCard.classList.add('correct');
+          pair.imgCard.classList.add('correct');
+          pair.txtCard.classList.add('correct');
           correctPairsInThisCheck++;
 
           // Regra de Pontuação: Se nunca foi verificado antes e é a primeira tentativa correta, soma ponto
@@ -1034,7 +1062,7 @@
 
       atualizarInterfaceGeral();
 
-      // Verificar se TODOS os pares da questão (quantos forem) estão corretos simultaneamente
+      // Verificar se todos os 4 pares válidos estão corretos simultaneamente
       // (As sobras soltas não impedem a conclusão se os pares corretos estiverem formados)
       if (correctPairsInThisCheck === totalExpectedPairs) {
         if (indiceAtual === questoes.length - 1) {
@@ -1077,6 +1105,7 @@
       }
       const areaRect = playArea.getBoundingClientRect();
       cards.forEach(card => {
+        if (getPairByCard(card)) return; // cards combinados são ajustados junto com o par
         let x = parseFloat(card.style.left);
         let y = parseFloat(card.style.top);
         if (x + card.offsetWidth > areaRect.width) {
@@ -1086,7 +1115,7 @@
           card.style.top = `${Math.max(0, areaRect.height - card.offsetHeight)}px`;
         }
       });
-      pairs.forEach(updatePairButtonPosition);
+      pairs.forEach(p => posicionarPar(p, parseFloat(p.imgCard.style.left), parseFloat(p.imgCard.style.top)));
     }
   </script>
 </body>
