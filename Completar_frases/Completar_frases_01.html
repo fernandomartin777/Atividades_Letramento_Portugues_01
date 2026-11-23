@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete a frase</title>
+  <style>
+    /* RESET E TIPOGRAFIA DE SERIFAS */
+    * {
+      box-sizing: border-box;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #000000;
+    }
+
+    html {
+      font-size: 20px;
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 17px;
+      }
+    }
+
+    body {
+      background-color: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container-principal {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border: 2px solid #2980b9;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE PROGRESSO EM TONS DE AZUL */
+    .header-progresso {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .trilho-barra {
+      width: 100%;
+      height: 24px;
+      background-color: #ebf5fb;
+      border: 2px solid #3498db;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preenchimento-barra {
+      height: 100%;
+      background-color: #2980b9;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .info-pontos {
+      display: flex;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #1a5276;
+    }
+
+    /* CONTADOR DE QUESTÕES E TÍTULO */
+    .contador-questoes {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #2980b9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .titulo-questao {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: bold;
+      text-align: center;
+      margin: 5px 0 15px 0;
+    }
+
+    /* IMAGEM DA QUESTÃO */
+    .container-imagem {
+      margin: 10px 0 20px 0;
+      text-align: center;
+    }
+
+    .imagem-exibida {
+      max-width: 100%;
+      height: 400px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      border: 2px solid #aeb6bf;
+      object-fit: contain;
+    }
+
+    /* FRASE COM A LINHA DE RESPOSTA NO MEIO */
+    .painel-frase {
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .painel-frase p {
+      font-size: clamp(1.3rem, 3.8vw, 1.6rem);
+      line-height: 2.2;
+      margin: 0;
+    }
+
+    /* LINHA DE INPUT: 20 caracteres de largura (o limite de digitação é 40, definido no JS) */
+    .campo-resposta {
+      font-size: inherit;
+      font-weight: bold;
+      width: calc(20ch + 24px);
+      max-width: 100%;
+      padding: 2px 10px;
+      border: 2px solid #2c3e50;
+      border-radius: 6px;
+      background-color: #ffffff;
+      outline: none;
+      vertical-align: baseline;
+    }
+
+    .campo-resposta:focus {
+      border-color: #2980b9;
+      box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.25);
+    }
+
+    .campo-resposta.campo-correto {
+      background-color: #d4efdf !important;
+      border-color: #27ae60;
+    }
+
+    .campo-resposta.campo-incorreto {
+      background-color: #fadbd8 !important;
+      border-color: #e74c3c;
+    }
+
+    /* TRILHA DE PRÊMIOS (Borda tracejada) */
+    .trilha-premios-container {
+      width: 100%;
+      min-height: 36px;
+      background-color: #f7f9fa;
+      border: 1.5px dashed #2980b9;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .img-premio {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    /* BOTÕES EMPILHADOS VERTICALMENTE */
+    .area-botoes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      background-color: #2980b9;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    .btn-acao:hover:not(:disabled) {
+      background-color: #1f618d;
+    }
+
+    .btn-acao:disabled {
+      background-color: #bdc3c7 !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-proximo {
+      background-color: #27ae60;
+      display: none;
+    }
+
+    .btn-proximo:hover {
+      background-color: #1e8449;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <!-- BARRA DE PROGRESSO & PONTOS -->
+    <div class="header-progresso">
+      <div class="trilho-barra">
+        <div id="barra-preenchimento" class="preenchimento-barra"></div>
+      </div>
+      <div class="info-pontos">
+        PONTOS: <span id="pontos-atuais">0</span> / <span id="pontos-maximos">0</span>
+      </div>
+    </div>
+
+    <!-- NUMERAÇÃO E TÍTULO DA QUESTÃO -->
+    <div id="contador-questoes" class="contador-questoes"></div>
+    <div id="titulo-questao" class="titulo-questao"></div>
+
+    <!-- IMAGEM DA QUESTÃO -->
+    <div class="container-imagem">
+      <img id="imagem-questao" class="imagem-exibida" src="" alt="Imagem da questão">
+    </div>
+
+    <!-- FRASE COM A LINHA DE RESPOSTA (montada pelo JavaScript) -->
+    <div id="painel-frase" class="painel-frase"></div>
+
+    <!-- TRILHA DE PRÊMIOS (Com prize.png) -->
+    <div id="trilha-premios" class="trilha-premios-container"></div>
+
+    <!-- BOTÕES DE AÇÃO EMPILHADOS -->
+    <div class="area-botoes">
+      <button id="btn-conferir" class="btn-acao" onclick="conferirResposta()">Conferir a resposta</button>
+      <button id="btn-proximo" class="btn-acao btn-proximo" onclick="avancarQuestao()">Próxima questão</button>
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------------------------------
+    // CONFIGURAÇÕES
+    // ----------------------------------------------------
+    // Pasta das imagens. Em cada questão basta escrever o nome do arquivo.
+    // (Se o caminho começar com ./  ../  /  http://  https://  ou data:, ele é usado exatamente como escrito.)
+    const PASTA_IMAGENS = "./";
+
+    // Pontos da questão resolvida na 1ª tentativa. A cada tentativa a mais perde 1 ponto, até zero.
+    // Com 5: 5, 4, 3, 2, 1, 0.   Com 3: 3, 2, 1, 0.
+    const PONTOS_POR_QUESTAO = 5;
+
+    // ----------------------------------------------------
+    // LISTA DE QUESTÕES
+    //
+    // Cada questão tem:
+    //   imagem:   nome do arquivo da imagem
+    //   frase:    a frase completa, com ___ (três underlines) no lugar onde fica a linha de resposta
+    //   resposta: a palavra certa. Para aceitar mais de uma, use lista: ["mata", "floresta"]
+    //
+    // Opcionais:
+    //   titulo:        texto acima da imagem (padrão: "Complete a frase.")
+    //   sensivelCase:  true se maiúsculas/minúsculas devem ser respeitadas (padrão: false)
+    //
+    // Para uma questão nova, copie uma linha { ... } e troque os textos.
+    // ----------------------------------------------------
+    const questoes = [
+      { imagem: "foto001.jpg", frase: "A ___ do celular do Vítor acabou antes de chegar em casa.", resposta: "bateria" },
+      { imagem: "foto002.jpg", frase: "Fernando achou uma mariposa na ___.", resposta: "parede" },
+      { imagem: "foto003.jpg", frase: "Rafael está preocupado porque o ___ está atrasado.", resposta: "ônibus" },
+      { imagem: "foto004.jpg", frase: "Vitória pensou que hoje iria fazer ___, mas fez frio.", resposta: "calor" },
+      { imagem: "foto005.jpg", frase: "Valentina está ___ de uma piada que sua amiga mandou.", resposta: "rindo" },
+      { imagem: "foto006.jpg", frase: "Sofia está guardando as coisas porque está na hora da ___.", resposta: "saída" },
+      { imagem: "foto007.jpg", frase: "Gustavo, Júlia e Lara foram fazer um lanche, mas não tiveram ___ para comprar refrigerante.", resposta: "dinheiro" }
+    ];
+
+    // ----------------------------------------------------
+    // CÓDIGO DA ATIVIDADE
+    // ----------------------------------------------------
+    const MARCADOR_LACUNA = /_{3,}/;   // ___ (três ou mais underlines)
+
+    let indiceAtual = 0;
+    let pontuacaoAcumulada = 0;
+    let tentativasQuestao = 0;
+
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const qParam = urlParams.get('q');
+      const pParam = urlParams.get('p');
+
+      if (qParam !== null && !isNaN(qParam)) {
+        let questaoInformada = parseInt(qParam, 10) - 1;
+        indiceAtual = Math.max(0, Math.min(questoes.length - 1, questaoInformada));
+      }
+
+      if (pParam !== null && !isNaN(pParam)) {
+        pontuacaoAcumulada = parseInt(pParam, 10);
+      } else {
+        pontuacaoAcumulada = parseInt(localStorage.getItem('pontosAluno') || '0', 10);
+      }
+
+      localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+      localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+      document.getElementById('pontos-maximos').innerText = questoes.length * PONTOS_POR_QUESTAO;
+      carregarQuestao(indiceAtual);
+      atualizarInterface();
+    };
+
+    function resolverCaminhoImagem(nome) {
+      const caminho = String(nome).trim();
+      if (/^(\.{1,2}\/|\/|https?:|data:)/i.test(caminho)) return caminho;
+      let pasta = PASTA_IMAGENS;
+      if (pasta && !pasta.endsWith('/')) pasta += '/';
+      return pasta + caminho;
+    }
+
+    function carregarQuestao(index) {
+      tentativasQuestao = 0;
+
+      const btnConferir = document.getElementById('btn-conferir');
+      btnConferir.style.display = 'block';
+      btnConferir.disabled = false;
+
+      document.getElementById('btn-proximo').style.display = 'none';
+
+      const q = questoes[index];
+
+      document.getElementById('contador-questoes').innerText = `Questão ${index + 1} de ${questoes.length}`;
+      document.getElementById('titulo-questao').innerText = q.titulo || "Complete a frase.";
+
+      const img = document.getElementById('imagem-questao');
+      img.onerror = () => console.warn('Imagem não encontrada:', img.getAttribute('src'));
+      img.src = resolverCaminhoImagem(q.imagem);
+
+      montarFrase(q.frase);
+      atualizarInterface();
+
+      const campo = document.getElementById('campo-resposta');
+      if (campo) campo.focus();
+    }
+
+    // Monta a frase: texto antes + linha de input + texto depois
+    function montarFrase(frase) {
+      const painel = document.getElementById('painel-frase');
+      painel.innerHTML = '';
+
+      const p = document.createElement('p');
+      const achou = frase.match(MARCADOR_LACUNA);
+
+      let antes, depois;
+      if (achou) {
+        antes = frase.slice(0, achou.index);
+        depois = frase.slice(achou.index + achou[0].length);
+      } else {
+        console.warn('A frase não tem ___ para marcar onde fica a linha de resposta:', frase);
+        antes = frase + ' ';
+        depois = '';
+      }
+
+      p.appendChild(document.createTextNode(antes));
+      p.appendChild(criarCampoResposta());
+      p.appendChild(document.createTextNode(depois));
+      painel.appendChild(p);
+    }
+
+    function criarCampoResposta() {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'campo-resposta';
+      input.className = 'campo-resposta';
+      input.maxLength = 40;                 // limite de digitação (a caixa mostra 20)
+
+      // Sem sugestões de preenchimento: não há <form>, nem "name", e o autocomplete fica desligado
+      input.autocomplete = 'off';
+      input.setAttribute('autocorrect', 'off');      // não corrige sozinho
+      input.setAttribute('autocapitalize', 'off');
+
+      // O corretor do navegador continua ativo (sublinhado vermelho)
+      input.spellcheck = true;
+      input.lang = 'pt-BR';
+
+      // Bloqueia colar (Ctrl+V, menu do botão direito, Shift+Insert)
+      input.addEventListener('paste', e => e.preventDefault());
+      // Bloqueia arrastar texto para dentro do campo
+      input.addEventListener('drop', e => e.preventDefault());
+      // Garantia extra para navegadores que avisam o tipo de entrada
+      input.addEventListener('beforeinput', e => {
+        if (/^insertFrom(Paste|PasteAsQuotation|Drop|Yank)$/.test(e.inputType)) e.preventDefault();
+      });
+      // Bloqueia colar com o botão do meio do mouse (comum no Linux)
+      input.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });
+      input.addEventListener('auxclick', e => e.preventDefault());
+
+      // Ao editar, tira a cor de certo/errado
+      input.addEventListener('input', () => {
+        input.classList.remove('campo-correto', 'campo-incorreto');
+      });
+
+      // Enter confere a resposta
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !document.getElementById('btn-conferir').disabled) {
+          e.preventDefault();
+          conferirResposta();
+        }
+      });
+
+      return input;
+    }
+
+    // Deixa tudo comparável: sem espaços sobrando e, se for o caso, sem diferença de maiúsculas
+    function normalizarTexto(texto, sensivelCase) {
+      let t = String(texto).normalize('NFC').trim().replace(/\s+/g, ' ');
+      if (!sensivelCase) t = t.toLocaleLowerCase('pt-BR');
+      return t;
+    }
+
+    function conferirResposta() {
+      const q = questoes[indiceAtual];
+      const campo = document.getElementById('campo-resposta');
+
+      tentativasQuestao++;
+
+      const aceitas = (Array.isArray(q.resposta) ? q.resposta : [q.resposta])
+        .map(r => normalizarTexto(r, q.sensivelCase));
+      const digitado = normalizarTexto(campo.value, q.sensivelCase);
+      const acertou = digitado !== '' && aceitas.includes(digitado);
+
+      if (acertou) {
+        campo.classList.remove('campo-incorreto');
+        campo.classList.add('campo-correto');
+        campo.readOnly = true;
+
+        let pontosGanhos = Math.max(0, PONTOS_POR_QUESTAO + 1 - tentativasQuestao);
+        pontuacaoAcumulada += pontosGanhos;
+        localStorage.setItem('pontosAluno', pontuacaoAcumulada);
+        localStorage.setItem('pontuacaoTotal', pontuacaoAcumulada);
+
+        document.getElementById('btn-conferir').disabled = true;
+
+        const btnProximo = document.getElementById('btn-proximo');
+        if (indiceAtual === questoes.length - 1) {
+          btnProximo.innerText = "Terminar atividade";
+        } else {
+          btnProximo.innerText = "Próxima questão";
+        }
+        btnProximo.style.display = 'block';
+      } else {
+        campo.classList.remove('campo-correto');
+        campo.classList.add('campo-incorreto');
+        campo.focus();
+      }
+
+      atualizarInterface();
+    }
+
+    function atualizarInterface() {
+      const percentualBarra = ((indiceAtual + 1) / questoes.length) * 100;
+      document.getElementById('barra-preenchimento').style.width = `${percentualBarra}%`;
+      document.getElementById('pontos-atuais').innerText = pontuacaoAcumulada;
+
+      const containerPremios = document.getElementById('trilha-premios');
+      containerPremios.innerHTML = '';
+      for (let i = 0; i < pontuacaoAcumulada; i++) {
+        const img = document.createElement('img');
+        img.src = 'prize.png';
+        img.className = 'img-premio';
+        img.alt = 'Prêmio';
+        containerPremios.appendChild(img);
+      }
+    }
+
+    function avancarQuestao() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (indiceAtual < questoes.length - 1) {
+        indiceAtual++;
+        carregarQuestao(indiceAtual);
+      } else {
+        window.location.href = "end.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
