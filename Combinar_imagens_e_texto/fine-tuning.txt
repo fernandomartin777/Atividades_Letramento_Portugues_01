@@ -46,3 +46,40 @@ Questão 8: "morango" || "laranja.png" resulta em "morango", sem extensão, e o 
 Questão 10: "terra" || ... também resulta em "terra", sem .png.
 
 Com o || o JavaScript usa sempre o primeiro valor, então basta deixar um único nome correto em cada uma. Se você me disser quais são os arquivos certos, eu corrijo.
+
+
+Os quatro arquivos foram alterados. Agora estou testando o clique nas letras e o arrastar em cada um.
+
+Apliquei as duas modificações, do mesmo jeito, nos quatro arquivos. Testei cada um no navegador e não houve erros.
+
+**1. Fonte maior nos cards de texto**
+Ela fica no CSS, no bloco `.card.text-card`, na linha `font-size`:
+
+```css
+font-size: calc(clamp(1.5rem, 2.8vw, 2rem) * var(--escala, 1));
+```
+
+Os três valores do `clamp` são o tamanho mínimo, o proporcional à largura da tela e o máximo. Antes era `clamp(1.2rem, 2.2vw, 1.6rem)`, e agora o texto fica cerca de 25% maior (de até 25,6px para até 32px). Para aumentar ou diminuir, mude o mínimo (`1.5rem`) e o máximo (`2rem`). Deixei um comentário no CSS explicando.
+
+Para acompanhar a fonte maior, mudei mais duas coisas no mesmo bloco:
+- A largura máxima do card de texto subiu de 280px para 340px (`max-width`), para as frases não ficarem altas demais.
+- O card agora se alarga sozinho se uma palavra for maior que o limite, então nenhuma palavra é quebrada no meio.
+
+Se o texto maior não couber na tela, o código reduz a escala de todos os cards, como já fazia.
+
+**2. Marcar letras com o clique**
+- Clique numa letra: ela fica vermelho escuro. Clique de novo: volta a ser preta.
+- Clique na área branca do card, fora das letras: todas as letras daquele card voltam a ser pretas.
+- Funciona também no card de texto que já está combinado com uma imagem.
+- Arrastar o card não marca letras. Só vale como clique se o toque quase não se mover.
+- Um clique parado num card de texto não o gruda mais por acaso em uma imagem que esteja perto. Para combinar, continua sendo só arrastar.
+
+O vermelho está no CSS, em `--cor-letra-marcada: #b00000;`, dentro de `.card.text-card`. Se quiser mais escuro ou mais forte, é só mudar esse valor.
+
+Mudei a cor normal do texto dos cards de `#1e293b` (um cinza azulado bem escuro) para preto puro (`#000000`). Com o cinza azulado, o vermelho escuro quase não se distinguiria do texto sem marca.
+
+Arquivos:
+- imagens-texto-01.html
+- imagens-texto-02.html
+- imagens-texto-03.html
+- imagens-texto-03-simpl.html

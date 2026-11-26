@@ -193,14 +193,44 @@
       pointer-events: none;
     }
 
-    /* MODIFICADO: TAMANHO DA FONTE DOS TEXTOS AUMENTADO */
+    /* CARDS DE TEXTO
+       TAMANHO DA FONTE: ajuste na linha "font-size" abaixo.
+         clamp(mínimo, proporcional à largura da tela, máximo)
+         Para aumentar ou diminuir, mude o mínimo (1.5rem) e o máximo (2rem).
+       LARGURA MÁXIMA do card de texto: "max-width" (340px). O card cresce conforme o texto
+       até esse limite e nunca quebra uma palavra no meio. */
     .card.text-card {
-      min-width: calc(140px * var(--escala, 1));
-      max-width: calc(280px * var(--escala, 1));
+      --cor-letra-marcada: #b00000;   /* vermelho escuro das letras marcadas com o clique */
+      width: -moz-max-content;
+      width: max-content;
+      min-width: -moz-min-content;
+      min-width: min-content;
+      max-width: calc(340px * var(--escala, 1));
       min-height: calc(70px * var(--escala, 1));
-      font-size: calc(clamp(1.2rem, 2.2vw, 1.6rem) * var(--escala, 1));
-      color: #1e293b;
+      font-size: calc(clamp(1.5rem, 2.8vw, 2rem) * var(--escala, 1));
+      line-height: 1.25;
+      color: #000000;
       padding: calc(12px * var(--escala, 1)) calc(16px * var(--escala, 1));
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
+      -webkit-hyphens: none;
+      hyphens: none;
+    }
+
+    .card.text-card .texto-card {
+      display: block;
+      min-width: calc(110px * var(--escala, 1));
+    }
+
+    /* Palavra inteira nunca é quebrada entre duas linhas */
+    .card.text-card .palavra {
+      white-space: nowrap;
+    }
+
+    /* Letra marcada com o clique */
+    .card.text-card .letra.marcada {
+      color: var(--cor-letra-marcada);
     }
 
     .card.dragging {
@@ -805,7 +835,7 @@
         card.appendChild(img);
       } else {
         card.classList.add('text-card');
-        card.textContent = data.content;
+        construirTextoMarcavel(card, data.content);
       }
 
       card.style.left = `${x}px`;
@@ -817,10 +847,51 @@
       return card;
     }
 
+    // TEXTO COM LETRAS MARCÁVEIS
+    // Cada letra vira um <span>; cada palavra fica num <span> que impede quebra no meio dela.
+    function construirTextoMarcavel(card, texto) {
+      const caixa = document.createElement('span');
+      caixa.className = 'texto-card';
+
+      String(texto).normalize('NFC').split(/(\s+)/).forEach(parte => {
+        if (parte === '') return;
+        if (/^\s+$/.test(parte)) {
+          caixa.appendChild(document.createTextNode(' '));
+          return;
+        }
+        const palavra = document.createElement('span');
+        palavra.className = 'palavra';
+        Array.from(parte).forEach(caractere => {
+          const letra = document.createElement('span');
+          letra.className = 'letra';
+          letra.textContent = caractere;
+          palavra.appendChild(letra);
+        });
+        caixa.appendChild(palavra);
+      });
+
+      card.appendChild(caixa);
+    }
+
+    // Clique numa letra: alterna entre preta e vermelho escuro.
+    // Clique na área branca do card: todas as letras do card voltam a ser pretas.
+    function tratarToqueNoTexto(card, alvo) {
+      const letra = (alvo && alvo.closest) ? alvo.closest('.letra') : null;
+      if (letra && card.contains(letra)) {
+        letra.classList.toggle('marcada');
+      } else {
+        card.querySelectorAll('.letra.marcada').forEach(l => l.classList.remove('marcada'));
+      }
+    }
+
+    // Guarda onde o toque começou, para diferenciar "clique" de "arrastar"
+    let toqueInicial = null;
+
     // ARRASTAR E SOLTAR (POINTER EVENTS)
     function onPointerDown(e) {
       if (e.target.classList.contains('unpair-btn')) return;
       e.preventDefault();
+      toqueInicial = { alvo: e.target, x: e.clientX, y: e.clientY };
       jaInteragiu = true;
       const card = e.currentTarget;
       card.setPointerCapture(e.pointerId);
@@ -894,9 +965,16 @@
       card.removeEventListener('pointerup', onPointerUp);
       card.removeEventListener('pointercancel', onPointerUp);
 
+      // Foi um clique (quase sem mover) em um card de texto? Então marca/desmarca letras
+      const foiClique = e.type === 'pointerup' && toqueInicial &&
+                        Math.hypot(e.clientX - toqueInicial.x, e.clientY - toqueInicial.y) < 8;
+      const alvoDoClique = toqueInicial ? toqueInicial.alvo : null;
+      toqueInicial = null;
+      const cliqueNoTexto = foiClique && card.classList.contains('text-card');
+
       if (draggedEntity.type === 'card') {
         draggedEntity.card.classList.remove('dragging');
-        checkSnapProximity(draggedEntity.card);
+        if (!cliqueNoTexto) checkSnapProximity(draggedEntity.card);   // um clique parado não gruda cards
       } else if (draggedEntity.type === 'pair') {
         draggedEntity.pair.imgCard.classList.remove('dragging');
         draggedEntity.pair.txtCard.classList.remove('dragging');
@@ -904,6 +982,8 @@
 
       isDragging = false;
       draggedEntity = null;
+
+      if (cliqueNoTexto) tratarToqueNoTexto(card, alvoDoClique);
     }
 
     // ENCAIXE AUTOMÁTICO (GRUDE)
