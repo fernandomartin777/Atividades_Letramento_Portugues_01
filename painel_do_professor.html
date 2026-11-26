@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor - Controle de XP e Retomada</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            text-align: center;
+            max-width: 550px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        h2 { color: #2c3e50; margin-bottom: 5px; }
+
+        .placar {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #e8f8f5;
+            border-radius: 6px;
+        }
+
+        .secao {
+            background: #ffffff;
+            border: 1px solid #dcdde1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .campo-input {
+            font-size: 16pt;
+            font-family: Georgia, serif;
+            width: 100px;
+            text-align: center;
+            padding: 5px;
+            margin: 5px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+
+        label {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .container-avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .preview-avatar {
+            width: 90px;
+            height: 90px;
+            border: 3px solid #2980b9;
+            border-radius: 8px;
+            object-fit: contain;
+            background-color: #ffffff;
+            display: none;
+        }
+
+        .btn-arquivo {
+            font-size: 12pt;
+            padding: 8px 12px;
+            background-color: #34495e;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-arquivo:hover {
+            background-color: #2c3e50;
+        }
+
+        button {
+            font-size: 14pt;
+            font-family: Georgia, serif;
+            padding: 10px 20px;
+            margin: 8px 4px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-zerar { background-color: #e74c3c; }
+        .btn-zerar:hover { background-color: #c0392b; }
+
+        /* ---------- LISTA SANFONA DE ATIVIDADES ---------- */
+        .lista-atividades {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .lista-atividades details {
+            margin-bottom: 10px;
+            border: 1px solid #dcdde1;
+            border-radius: 6px;
+            background-color: #ffffff;
+        }
+
+        .lista-atividades summary {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: #eaf2f8;
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .lista-atividades details[open] summary {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .lista-atividades a {
+            display: block;
+            font-size: 12pt;
+            color: #1f4e79;
+            text-decoration: none;
+            padding: 9px 12px;
+            margin: 6px 8px;
+            border-radius: 4px;
+            background-color: #f4f6f7;
+        }
+
+        .lista-atividades a:hover {
+            background-color: #d6eaf8;
+        }
+
+        /* ---------- MENSAGEM / ESCOLHA DE VERSÃO ---------- */
+        .mensagem-abertura {
+            display: none;
+            margin-top: 12px;
+            padding: 10px;
+            border: 1px solid #f5cba7;
+            background-color: #fef5e7;
+            border-radius: 6px;
+            font-size: 12pt;
+            color: #5c3a21;
+        }
+
+        .mensagem-abertura button {
+            display: block;
+            width: 100%;
+            font-size: 12pt;
+            background-color: #1f4e79;
+            margin: 8px 0 0 0;
+        }
+
+    /* OVERLAY DE ESCOLHA DE PERSONAGEM */
+    .overlay-personagens {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .overlay-painel {
+      background: #ffffff;
+      border: 3px solid #2c3e50;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 950px;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .overlay-titulo {
+      font-size: 28px;
+      color: #2c3e50;
+      text-align: center;
+      margin: 0;
+      padding: 18px 15px 12px 15px;
+    }
+
+    /* Só esta área rola; o título e o botão "Pronto" ficam sempre visíveis */
+    .grade-personagens {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 20px 20px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 18px;
+    }
+
+    .cartao-personagem {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f7f9fa;
+      border: 3px solid #d5dbdb;
+      border-radius: 12px;
+      padding: 12px 10px 10px 10px;
+      cursor: pointer;
+    }
+
+    .cartao-personagem:hover {
+      border-color: #3498db;
+    }
+
+    .cartao-personagem.selecionado {
+      border-color: #27ae60;
+      background-color: #e9f7ef;
+    }
+
+    .cartao-personagem input[type="radio"] {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 26px;
+      height: 26px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .cartao-personagem img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+    }
+
+    .nome-personagem {
+      margin-top: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2c3e50;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .overlay-mensagem {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: 20px;
+      color: #34495e;
+    }
+
+    .overlay-rodape {
+      display: flex;
+      justify-content: center;
+      padding: 14px 15px 18px 15px;
+      border-top: 2px solid #d5dbdb;
+    }
+
+        .btn-pronto {
+            font-size: 22px;
+            background-color: #27ae60;
+            padding: 14px 36px;
+            width: 100%;
+            max-width: 380px;
+            margin: 0;
+        }
+
+        .btn-pronto:hover { background-color: #219150; }
+    </style>
+</head>
+<body>
+
+    <h2>Painel do Professor</h2>
+    <p style="margin-top:0; color:#7f8c8d;">Controle de XP e Retomada de Atividade</p>
+    
+    <div class="placar">
+        Pontuação Atual: <span id="lblPontos">0</span> XP
+    </div>
+
+    <!-- ZERAR NAVEGADOR -->
+    <div class="secao">
+        <button class="btn-zerar" onclick="zerarPontuacao()">Zerar Histórico do Navegador</button>
+    </div>
+
+    <!-- CONTINUAR DE UMA QUESTÃO ESPECÍFICA -->
+    <div class="secao">
+        <h3 style="margin-top:0; color:#2c3e50;">Retomada do Aluno</h3>
+        
+        <div style="margin-bottom: 15px;">
+            <label>1. Escolher Imagem de Avatar:</label>
+            <div class="container-avatar-upload">
+                <input type="file" id="inputAvatar" accept="image/*" style="display: none;" onchange="carregarImagemAvatar(event)">
+                <button type="button" class="btn-arquivo" onclick="document.getElementById('inputAvatar').click()">Procurar imagem no seu aparelho</button>
+                <button type="button" class="btn-arquivo" onclick="abrirOverlayPersonagens()">Escolher um personagem</button>
+                <img id="imgPreview" class="preview-avatar" alt="Pré-visualização do Avatar">
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around; margin-bottom: 10px;">
+            <div>
+                <label for="inputQuestao">2. Questão:</label><br>
+                <input type="number" id="inputQuestao" class="campo-input" value="1" min="1" max="20">
+            </div>
+
+            <div>
+                <label for="inputPontos">3. Pontos (XP):</label><br>
+                <input type="number" id="inputPontos" class="campo-input" value="0" min="0">
+            </div>
+        </div>
+
+        <label>4. Clique na atividade para abrir:</label>
+
+        <div id="mensagemAbertura" class="mensagem-abertura"></div>
+
+        <!--
+        =====================================================================================
+        LISTA DE ATIVIDADES (sanfona)
+
+        COMO ACRESCENTAR UMA ATIVIDADE NOVA:
+          1. Copie a linha de uma atividade parecida dentro da categoria certa.
+          2. Cole logo abaixo, deixando uma linha em branco entre os itens.
+          3. Troque o endereço (href) pelo mesmo endereço que está no index.html
+             (a página "start" da atividade) e troque o texto pelo título.
+
+        COMO ACRESCENTAR UMA CATEGORIA NOVA:
+          Copie um bloco <details> ... </details> inteiro, cole abaixo de outro bloco,
+          deixe uma linha em branco entre eles e troque o texto do <summary>.
+
+        O painel descobre sozinho qual é o arquivo da atividade lendo a página "start".
+        Se isso não funcionar para alguma atividade, acrescente o endereço do arquivo da atividade
+        em data-destino, assim:
+          <a href="Pasta/start.html" data-destino="Pasta/atividade.html">Título</a>
+        =====================================================================================
+        -->
+        <div id="listaAtividades" class="lista-atividades">
+
+      <details>
+        <summary>TREINANDO AS LETRAS</summary>
+
+        <a href="Imagens_palavras/start_CQ.html">CQ - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_CQ.html">CQ - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start_G.html">G - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_G.html">G - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start_JG.html">JG - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_JG.html">JG - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start_L_LH.html">L/LH - Colocar figuras junto com seus nomes</a>
+
+        <a href="Imagens_palavras/start_L_N.html">L/N - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_L_LH_N.html">L/LH/N - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start-vogal-l.html">Vogal+L - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_vogal-l.html">Vogal+L - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startM_N.html">M/N - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_MN.html">M/N - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startN_NH.html">N/NH - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_N_NH.html">N/NH - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start-vogal-nm.html">Vogal+N/M - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_vogal-nm.html">Vogal+N/M - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startS.html">S - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_S.html">S - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startS_Z.html">S/Z - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_S_Z.html">S/Z - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start-vogal-sz.html">Vogal+S/Z - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_vogal-sz.html">Vogal+S/Z - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startCHX.html">CH/X - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_CHX.html">CH/X - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startR.html">R - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_R.html">R - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/start-vogal-r.html">Vogal+R - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_vogal-r.html">Vogal+R - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startConsRL.html">Consoantes + R ou L - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_ConsRL.html">Consoantes + R ou L - Escrever o nome das figuras</a>
+
+        <a href="Imagens_palavras/startX.html">Sons da letra X - Colocar figuras junto com seus nomes</a>
+
+        <a href="Escrever_palavras/start_Escrever_X.html">Sons da letra X - Escrever o nome das figuras</a>
+
+      </details>
+
+      <details>
+        <summary>ENTENDENDO AS PALAVRAS</summary>
+
+        <a href="Combinar_imagens_e_texto/start01.html">Vogais e consoantes - Combinando imagens</a>
+
+        <a href="Combinar_imagens_e_texto/start02.html">Vogais antes de consoantes - Qual está escrito corretamente?</a>
+
+        <a href="Intruso_consoantes/page00.html">Posições das consoantes - Quem é o intruso?</a>
+
+        <a href="Jogo_da_Forca_vogais_consoantes/page00.html">Posições das consoantes - Jogo da forca (dicas fáceis)</a>
+
+        <a href="Dicas_silabas_complexas/start.html">O que tem na mochila? - Jogo de dicas estilo forca (Sílabas complexas)</a>
+
+        <a href="Dicas_diversos_mercado/start.html">O que comprar no mercado? - Jogo de dicas estilo forca (Palavras diversas)</a>
+
+      </details>
+
+      <details>
+        <summary>LENDO E ENTENDENDO</summary>
+
+        <a href="Combinar_imagens_e_texto/start03.html">Combinar imagens com frases 1</a>
+
+        <a href="Completar_frases/start01.html">Complete as frases 1</a>
+
+        <a href="Intruso_facil/page00.html">Quem é o intruso? (Nível fácil)</a>
+
+        <a href="Desafio_das_dicas_01/page00.html">Desafio das Dicas (Nível básico)</a>
+
+        <a href="Motorista/start.html">Você é o motorista. (Atividade multidisciplinar envolvendo português, matemática e geografia com mapas eletrônicos)</a>
+
+        <a href="Frases_01/start_easy.html">Interpretação de frases e fotos 1 (Fácil)</a>
+
+        <a href="Frases_01/start.html">Interpretação de frases e fotos 1 (Médio)</a>
+
+        <a href="Frases_02/start.html">Interpretação de mensagens 1</a>
+
+        <a href="Frases_03/start.html">Interpretação de mensagens 2 (com respostas abertas)</a>
+
+      </details>
+
+      <details>
+        <summary>DIFERENCIANDO LETRAS E SONS</summary>
+
+        <a href="Combinar_letras/combine_as_letras.html">Combine as letras. (Reconhecimento de maiúsculas e minúsculas)</a>
+
+        <a href="Combinar_letras/combine_reduzido.html">Combine as letras. (Somente letras que causam mais dúvidas)</a>
+
+        <a href="Combinar_letras/combine_as_letras_cursiva.html">Combine as letras. (Reconhecimento de letra de imprensa e letra cursiva)</a>
+
+        <a href="Atividades_com_imagens/start_bolha_01.html">B/P, D/T - Estoure a bolha certa (Diferenciação de fonemas)</a>
+
+        <a href="Atividades_com_imagens/start_bolha_02.html">J(G)/CH(X) - Estoure a bolha certa (Diferenciação de fonemas)</a>
+
+        <a href="Atividades_com_imagens/start_bolha_03.html">S/Z - Estoure a bolha certa (Diferenciação de fonemas)</a>
+
+        <a href="Atividades_com_imagens/start_escrever-s-z.html">S/Z - Escreva os nomes das figuras (Diferenciação de fonemas)</a>
+
+        <a href="Atividades_com_imagens/start_bolha_04.html">M/N/NH - Estoure a bolha certa (Diferenciação de fonemas)</a>
+
+        <a href="Atividades_com_imagens/start_escrever-m-n.html">M/N/NH - Escreva os nomes das figuras (Diferenciação de fonemas)</a>
+
+        <a href="Atividades_com_imagens/start_bolha_05.html">CQ/G - Estoure a bolha certa (Diferenciação de fonemas)</a>
+
+        <a href="Jurassic01/start01.html">CQ/G - Figuras com leitura e escrita (Diferenciação de fonemas / Animação do pterossauro)</a>
+
+        <a href="Ordenar_S/start.html">Letra S - Ordenação de letras</a>
+
+        <a href="Ordenar_R/start.html">Letra R - Ordenação de letras</a>
+
+        <a href="Ordenar_letras_consoantes/page00.html">Posições das consoantes - Ordenação de letras</a>
+
+      </details>
+
+      <details>
+        <summary>NÚMEROS E CONTAGEM</summary>
+
+        <a href="Contadores/contar_bolhas.html">Contador de bolhas de sabão lento</a>
+
+        <a href="Contadores/contar_bolhas_faster_numbers_up.html">Contador de bolhas de sabão rápido</a>
+
+        <a href="Contadores/contar_estrelas.html">Contagem de estrelas</a>
+
+        <a href="Contadores/contar_dinheiro.html">Contagem de dinheiro</a>
+
+      </details>
+
+        </div>
+    </div>
+
+    <!-- OVERLAY: ESCOLHER UM PERSONAGEM -->
+    <div id="overlay-personagens" class="overlay-personagens" role="dialog" aria-modal="true" aria-labelledby="titulo-overlay">
+        <div class="overlay-painel">
+            <h2 id="titulo-overlay" class="overlay-titulo">Escolha um personagem</h2>
+            <div id="grade-personagens" class="grade-personagens"></div>
+            <div class="overlay-rodape">
+                <button type="button" class="btn-pronto" onclick="confirmarPersonagem()">Pronto</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let avatarDataURL = "";
+        const chavesPontos = ["pontosAluno", "pontosTotais", "pontuacaoTotal"];
+
+        // ----------------------------------------------------
+        // PERSONAGENS
+        // Este painel fica na pasta raiz, ao lado do index.html, então a pasta é Characters/.
+        // Já as atividades ficam uma pasta abaixo (ex.: Imagens_palavras/), por isso o caminho
+        // que é guardado para elas começa com ../
+        //
+        // Para acrescentar personagens, use a lista abaixo (a mesma do start_with_avatar.html).
+        // ----------------------------------------------------
+        const PASTA_PERSONAGENS = "Characters/";           // como este painel enxerga a pasta
+        const PREFIXO_PARA_ATIVIDADES = "../";             // como as atividades enxergam a pasta
+    const PERSONAGENS = [
+      "Alice.png",
+      "Alice.webp",
+      "Ana_Clara.png",
+      "Ana_Clara.webp",
+      "Beatriz.png",
+      "Beatriz.webp",
+      "Bernardo.png",
+      "Bernardo.webp",
+      "Enzo.png",
+      "Enzo.webp",
+      "Felipe.png",
+      "Felipe.webp",
+      "Gabriel.png",
+      "Gabriel.webp",
+      "Gustavo.png",
+      "Gustavo.webp",
+      "Hugo.png",
+      "Hugo.webp",
+      "Isabela.png",
+      "Isabela.webp",
+      "Isadora.png",
+      "Isadora.webp",
+      "Jamile.png",
+      "Jamile.webp",
+      "Joao_Paulo.png",
+      "Joao_Paulo.webp",
+      "Julia.png",
+      "Julia.webp",
+      "Kauan.png",
+      "Kauan.webp",
+      "Lara.png",
+      "Lara.webp",
+      "Livia.png",
+      "Livia.webp",
+      "Lucas.png",
+      "Lucas.webp",
+      "Luiza.png",
+      "Luiza.webp",
+      "Manuela.png",
+      "Manuela.webp",
+      "Maria_Eduarda.png",
+      "Maria_Eduarda.webp",
+      "Matheus.png",
+      "Matheus.webp",
+      "Melissa.png",
+      "Melissa.webp",
+      "Murilo.png",
+      "Murilo.webp",
+      "Nicole.png",
+      "Nicole.webp",
+      "Pedro.png",
+      "Pedro.webp",
+      "Rafael.png",
+      "Rafael.webp",
+      "Sara.png",
+      "Sara.webp",
+      "Sofia.png",
+      "Sofia.webp",
+      "Thiago.png",
+      "Thiago.webp",
+      "Valentina.png",
+      "Valentina.webp",
+      "Vitor.png",
+      "Vitor.webp",
+      "Vitoria.png",
+      "Vitoria.webp"
+    ];
+
+    // Nomes que precisam de acento (nome do arquivo sem extensão  ->  como deve aparecer)
+    const NOMES_COM_ACENTO = {
+      "Joao_Paulo": "João Paulo",
+      "Julia": "Júlia",
+      "Livia": "Lívia",
+      "Luiza": "Luíza",
+      "Vitor": "Vítor",
+      "Vitoria": "Vitória"
+    };
+
+    function nomeDoPersonagem(arquivo) {
+      const base = arquivo.replace(/\.[^.]+$/, '');
+      return NOMES_COM_ACENTO[base] || base.replace(/_/g, ' ');
+    }
+
+        window.onload = function() {
+            atualizarExibicao();
+            carregarAvatarAtual();
+            document.getElementById('listaAtividades').addEventListener('click', cliqueNaLista);
+        };
+
+        // O caminho guardado para as atividades (../Characters/...) precisa perder o ../ para aparecer aqui
+        function caminhoParaExibirNoPainel(valor) {
+            return valor.replace(/^\.\.\//, '');
+        }
+
+        function mostrarPreview(valor) {
+            const img = document.getElementById('imgPreview');
+            img.src = caminhoParaExibirNoPainel(valor);
+            img.style.display = 'block';
+        }
+
+        function carregarAvatarAtual() {
+            const salvo = localStorage.getItem('avatarData');
+            if (salvo) {
+                avatarDataURL = salvo;
+                mostrarPreview(salvo);
+            }
+        }
+
+        function carregarImagemAvatar(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                avatarDataURL = e.target.result;
+                mostrarPreview(avatarDataURL);
+            };
+            leitor.readAsDataURL(arquivo);
+        }
+
+        function obterPontosAtuais() {
+            for (let chave of chavesPontos) {
+                const valor = localStorage.getItem(chave);
+                if (valor !== null) return parseInt(valor, 10);
+            }
+            return 0;
+        }
+
+        function salvarPontosEmTodasChaves(valor) {
+            chavesPontos.forEach(chave => localStorage.setItem(chave, valor));
+        }
+
+        function atualizarExibicao() {
+            document.getElementById("lblPontos").innerText = obterPontosAtuais();
+        }
+
+        function zerarPontuacao() {
+            salvarPontosEmTodasChaves(0);
+            localStorage.removeItem('avatarData');
+            avatarDataURL = "";
+            document.getElementById('imgPreview').style.display = 'none';
+            atualizarExibicao();
+            alert("✅ Pontuação e Avatar zerados no navegador!");
+        }
+
+        // ----------------------------------------------------
+        // ABRIR UMA ATIVIDADE DA LISTA, NA QUESTÃO E COM OS PONTOS INFORMADOS
+        // ----------------------------------------------------
+        function cliqueNaLista(e) {
+            const link = e.target.closest ? e.target.closest('a') : null;
+            if (!link) return;
+            e.preventDefault();
+            abrirAtividade(link.getAttribute('href'), link.getAttribute('data-destino'));
+        }
+
+        async function abrirAtividade(paginaInicial, destinoManual) {
+            esconderMensagem();
+
+            const questao = document.getElementById("inputQuestao").value || "1";
+            const pontos = document.getElementById("inputPontos").value || "0";
+
+            salvarPontosEmTodasChaves(parseInt(pontos, 10) || 0);
+            if (avatarDataURL) {
+                localStorage.setItem('avatarData', avatarDataURL);
+            }
+            atualizarExibicao();
+
+            const parametros = `?q=${encodeURIComponent(questao)}&p=${encodeURIComponent(pontos)}`;
+            const urlInicio = new URL(paginaInicial, window.location.href);
+
+            // Endereço da atividade informado à mão (data-destino): abre direto
+            if (destinoManual) {
+                window.location.href = new URL(destinoManual, window.location.href).href + parametros;
+                return;
+            }
+
+            // Caso normal: lê a página "start" para descobrir qual arquivo ela abre
+            mostrarMensagem('Procurando a atividade...');
+            let texto;
+            try {
+                const resposta = await fetch(urlInicio.href);
+                if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+                texto = await resposta.text();
+            } catch (erro) {
+                mostrarMensagem(
+                    'Não consegui ler a página inicial desta atividade. O painel precisa estar aberto pela internet (não direto do arquivo no computador).',
+                    [{ rotulo: 'Abrir a página inicial da atividade', url: urlInicio.href }]
+                );
+                return;
+            }
+
+            const destinos = descobrirDestinos(texto, urlInicio);
+
+            if (destinos.length === 1) {
+                window.location.href = destinos[0] + parametros;
+            } else if (destinos.length > 1) {
+                mostrarMensagem(
+                    'Esta atividade tem mais de uma versão. Qual deseja abrir?',
+                    destinos.map(url => ({ rotulo: nomeDoArquivo(url), url: url + parametros }))
+                );
+            } else {
+                mostrarMensagem(
+                    'Não encontrei qual arquivo esta atividade abre. Use data-destino no item da lista (veja o comentário acima da lista).',
+                    [{ rotulo: 'Abrir a página inicial da atividade', url: urlInicio.href }]
+                );
+            }
+        }
+
+        // Procura, na página "start", os arquivos para onde ela redireciona (window.location.href = "...")
+        function descobrirDestinos(texto, urlInicio) {
+            const achados = [];
+            const padrao = /location(?:\.href)?\s*=\s*(['"`])([^'"`]+)\1|location\.(?:assign|replace)\(\s*(['"`])([^'"`]+)\3\s*\)/g;
+            let m;
+            while ((m = padrao.exec(texto)) !== null) {
+                const alvo = (m[2] || m[4] || '').trim();
+                if (!alvo || alvo.indexOf('${') !== -1 || alvo.charAt(0) === '#' || /^javascript:/i.test(alvo)) continue;
+
+                let url;
+                try { url = new URL(alvo, urlInicio); } catch (e) { continue; }
+                if (url.origin !== urlInicio.origin) continue;
+                if (/\/index\.html$/i.test(url.pathname)) continue;   // botões de "voltar ao início"
+
+                url.search = '';
+                url.hash = '';
+                if (url.href === urlInicio.href) continue;
+                if (achados.indexOf(url.href) === -1) achados.push(url.href);
+            }
+            return achados;
+        }
+
+        function nomeDoArquivo(url) {
+            const ultimo = new URL(url).pathname.split('/').pop();
+            try { return decodeURIComponent(ultimo); } catch (e) { return ultimo; }
+        }
+
+        function mostrarMensagem(texto, botoes) {
+            const caixa = document.getElementById('mensagemAbertura');
+            caixa.innerHTML = '';
+            caixa.appendChild(document.createTextNode(texto));
+            (botoes || []).forEach(b => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = b.rotulo;
+                btn.onclick = () => { window.location.href = b.url; };
+                caixa.appendChild(btn);
+            });
+            caixa.style.display = 'block';
+        }
+
+        function esconderMensagem() {
+            const caixa = document.getElementById('mensagemAbertura');
+            caixa.style.display = 'none';
+            caixa.innerHTML = '';
+        }
+
+        // ----------------------------------------------------
+        // OVERLAY DE PERSONAGENS
+        // ----------------------------------------------------
+        let personagemSelecionado = null;   // caminho (para as atividades) do personagem marcado
+
+        function caminhoPersonagemParaPainel(arquivo) {
+            return PASTA_PERSONAGENS + encodeURIComponent(arquivo);
+        }
+
+        function caminhoPersonagemParaAtividades(arquivo) {
+            return PREFIXO_PARA_ATIVIDADES + caminhoPersonagemParaPainel(arquivo);
+        }
+
+        function abrirOverlayPersonagens() {
+            const grade = document.getElementById('grade-personagens');
+            grade.innerHTML = '';
+            grade.scrollTop = 0;
+
+            // Se já havia um personagem escolhido, ele aparece marcado
+            personagemSelecionado = avatarDataURL;
+
+            PERSONAGENS.forEach(arquivo => {
+                const caminhoPainel = caminhoPersonagemParaPainel(arquivo);
+                const caminhoAtividades = caminhoPersonagemParaAtividades(arquivo);
+
+                const cartao = document.createElement('label');
+                cartao.className = 'cartao-personagem';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'personagem';
+                radio.value = caminhoAtividades;
+                radio.addEventListener('change', () => marcarPersonagem(caminhoAtividades));
+
+                const img = document.createElement('img');
+                img.loading = 'lazy';
+                img.alt = nomeDoPersonagem(arquivo);
+                img.src = caminhoPainel;
+                img.onerror = () => {
+                    console.warn('Imagem de personagem não encontrada:', caminhoPainel);
+                    cartao.remove();
+                    verificarGradeVazia();
+                };
+
+                const nome = document.createElement('span');
+                nome.className = 'nome-personagem';
+                nome.textContent = nomeDoPersonagem(arquivo);
+
+                cartao.appendChild(radio);
+                cartao.appendChild(img);
+                cartao.appendChild(nome);
+                grade.appendChild(cartao);
+
+                if (caminhoAtividades === personagemSelecionado) {
+                    radio.checked = true;
+                    cartao.classList.add('selecionado');
+                }
+            });
+
+            verificarGradeVazia();
+
+            document.getElementById('overlay-personagens').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function verificarGradeVazia() {
+            const grade = document.getElementById('grade-personagens');
+            const aviso = grade.querySelector('.overlay-mensagem');
+            const temCartoes = grade.querySelector('.cartao-personagem') !== null;
+            if (!temCartoes && !aviso) {
+                const msg = document.createElement('p');
+                msg.className = 'overlay-mensagem';
+                msg.textContent = 'Nenhum personagem encontrado.';
+                grade.appendChild(msg);
+            }
+        }
+
+        function marcarPersonagem(caminho) {
+            personagemSelecionado = caminho;
+            document.querySelectorAll('.cartao-personagem').forEach(c => {
+                c.classList.toggle('selecionado', c.querySelector('input').checked);
+            });
+        }
+
+        function fecharOverlayPersonagens() {
+            document.getElementById('overlay-personagens').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Botão "Pronto": guarda o personagem marcado e mostra a pré-visualização
+        function confirmarPersonagem() {
+            const marcado = document.querySelector('#grade-personagens input[type="radio"]:checked');
+            if (marcado) {
+                avatarDataURL = marcado.value;
+                mostrarPreview(avatarDataURL);
+            }
+            fecharOverlayPersonagens();
+        }
+
+        // Esc fecha o overlay sem alterar a escolha
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('overlay-personagens').style.display === 'flex') {
+                fecharOverlayPersonagens();
+            }
+        });
+    </script>
+
+</body>
+</html>
