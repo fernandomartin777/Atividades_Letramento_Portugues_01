@@ -65,6 +65,23 @@
       background-color: #219653;
       transform: translateY(-2px);
     }
+
+    /* Botões de iniciar empilhados, um abaixo do outro */
+    .area-botoes-iniciar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Versão simplificada: mesmo botão, em um verde mais pálido */
+    .btn-iniciar-simplificado {
+      background-color: #6fbb8c;
+    }
+
+    .btn-iniciar-simplificado:hover {
+      background-color: #58a876;
+    }
   </style>
 </head>
 <body>
@@ -73,8 +90,13 @@
     <h1>Combine as figuras com as palavras ou frases</h1>
     <p>Clique no botão abaixo para iniciar a atividade e testar seus conhecimentos.</p>
 
-    <!-- Botão de Iniciar Atividade Ativo -->
-    <button class="btn-iniciar" onclick="iniciarAtividade()">Iniciar atividade</button>
+    <div class="area-botoes-iniciar">
+      <!-- Botão de Iniciar Atividade Ativo -->
+      <button class="btn-iniciar" onclick="iniciarAtividade()">Iniciar atividade</button>
+
+      <!-- Botão de Iniciar Atividade Simplificada -->
+      <button class="btn-iniciar btn-iniciar-simplificado" onclick="iniciarAtividadeSimplificada()">Iniciar atividade simplificada</button>
+    </div>
   </div>
 
   <script>
@@ -85,6 +107,15 @@
 
       // Redireciona para a atividade principal
       window.location.href = "imagens-texto-03.html";
+    }
+
+    function iniciarAtividadeSimplificada() {
+      // Zera a pontuação no LocalStorage
+      localStorage.setItem("pontosAluno", 0);
+      localStorage.setItem("pontuacaoTotal", 0);
+
+      // Redireciona para a versão simplificada da atividade
+      window.location.href = "imagens-texto-03-simpl.html";
     }
   </script>
 
